@@ -1,0 +1,220 @@
+[
+	{
+		"id"	:	"CORE_PROG001D",
+		"type"	:	"F", 
+		"name"	:	"ZA. Config",
+		"icon"	:	"globe2",
+		"items"	:	[
+			{
+				"id"	:	"CORE_PROG001D0001Q",
+				"type"	:	"I",
+				"name"	:	"ZA01 - System site",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01"
+			},
+			{
+				"id"	:	"CORE_PROG001D0002Q",
+				"type"	:	"I",
+				"name"	:	"ZA02 - Program",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			},			
+			{
+				"id"	:	"CORE_PROG001D0003Q",
+				"type"	:	"I",
+				"name"	:	"ZA03 - Menu settings",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01/c2/f11e322d-9126-4760-bd2b-24d78b7fa85a"
+			},
+			{
+				"id"	:	"CORE_PROG001D0004Q",
+				"type"	:	"I",
+				"name"	:	"ZA04 - Template",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01/c2/0000"
+			},
+			{
+				"id"	:	"CORE_PROG001D0005Q",
+				"type"	:	"I",
+				"name"	:	"ZA05 - Report",
+				"icon"	:	"globe2",
+				"url"	:	"#/name"
+			},
+			{
+				"id"	:	"CORE_PROG001D0007Q",
+				"type"	:	"I",
+				"name"	:	"ZA07 - Setting",
+				"icon"	:	"globe2",
+				"url"	:	""
+			}			
+		]
+	}
+    ,
+    {
+		"id"	:	"CORE_PROG002D",
+		"type"	:	"F", 
+		"name"	:	"ZB. Role authority",
+		"icon"	:	"globe2",
+		"items"	:	[
+			{
+				"id"	:	"CORE_PROG002D0001Q",
+				"type"	:	"I",
+				"name"	:	"ZB01 - Role",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"CORE_PROG002D0002Q",
+				"type"	:	"I",
+				"name"	:	"ZB02 - User role",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"CORE_PROG002D0003Q",
+				"type"	:	"I",
+				"name"	:	"ZB03 - Role for menu",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}            
+        ]
+    }
+    ,
+    {
+		"id"	:	"CORE_PROG003D",
+		"type"	:	"F", 
+		"name"	:	"ZC. Service",
+		"icon"	:	"globe2",
+		"items"	:	[
+			{
+				"id"	:	"CORE_PROG002D0001Q",
+				"type"	:	"I",
+				"name"	:	"ZB01 - Role",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"CORE_PROG003D0002Q",
+				"type"	:	"I",
+				"name"	:	"ZC02 - Expression",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"CORE_PROG003D0003Q",
+				"type"	:	"I",
+				"name"	:	"ZC03 - Bean support",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"CORE_PROG003D0006Q",
+				"type"	:	"I",
+				"name"	:	"ZC06 - Expression Job",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}                               
+        ]        
+    }
+    ,
+    {
+		"id"	:	"CORE_PROG004D",
+		"type"	:	"F", 
+		"name"	:	"ZD. Log",
+		"icon"	:	"globe2",        
+        "items"	:	[
+			{
+				"id"	:	"CORE_PROG004D0001Q",
+				"type"	:	"I",
+				"name"	:	"ZD01 - Event log",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,        
+			{
+				"id"	:	"CORE_PROG004D0002Q",
+				"type"	:	"I",
+				"name"	:	"ZD02 - Login log",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,        
+			{
+				"id"	:	"CORE_PROG004D0003Q",
+				"type"	:	"I",
+				"name"	:	"ZD03 - Expression Job log",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}            
+        ]
+    }
+    ,
+    {
+		"id"	:	"GTK_CAR001D",
+		"type"	:	"F", 
+		"name"	:	"公務車申請",
+		"icon"	:	"globe2",        
+        "items"	:	[
+			{
+				"id"	:	"GTK_CAR001D0001Q",
+				"type"	:	"I",
+				"name"	:	"01 - 申請預約",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0002Q",
+				"type"	:	"I",
+				"name"	:	"02 - 申請單查詢",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0003Q",
+				"type"	:	"I",
+				"name"	:	"03 - 車輛檢查表",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0004Q",
+				"type"	:	"I",
+				"name"	:	"04 - 使用明細表",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0005Q",
+				"type"	:	"I",
+				"name"	:	"使用明細/檢查表報表",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0006Q",
+				"type"	:	"I",
+				"name"	:	"預約日曆清單(取消用)",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}
+            ,
+			{
+				"id"	:	"GTK_CAR001D0007Q",
+				"type"	:	"I",
+				"name"	:	"報表明細(幼獅專用)",
+				"icon"	:	"globe2",
+				"url"	:	"#/prog01c1"
+			}            
+        ]
+    }
+]

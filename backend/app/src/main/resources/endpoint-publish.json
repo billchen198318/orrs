@@ -1,0 +1,17 @@
+{
+	"endpoints" : [
+		{
+			"name"		:	"testService",
+			"beanId"	:	"testService",
+			"publish"	:	"/testService",
+			"inInterceptors"	:	[
+				"loggingInInterceptor",
+				"soapForceDoclitBareInInterceptor"
+			],
+			"outInterceptors"	:	[
+				"loggingOutInterceptor"
+			],
+			"enable"	:	true
+		}
+	]
+}

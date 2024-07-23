@@ -1,0 +1,40 @@
+cd..
+npx nuxi@latest init frontend-v-nx 
+
+cd frontend-v-nx 
+
+npm install --save sass
+npm install --save bootstrap
+npm install --save bootstrap-icons
+npm install --save @popperjs/core
+npm install --save pinia
+npm install --save @pinia/nuxt
+npm install --save sweetalert2
+npm install --save vue3-toastify
+npm install --save axios
+npm install --save bytemd
+npm install --save @bytemd/vue-next
+npm install --save @bytemd/plugin-gfm
+npm install --save @bytemd/plugin-import-html
+npm install --save echarts
+npm install --save vue-echarts
+
+
+# build & test
+npm run build
+npm run dev
+npm run preview
+npx nuxi start
+
+# dev mode dot env of .env.local
+npx nuxi dev --dotenv .env.local
+
+
+# command will then output an .output/public/index.html entrypoint
+nuxi generate
+
+# This will launch your production Nuxt server that listens on port 3000 by default.
+node .output/server/index.mjs
+
+
+

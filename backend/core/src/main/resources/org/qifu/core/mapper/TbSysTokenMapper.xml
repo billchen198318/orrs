@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.qifu.core.mapper.TbSysTokenMapper">
+
+  <resultMap id="BaseResultMap" type="org.qifu.core.entity.TbSysToken">
+  	<id column="OID" jdbcType="CHAR" property="oid" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="TOKEN" jdbcType="VARCHAR" property="token" />
+    <result column="EXPIRES_DATE" jdbcType="TIMESTAMP" property="expiresDate" />
+    <result column="RF_EXPIRES_DATE" jdbcType="TIMESTAMP" property="rfExpiresDate" />
+    <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
+  </resultMap>
+  
+  <resultMap id="BoardDemoResultMap" type="org.qifu.core.vo.BoardDemo">
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="COUNT_SIZE" jdbcType="INTEGER" property="countSize" />
+  </resultMap>  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    where OID = #{oid,jdbcType=CHAR}
+  </select>  
+  
+  <sql id="baseConditions">
+	<if test="token != null and token != ''.toString() ">
+		AND TOKEN = #{token,jdbcType=VARCHAR}
+	</if>
+	<if test="userId != null and userId != ''.toString() ">
+		AND USER_ID = #{userId,jdbcType=VARCHAR}
+	</if>	  
+  </sql>
+  
+  <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    WHERE 1=1
+	
+	<include refid="baseConditions"/>
+			
+	<if test="orderBy != null and orderBy != ''.toString() and sortType != null and sortType != ''.toString() ">
+		ORDER BY  ${orderBy} ${sortType}
+	</if>	
+  </select>    
+  
+  <select id="findPage" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	<include refid="org.qifu.core.mapper.DB1Config.sql1"/>
+  	
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    WHERE 1=1
+	
+	<include refid="baseConditions"/>	
+		
+	<include refid="org.qifu.core.mapper.DB1Config.sql2"/>
+  </select>  
+  
+  <select id="count" parameterType="java.util.HashMap" resultType="java.lang.Long">
+    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    WHERE 1=1
+	
+	<include refid="baseConditions"/>
+	
+  </select>  
+  
+  <insert id="insert" parameterType="org.qifu.core.entity.TbSysToken"> 
+    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        OID,
+      </if>
+      <if test="userId != null">
+        USER_ID,
+      </if>
+      <if test="token != null">
+        TOKEN,
+      </if>
+      <if test="expiresDate != null">
+        EXPIRES_DATE,
+      </if>
+      <if test="rfExpiresDate != null">
+        RF_EXPIRES_DATE,
+      </if>
+      <if test="cdate != null">
+        CDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        #{oid,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="expiresDate != null">
+        #{expiresDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rfExpiresDate != null">
+        #{rfExpiresDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cdate != null">
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>  
+  
+  <update id="update" parameterType="org.qifu.core.entity.TbSysToken">
+    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    <set>
+      <if test="userId != null">
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        TOKEN = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="expiresDate != null">
+        EXPIRES_DATE = #{expiresDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rfExpiresDate != null">
+        RF_EXPIRES_DATE = #{rfExpiresDate,jdbcType=TIMESTAMP},
+      </if>
+      <!--  
+      <if test="cdate != null">
+        CDATE = #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      -->
+    </set>
+    where OID = #{oid,jdbcType=CHAR}
+  </update>  
+  
+  <delete id="delete" parameterType="org.qifu.core.entity.TbSysToken">
+    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token
+    where OID = #{oid,jdbcType=CHAR}
+  </delete>  
+
+  <select id="findCountSizeByDatePerUser" parameterType="java.util.HashMap" resultMap="BoardDemoResultMap">
+	SELECT USER_ID, COUNT(*) AS COUNT_SIZE 
+	FROM <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token 
+	WHERE CDATE <![CDATA[ >= ]]> #{date1,jdbcType=TIMESTAMP}
+	AND CDATE <![CDATA[ <= ]]> #{date2,jdbcType=TIMESTAMP}
+	GROUP BY USER_ID ORDER BY COUNT_SIZE desc
+	LIMIT 7
+  </select>    
+  
+  <select id="countSizeByDate" parameterType="java.util.HashMap" resultType="java.lang.Long">
+	SELECT COUNT(*) AS COUNT_SIZE 
+	FROM <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_sys_token 
+	WHERE CDATE <![CDATA[ >= ]]> #{date1,jdbcType=TIMESTAMP}
+	AND CDATE <![CDATA[ <= ]]> #{date2,jdbcType=TIMESTAMP}
+  </select>    
+  
+</mapper>
