@@ -89,7 +89,7 @@ export default {
 				<h3 class="login-head">
 					<!-- <img src="resource/logo.svg" width="250px" style="margin-bottom:10px" /> -->
 					<i class="bi bi-person-circle"></i>
-					qífū - frontend
+					orrs - frontend
 				</h3>
                 <div class="form-group form-floating">
                     <input type="text" class="form-control" id="username" placeholder="Account" v-model="this.userId">

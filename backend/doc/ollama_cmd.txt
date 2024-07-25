@@ -1,0 +1,6 @@
+ollama pull llama3 # Should take a while.
+ollama run llama3
+
+
+ollama pull mistral
+ollama run mistral

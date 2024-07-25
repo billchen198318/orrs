@@ -19,7 +19,7 @@ export default {
 <template>
 	<div class="callout callout-info">
 		<h4><i class="bi bi-info-circle"></i>&nbsp;Welcome</h4>
-		Welcome qífū-4&nbsp;(Version&nbsp;:&nbsp;0.4)&nbsp;
+		Welcome orrs&nbsp;(Version&nbsp;:&nbsp;0.4)&nbsp;
 		<br>
 		請點選左邊選單，進行操作。
 		<br>

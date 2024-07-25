@@ -21,7 +21,9 @@
  */
 package org.qifu.core.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,16 @@ import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.YesNo;
 import org.qifu.core.util.CoreApiSupport;
 import org.qifu.core.vo.TestModel;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaApi;
+import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
+import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
+import org.springframework.ai.ollama.api.OllamaApi.GenerateRequest;
+import org.springframework.ai.ollama.api.OllamaApi.Message;
+import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +66,57 @@ public class HelloApiController extends CoreApiSupport {
 	
 //	@Autowired
 //	RedisTemplate<String, String> redisTemplate;
+	
+	@Autowired
+	OllamaChatModel ollamaChatModel;
+	
+	@Autowired
+	OllamaApi ollamaApi;
+	
+	@Operation(summary = "測試ollama", description = "測試用ollama - 1")
+	@GetMapping(value = "/generateResponse/{msg}")	
+	public QueryResult<String> generateResponse(@PathVariable String msg) {
+		QueryResult<String> result = this.initResult();
+		String res = ollamaChatModel.call(msg);
+		System.out.println("res>>>" + res);
+		result.setValue(res);
+		return result;
+	}
+	
+	@Operation(summary = "測試ollama 與 prompt", description = "測試用ollama - 2")
+	@GetMapping(value = "/generateResponse2/{prompt}")	
+	public QueryResult<String> generateResponse2(@PathVariable String prompt) {
+		QueryResult<String> result = this.initResult();
+		org.springframework.ai.chat.model.ChatResponse chatResponse = ollamaChatModel.call(new Prompt(prompt));
+        String res = chatResponse.getResult().getOutput().getContent();
+		System.out.println("res>>>" + res);
+		result.setValue(res);   
+		result.setValue( result.getValue() + "\n" + res);        
+		return result;
+	}	
+	
+	@Operation(summary = "測試ollama 第3個範例", description = "測試用ollama - 3")
+	@GetMapping(value = "/generateResponse3/{content}")		
+	public QueryResult<String> generateResponse3(@PathVariable String content) {
+		QueryResult<String> result = this.initResult();
+		
+		var req = ChatRequest.builder("llama3")
+			.withStream(false)
+			.withMessages(List.of(
+					Message.builder(Message.Role.SYSTEM).withContent("請用中文回應").build()
+					,
+					Message.builder(Message.Role.USER).withContent(content).build()
+				)
+			) // .withOptions(OllamaOptions.create().withTemperature(0.9f))
+		.build();
+		
+		//OllamaApi ollamaApi = new OllamaApi("YOUR_HOST:YOUR_PORT");		
+		ChatResponse resp = ollamaApi.chat(req);
+		
+		result.setValue(resp.message().content());
+		
+		return result;
+	}		
 	
 	@Operation(summary = "測試del", description = "測試用的接口del")
 	//@ResponseBody

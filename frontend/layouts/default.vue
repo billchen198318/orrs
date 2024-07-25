@@ -161,13 +161,13 @@ function _clearUserLoginData() {
 </script>
 <template>  
 	<head>
-		<title>qífū</title>
+		<title>orrs</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta charset="UTF-8" />
 	</head>  
 	<div v-if=" 'Y' == this.baseStore.user.login " class="app sidebar-mini">
 		<!-- Navbar-->
-        <header class="app-header"><a class="app-header__logo" href="#" v-on:click="this.reloadPageLogoClick">qífū</a>
+        <header class="app-header"><a class="app-header__logo" href="#" v-on:click="this.reloadPageLogoClick">orrs</a>
 			<!-- Sidebar toggle button-->
 			<a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"><h4 style="margin-top: 10px;"><i class="bi bi-list"></i></h4></a>
 			<!-- Navbar Right Menu-->
