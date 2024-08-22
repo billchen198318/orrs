@@ -30,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.YesNo;
+import org.qifu.core.model.ChatResponseContentType;
+import org.qifu.core.util.ChatResponseContent;
 import org.qifu.core.util.CoreApiSupport;
 import org.qifu.core.vo.TestModel;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -38,7 +40,6 @@ import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
 import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
-import org.springframework.ai.ollama.api.OllamaApi.GenerateRequest;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,16 +96,25 @@ public class HelloApiController extends CoreApiSupport {
 		return result;
 	}	
 	
-	@Operation(summary = "測試ollama 第3個範例", description = "測試用ollama - 3")
+	@Operation(summary = "測試ollama 第3個範例", description = "測試用gemma2 - 3")
 	@GetMapping(value = "/generateResponse3/{content}")		
 	public QueryResult<String> generateResponse3(@PathVariable String content) {
 		QueryResult<String> result = this.initResult();
 		
-		var req = ChatRequest.builder("llama3")
+		var req = ChatRequest.builder("gemma2")
 			.withStream(false)
 			.withMessages(List.of(
-					Message.builder(Message.Role.SYSTEM).withContent("請用中文回應").build()
+					//Message.builder(Message.Role.SYSTEM).withContent("中文回應").build()
+					//,
+					Message.builder(Message.Role.SYSTEM).withContent("echarts version 5.3.2").build()
 					,
+					Message.builder(Message.Role.SYSTEM).withContent("echarts cdn base url https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js").build()
+					,
+					Message.builder(Message.Role.SYSTEM).withContent("echarts width 640px, height 480px").build()
+					,
+					Message.builder(Message.Role.SYSTEM).withContent("give me full html code content").build()
+					,
+					//實際值 [100, 107, 84, 91] 標題[week1, week2, week3, week3] 用 echarts 5.3.2 產生bar圖, pie圖, line圖
 					Message.builder(Message.Role.USER).withContent(content).build()
 				)
 			) // .withOptions(OllamaOptions.create().withTemperature(0.9f))
@@ -114,6 +124,12 @@ public class HelloApiController extends CoreApiSupport {
 		ChatResponse resp = ollamaApi.chat(req);
 		
 		result.setValue(resp.message().content());
+		
+		System.out.println("------------------------------------------------------");
+		String str = resp.message().content();
+		str = ChatResponseContent.parse(str, ChatResponseContentType.HTML);
+		System.out.println(str);
+		System.out.println("------------------------------------------------------");
 		
 		return result;
 	}		
