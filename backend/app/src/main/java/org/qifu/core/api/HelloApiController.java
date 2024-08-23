@@ -30,9 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.YesNo;
-import org.qifu.core.model.ChatResponseContentType;
-import org.qifu.core.util.ChatResponseContent;
 import org.qifu.core.util.CoreApiSupport;
+import org.qifu.core.util.MarkdownCodeExtractor;
 import org.qifu.core.vo.TestModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -109,8 +108,8 @@ public class HelloApiController extends CoreApiSupport {
 					Message.builder(Message.Role.SYSTEM).withContent("echarts version 5.3.2").build()
 					,
 					Message.builder(Message.Role.SYSTEM).withContent("echarts cdn base url https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js").build()
-					,
-					Message.builder(Message.Role.SYSTEM).withContent("echarts width 640px, height 480px").build()
+					//,
+					//Message.builder(Message.Role.SYSTEM).withContent("echarts width 640px, height 480px").build()
 					,
 					Message.builder(Message.Role.SYSTEM).withContent("give me full html code content").build()
 					,
@@ -127,7 +126,7 @@ public class HelloApiController extends CoreApiSupport {
 		
 		System.out.println("------------------------------------------------------");
 		String str = resp.message().content();
-		str = ChatResponseContent.parse(str, ChatResponseContentType.HTML);
+		str = MarkdownCodeExtractor.parse(str);
 		System.out.println(str);
 		System.out.println("------------------------------------------------------");
 		

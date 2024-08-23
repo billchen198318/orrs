@@ -1,5 +1,5 @@
 package org.qifu.core.model;
 
-public enum ChatResponseContentType {
+public enum MarkdownCodeType {
 	JAVA, HTML
 }
