@@ -75,4 +75,86 @@ public class PROG010D0001Controller extends CoreApiSupport {
 		return ResponseEntity.ok().body(result);
 	}			
 	
+	@ControllerMethodAuthority(programId = "CORE_PROG010D0001D", check = true)
+	@Operation(summary = "CORE_PROG010D0001 - delete", description = "刪除TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbOrrsTask task) {
+		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<Boolean> delResult = this.orrsTaskService.delete(task);
+			this.setDefaultResponseJsonResult(delResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
+	
+	private void handlerCheck(DefaultControllerJsonResultObj<TbOrrsTask> result, TbOrrsTask task) throws ControllerException, ServiceException, Exception {
+		
+	}
+	
+	private void save(DefaultControllerJsonResultObj<TbOrrsTask> result, TbOrrsTask task) throws ControllerException, ServiceException, Exception {
+		this.handlerCheck(result, task);
+		DefaultResult<TbOrrsTask> cResult = this.orrsTaskService.insert(task);
+		this.setDefaultResponseJsonResult(cResult, result);
+	}
+	
+	private void update(DefaultControllerJsonResultObj<TbOrrsTask> result, TbOrrsTask task) throws ControllerException, ServiceException, Exception {
+		this.handlerCheck(result, task);
+		DefaultResult<TbOrrsTask> uResult = this.orrsTaskService.update(task);
+		this.setDefaultResponseJsonResult(uResult, result);
+	}	
+	
+	@ControllerMethodAuthority(programId = "CORE_PROG010D0001C", check = true)
+	@Operation(summary = "CORE_PROG010D0001 - save", description = "新增TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsTask>> doSave(@RequestBody TbOrrsTask task) {
+		DefaultControllerJsonResultObj<TbOrrsTask> result = this.initDefaultJsonResult();
+		try {
+			this.save(result, task);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}
+	
+	@ControllerMethodAuthority(programId = "CORE_PROG010D0001E", check = true)
+	@Operation(summary = "CORE_PROG010D0001 - load", description = "讀取TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsTask>> doLoad(@RequestBody TbOrrsTask task) {
+		DefaultControllerJsonResultObj<TbOrrsTask> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<TbOrrsTask> lResult = this.orrsTaskService.selectByEntityPrimaryKey(task);
+			this.setDefaultResponseJsonResult(lResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
+	
+	@ControllerMethodAuthority(programId = "CORE_PROG010D0001U", check = true)
+	@Operation(summary = "CORE_PROG010D0001 - update", description = "更新TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsTask>> doUpdate(@RequestBody TbOrrsTask task) {
+		DefaultControllerJsonResultObj<TbOrrsTask> result = this.initDefaultJsonResult();
+		try {
+			this.update(result, task);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}		
+	
 }
