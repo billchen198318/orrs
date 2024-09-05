@@ -7,10 +7,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.core.model.MarkdownCodeType;
 
 public class MarkdownCodeExtractor {
-	private static final String _regex = "```(?:[a-zA-Z]*)\\s*([\\s\\S]*?)```";
-	private static final Pattern _pattern = Pattern.compile(_regex);
+	private static final String _regexAll = "```(?:[a-zA-Z]*)\\s*([\\s\\S]*?)```";
+	private static final Pattern _patternAll = Pattern.compile(_regexAll);
+	private static final String _regexGroovy = "```groovy\\s*([\\s\\S]*?)```";
+	private static final Pattern _patternGroovy = Pattern.compile(_regexGroovy);
+	private static final String _regexJava = "```java\\s*([\\s\\S]*?)```";
+	private static final Pattern _patternJava = Pattern.compile(_regexJava);
+	private static final String _regexHtml = "```html\\s*([\\s\\S]*?)```";
+	private static final Pattern _patternHtml = Pattern.compile(_regexHtml);	
 	private static final String CODE_START_HTML = "```html";
 	private static final String CODE_START_JAVA = "```java";
+	private static final String CODE_START_GROOVY = "```groovy";
 	private static final String CODE_END = "```";
 	
 	private static String getBlockValue(String str, MarkdownCodeType type) {
@@ -28,6 +35,11 @@ public class MarkdownCodeExtractor {
 			e = val.lastIndexOf(CODE_END);	
 			fAdd = CODE_START_HTML.length();
 		}
+		if (type == MarkdownCodeType.GROOVY) {
+			f = val.indexOf(CODE_START_GROOVY);
+			e = val.lastIndexOf(CODE_END);	
+			fAdd = CODE_START_GROOVY.length();
+		}		
 		if (f >= 0 && f < e && e >= 10) {
 			val = val.substring(f+fAdd, e);
 		}		
@@ -48,12 +60,44 @@ public class MarkdownCodeExtractor {
 				val = val.substring(0, val.length()-3);
 			}
 		}
+		if (type == MarkdownCodeType.GROOVY) {
+			if (val.length() >= CODE_START_GROOVY.length() && val.startsWith(CODE_START_GROOVY) && val.endsWith(CODE_END)) {
+				val = val.substring(CODE_START_GROOVY.length(), val.length());
+				val = val.substring(0, val.length()-3);
+			}			
+		}
 		return val;
 	}
 	
 	public static String parse(String markdownText) {
+		return parse(markdownText, null);
+	}
+	
+	public static String parseGroovy(String markdownText) {
+		return parse(markdownText, MarkdownCodeType.GROOVY);
+	}
+	
+	public static String parseHtml(String markdownText) {
+		return parse(markdownText, MarkdownCodeType.HTML);
+	}	
+	
+	public static String parseJava(String markdownText) {
+		return parse(markdownText, MarkdownCodeType.JAVA);
+	}
+	
+	private static String parse(String markdownText, MarkdownCodeType type) {
+		Pattern p = _patternAll;
+		if (MarkdownCodeType.JAVA.equals(type)) {
+			p = _patternJava;
+		}
+		if (MarkdownCodeType.HTML.equals(type)) {
+			p = _patternHtml;
+		}
+		if (MarkdownCodeType.GROOVY.equals(type)) {
+			p = _patternGroovy;
+		}		
 		StringBuilder sb = new StringBuilder();
-		Matcher matcher = _pattern.matcher(markdownText);
+		Matcher matcher = p.matcher(markdownText);
 		while (matcher.find()) {
 			sb.append(matcher.group(1));
 		}

@@ -1,5 +1,5 @@
 package org.qifu.core.model;
 
 public enum MarkdownCodeType {
-	JAVA, HTML
+	JAVA, HTML, GROOVY
 }

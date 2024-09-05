@@ -29,18 +29,18 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.QueryResult;
+import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.YesNo;
 import org.qifu.core.util.CoreApiSupport;
 import org.qifu.core.util.MarkdownCodeExtractor;
 import org.qifu.core.vo.TestModel;
+import org.qifu.util.ScriptExpressionUtils;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
 import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
-import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,7 +73,7 @@ public class HelloApiController extends CoreApiSupport {
 	@Autowired
 	OllamaApi ollamaApi;
 	
-	@Operation(summary = "測試ollama", description = "測試用ollama - 1")
+	@Operation(summary = "測試ollama", description = "測試用codegeex4 - 1")
 	@GetMapping(value = "/generateResponse/{msg}")	
 	public QueryResult<String> generateResponse(@PathVariable String msg) {
 		QueryResult<String> result = this.initResult();
@@ -83,7 +83,7 @@ public class HelloApiController extends CoreApiSupport {
 		return result;
 	}
 	
-	@Operation(summary = "測試ollama 與 prompt", description = "測試用ollama - 2")
+	@Operation(summary = "測試ollama 與 prompt", description = "測試用codegeex4 - 2")
 	@GetMapping(value = "/generateResponse2/{prompt}")	
 	public QueryResult<String> generateResponse2(@PathVariable String prompt) {
 		QueryResult<String> result = this.initResult();
@@ -95,12 +95,12 @@ public class HelloApiController extends CoreApiSupport {
 		return result;
 	}	
 	
-	@Operation(summary = "測試ollama 第3個範例", description = "測試用gemma2 - 3")
+	@Operation(summary = "測試ollama 第3個範例", description = "測試用codegeex4 - 3")
 	@GetMapping(value = "/generateResponse3/{content}")		
 	public QueryResult<String> generateResponse3(@PathVariable String content) {
 		QueryResult<String> result = this.initResult();
 		
-		var req = ChatRequest.builder("gemma2")
+		var req = ChatRequest.builder("codegeex4")
 			.withStream(false)
 			.withMessages(List.of(
 					//Message.builder(Message.Role.SYSTEM).withContent("中文回應").build()
@@ -126,12 +126,47 @@ public class HelloApiController extends CoreApiSupport {
 		
 		System.out.println("------------------------------------------------------");
 		String str = resp.message().content();
-		str = MarkdownCodeExtractor.parse(str);
+		str = MarkdownCodeExtractor.parseHtml(str);
 		System.out.println(str);
 		System.out.println("------------------------------------------------------");
 		
 		return result;
 	}		
+	
+	@Operation(summary = "測試ollama 第4個範例", description = "測試用codegeex4 - 4")
+	@GetMapping(value = "/generateResponse4/{content}")		
+	public QueryResult<String> generateResponse4(@PathVariable String content) {
+		QueryResult<String> result = this.initResult();
+		
+		var req = ChatRequest.builder("codegeex4")
+			.withStream(false)
+			.withMessages(List.of(
+					Message.builder(Message.Role.SYSTEM).withContent(
+							"database is MariaDB, json output use com.fasterxml.jackson , need import java.sql.* , jdbc driver class org.mariadb.jdbc.Drive , jdbc url start is jdbc:mariadb:// ").build()
+					,
+					// mariadb IP位置 127.0.0.1 , port 3306, 帳戶: root 密碼: password 資料庫 orrs , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] , 所有欄位都是varchar格式, 先將資料放入List<Map> 中, 再將List<Map>轉成json輸出, 給我 groovy code
+					Message.builder(Message.Role.USER).withContent(content).build()
+				)
+			)
+		.build();
+		
+		ChatResponse resp = ollamaApi.chat(req);
+		
+		result.setValue(resp.message().content());
+		
+		System.out.println("------------------------------------------------------");
+		String str = resp.message().content();
+		str = MarkdownCodeExtractor.parseGroovy(str);
+		System.out.println(str);
+		try {
+			ScriptExpressionUtils.execute(ScriptTypeCode.GROOVY, str, null, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("------------------------------------------------------");
+		
+		return result;
+	}			
 	
 	@Operation(summary = "測試del", description = "測試用的接口del")
 	//@ResponseBody
