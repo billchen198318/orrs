@@ -47,6 +47,98 @@ INSERT INTO `tb_account` VALUES ('0','admin','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sa
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tb_orrs_command`
+--
+
+DROP TABLE IF EXISTS `tb_orrs_command`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_orrs_command` (
+  `OID` char(36) NOT NULL,
+  `CMD_ID` varchar(10) NOT NULL,
+  `NAME` varchar(50) NOT NULL,
+  `DESCRIPTION` varchar(500) DEFAULT NULL,
+  `USER_MESSAGE` varchar(8000) NOT NULL,
+  `RESULT_VARIABLE` varchar(50) NOT NULL,
+  `CUSERID` varchar(24) NOT NULL,
+  `CDATE` datetime NOT NULL,
+  `UUSERID` varchar(24) DEFAULT NULL,
+  `UDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`),
+  UNIQUE KEY `UK_1` (`CMD_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tb_orrs_command`
+--
+
+LOCK TABLES `tb_orrs_command` WRITE;
+/*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tb_orrs_command_adv`
+--
+
+DROP TABLE IF EXISTS `tb_orrs_command_adv`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_orrs_command_adv` (
+  `OID` char(36) NOT NULL,
+  `CMD_ID` varchar(10) NOT NULL,
+  `ADV_TYPE` varchar(1) NOT NULL DEFAULT '0',
+  `SCRIPT_CONTENT` varchar(8000) NOT NULL,
+  `CUSERID` varchar(24) NOT NULL,
+  `CDATE` datetime NOT NULL,
+  `UUSERID` varchar(24) DEFAULT NULL,
+  `UDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`),
+  UNIQUE KEY `UK_1` (`CMD_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tb_orrs_command_adv`
+--
+
+LOCK TABLES `tb_orrs_command_adv` WRITE;
+/*!40000 ALTER TABLE `tb_orrs_command_adv` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tb_orrs_command_adv` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tb_orrs_command_prompt`
+--
+
+DROP TABLE IF EXISTS `tb_orrs_command_prompt`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_orrs_command_prompt` (
+  `OID` char(36) NOT NULL,
+  `CMD_ID` varchar(10) NOT NULL,
+  `ITEM_SEQ` smallint(6) NOT NULL DEFAULT 0,
+  `PROMPT_CONTENT` varchar(8000) NOT NULL,
+  `CUSERID` varchar(24) NOT NULL,
+  `CDATE` datetime NOT NULL,
+  `UUSERID` varchar(24) DEFAULT NULL,
+  `UDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`),
+  UNIQUE KEY `UK_1` (`CMD_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tb_orrs_command_prompt`
+--
+
+LOCK TABLES `tb_orrs_command_prompt` WRITE;
+/*!40000 ALTER TABLE `tb_orrs_command_prompt` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tb_orrs_command_prompt` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tb_orrs_task`
 --
 
@@ -58,19 +150,15 @@ CREATE TABLE `tb_orrs_task` (
   `TASK_ID` varchar(10) NOT NULL,
   `NAME` varchar(50) NOT NULL,
   `DESCRIPTION` varchar(500) DEFAULT NULL,
-  `FLAG` varchar(2) NOT NULL DEFAULT '01',
-  `TIME_MS_T1` varchar(13) NOT NULL DEFAULT '',
-  `TIME_MS_T2` varchar(13) NOT NULL DEFAULT '',
-  `PROMPT` text NOT NULL DEFAULT '',
-  `USER_MESSAGE` text NOT NULL DEFAULT '',
-  `CONTENT` text NOT NULL DEFAULT '',
+  `CRON_EXPR` varchar(20) NOT NULL,
+  `ENABLE_FLAG` varchar(1) NOT NULL DEFAULT 'Y',
   `CUSERID` varchar(24) NOT NULL,
   `CDATE` datetime NOT NULL,
   `UUSERID` varchar(24) DEFAULT NULL,
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`TASK_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,6 +168,72 @@ CREATE TABLE `tb_orrs_task` (
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tb_orrs_task_cmd`
+--
+
+DROP TABLE IF EXISTS `tb_orrs_task_cmd`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_orrs_task_cmd` (
+  `OID` char(36) NOT NULL,
+  `TASK_ID` varchar(10) NOT NULL,
+  `CMD_ID` varchar(10) NOT NULL,
+  `ITEM_SEQ` smallint(6) NOT NULL DEFAULT 0,
+  `ENABLE_FLAG` varchar(1) NOT NULL DEFAULT 'Y',
+  `CUSERID` varchar(24) NOT NULL,
+  `CDATE` datetime NOT NULL,
+  `UUSERID` varchar(24) DEFAULT NULL,
+  `UDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`),
+  UNIQUE KEY `TASK_ID` (`TASK_ID`,`CMD_ID`,`ITEM_SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tb_orrs_task_cmd`
+--
+
+LOCK TABLES `tb_orrs_task_cmd` WRITE;
+/*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tb_orrs_task_result`
+--
+
+DROP TABLE IF EXISTS `tb_orrs_task_result`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_orrs_task_result` (
+  `OID` char(36) NOT NULL,
+  `TASK_ID` varchar(10) NOT NULL,
+  `CMD_ID` varchar(10) NOT NULL,
+  `ITEM_SEQ` smallint(6) NOT NULL,
+  `PROCESS_MS_T1` varchar(13) NOT NULL,
+  `PROCESS_MS_T2` varchar(13) NOT NULL,
+  `CONTENT` mediumblob DEFAULT NULL,
+  `LAST_CMD` varchar(1) NOT NULL DEFAULT 'N',
+  `CUSERID` varchar(24) NOT NULL,
+  `CDATE` datetime NOT NULL,
+  `UUSERID` varchar(24) DEFAULT NULL,
+  `UDATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`),
+  KEY `IDX_1` (`TASK_ID`),
+  KEY `IDX_2` (`CMD_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tb_orrs_task_result`
+--
+
+LOCK TABLES `tb_orrs_task_result` WRITE;
+/*!40000 ALTER TABLE `tb_orrs_task_result` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tb_orrs_task_result` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -943,4 +1097,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-25 19:30:01
+-- Dump completed on 2024-10-08 20:56:18
