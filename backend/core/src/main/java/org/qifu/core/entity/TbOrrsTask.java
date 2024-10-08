@@ -16,18 +16,14 @@ public class TbOrrsTask implements java.io.Serializable {
 	private String taskId;
 	private String name;
 	private String description;
-	private String flag;
-	private String timeMsT1;
-	private String timeMsT2;
+	private String cronExpr;
+	private String enableFlag;
 	private String cuserid;
 	private Date cdate;
 	private String uuserid;
-	private Date udate;	
-    private String prompt;
-    private String userMessage;
-    private String content;
-    
-    @EntityPK(name = "oid", autoUUID = true)
+	private Date udate;
+	
+	@EntityPK(name = "oid", autoUUID = true)
 	public String getOid() {
 		return oid;
 	}
@@ -61,28 +57,20 @@ public class TbOrrsTask implements java.io.Serializable {
 		this.description = description;
 	}
 	
-	public String getFlag() {
-		return flag;
+	public String getCronExpr() {
+		return cronExpr;
 	}
 	
-	public void setFlag(String flag) {
-		this.flag = flag;
+	public void setCronExpr(String cronExpr) {
+		this.cronExpr = cronExpr;
 	}
 	
-	public String getTimeMsT1() {
-		return timeMsT1;
+	public String getEnableFlag() {
+		return enableFlag;
 	}
 	
-	public void setTimeMsT1(String timeMsT1) {
-		this.timeMsT1 = timeMsT1;
-	}
-	
-	public String getTimeMsT2() {
-		return timeMsT2;
-	}
-	
-	public void setTimeMsT2(String timeMsT2) {
-		this.timeMsT2 = timeMsT2;
+	public void setEnableFlag(String enableFlag) {
+		this.enableFlag = enableFlag;
 	}
 	
 	@CreateUserField(name = "cuserid")
@@ -117,28 +105,8 @@ public class TbOrrsTask implements java.io.Serializable {
 		return udate;
 	}
 	
-	public String getPrompt() {
-		return prompt;
+	public void setUdate(Date udate) {
+		this.udate = udate;
 	}
 	
-	public void setPrompt(String prompt) {
-		this.prompt = prompt;
-	}
-	
-	public String getUserMessage() {
-		return userMessage;
-	}
-	
-	public void setUserMessage(String userMessage) {
-		this.userMessage = userMessage;
-	}
-	
-	public String getContent() {
-		return content;
-	}
-	
-	public void setContent(String content) {
-		this.content = content;
-	}
-    
 }

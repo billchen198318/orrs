@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.qifu.core.mapper.TbOrrsTaskMapper">
+<mapper namespace="org.qifu.core.mapper.TbOrrsCommandMapper">
 
-  <resultMap id="BaseResultMap" type="org.qifu.core.entity.TbOrrsTask">
+  <resultMap id="BaseResultMap" type="org.qifu.core.entity.TbOrrsCommand">
     <id column="OID" jdbcType="CHAR" property="oid" />
-    <result column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
+    <result column="CMD_ID" jdbcType="VARCHAR" property="cmdId" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
-    <result column="CRON_EXPR" jdbcType="VARCHAR" property="cronExpr" />
-    <result column="ENABLE_FLAG" jdbcType="VARCHAR" property="enableFlag" />
+    <result column="USER_MESSAGE" jdbcType="VARCHAR" property="userMessage" />
+    <result column="RESULT_VARIABLE" jdbcType="VARCHAR" property="resultVariable" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -17,13 +17,13 @@
   
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     where OID = #{oid,jdbcType=CHAR}
   </select>  
   
   <sql id="baseConditions">
-	<if test="taskId != null and taskId != ''.toString() ">
-		AND TASK_ID = #{taskId,jdbcType=VARCHAR}
+	<if test="cmdId != null and cmdId != ''.toString() ">
+		AND CMD_ID = #{cmdId,jdbcType=VARCHAR}
 	</if>	  
 	<if test="name != null and name != ''.toString() ">
 		AND NAME = #{name,jdbcType=VARCHAR}
@@ -31,14 +31,11 @@
 	<if test="nameLike != null and nameLike != ''.toString() ">
 		AND NAME like #{nameLike,jdbcType=VARCHAR}
 	</if>	
-	<if test="enableFlag != null and enableFlag != ''.toString() ">
-		AND ENABLE_FLAG = #{enableFlag,jdbcType=VARCHAR}
-	</if>	
   </sql>
   
   <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     WHERE 1=1
     
     <include refid="baseConditions" />
@@ -52,7 +49,7 @@
   	<include refid="org.qifu.core.mapper.DB1Config.sql1"/>
   	
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     WHERE 1=1
 	
 	<include refid="baseConditions" />
@@ -61,21 +58,21 @@
   </select>  
   
   <select id="count" parameterType="java.util.HashMap" resultType="java.lang.Long">
-    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     WHERE 1=1
 	
 	<include refid="baseConditions" />
 			
   </select>  
   
-  <insert id="insert" parameterType="org.qifu.core.entity.TbOrrsTask"> 
-    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <insert id="insert" parameterType="org.qifu.core.entity.TbOrrsCommand"> 
+    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="oid != null">
         OID,
       </if>
-      <if test="taskId != null">
-        TASK_ID,
+      <if test="cmdId != null">
+        CMD_ID,
       </if>
       <if test="name != null">
         NAME,
@@ -83,11 +80,11 @@
       <if test="description != null">
         DESCRIPTION,
       </if>
-      <if test="cronExpr != null">
-        CRON_EXPR,
+      <if test="userMessage != null">
+        USER_MESSAGE,
       </if>
-      <if test="enableFlag != null">
-        ENABLE_FLAG,
+      <if test="resultVariable != null">
+        RESULT_VARIABLE,
       </if>
       <if test="cuserid != null">
         CUSERID,
@@ -106,8 +103,8 @@
       <if test="oid != null">
         #{oid,jdbcType=CHAR},
       </if>
-      <if test="taskId != null">
-        #{taskId,jdbcType=VARCHAR},
+      <if test="cmdId != null">
+        #{cmdId,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
@@ -115,11 +112,11 @@
       <if test="description != null">
         #{description,jdbcType=VARCHAR},
       </if>
-      <if test="cronExpr != null">
-        #{cronExpr,jdbcType=VARCHAR},
+      <if test="userMessage != null">
+        #{userMessage,jdbcType=VARCHAR},
       </if>
-      <if test="enableFlag != null">
-        #{enableFlag,jdbcType=VARCHAR},
+      <if test="resultVariable != null">
+        #{resultVariable,jdbcType=VARCHAR},
       </if>
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
@@ -136,11 +133,11 @@
     </trim>
   </insert>  
   
-  <update id="update" parameterType="org.qifu.core.entity.TbOrrsTask">
-    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <update id="update" parameterType="org.qifu.core.entity.TbOrrsCommand">
+    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     <set>
-      <if test="taskId != null">
-        TASK_ID = #{taskId,jdbcType=VARCHAR},
+      <if test="cmdId != null">
+        CMD_ID = #{cmdId,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         NAME = #{name,jdbcType=VARCHAR},
@@ -148,11 +145,11 @@
       <if test="description != null">
         DESCRIPTION = #{description,jdbcType=VARCHAR},
       </if>
-      <if test="cronExpr != null">
-        CRON_EXPR = #{cronExpr,jdbcType=VARCHAR},
+      <if test="userMessage != null">
+        USER_MESSAGE = #{userMessage,jdbcType=VARCHAR},
       </if>
-      <if test="enableFlag != null">
-        ENABLE_FLAG = #{enableFlag,jdbcType=VARCHAR},
+      <if test="resultVariable != null">
+        RESULT_VARIABLE = #{resultVariable,jdbcType=VARCHAR},
       </if>
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
@@ -170,8 +167,8 @@
     where OID = #{oid,jdbcType=CHAR}
   </update>  
   
-  <delete id="delete" parameterType="org.qifu.core.entity.TbOrrsTask">
-    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <delete id="delete" parameterType="org.qifu.core.entity.TbOrrsCommand">
+    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_command
     where OID = #{oid,jdbcType=CHAR}
   </delete>
   

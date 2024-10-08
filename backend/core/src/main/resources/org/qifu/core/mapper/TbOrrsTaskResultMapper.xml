@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.qifu.core.mapper.TbOrrsTaskMapper">
+<mapper namespace="org.qifu.core.mapper.TbOrrsTaskResultMapper">
 
-  <resultMap id="BaseResultMap" type="org.qifu.core.entity.TbOrrsTask">
+  <resultMap id="BaseResultMap" type="org.qifu.core.entity.TbOrrsTaskResult">
     <id column="OID" jdbcType="CHAR" property="oid" />
     <result column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
-    <result column="NAME" jdbcType="VARCHAR" property="name" />
-    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
-    <result column="CRON_EXPR" jdbcType="VARCHAR" property="cronExpr" />
-    <result column="ENABLE_FLAG" jdbcType="VARCHAR" property="enableFlag" />
+    <result column="CMD_ID" jdbcType="VARCHAR" property="cmdId" />
+    <result column="ITEM_SEQ" jdbcType="SMALLINT" property="itemSeq" />
+    <result column="PROCESS_MS_T1" jdbcType="VARCHAR" property="processMsT1" />
+    <result column="PROCESS_MS_T2" jdbcType="VARCHAR" property="processMsT2" />
+    <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -17,7 +18,7 @@
   
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     where OID = #{oid,jdbcType=CHAR}
   </select>  
   
@@ -25,20 +26,17 @@
 	<if test="taskId != null and taskId != ''.toString() ">
 		AND TASK_ID = #{taskId,jdbcType=VARCHAR}
 	</if>	  
-	<if test="name != null and name != ''.toString() ">
-		AND NAME = #{name,jdbcType=VARCHAR}
+	<if test="cmdId != null and cmdId != ''.toString() ">
+		AND CMD_ID = #{cmdId,jdbcType=VARCHAR}
 	</if>
-	<if test="nameLike != null and nameLike != ''.toString() ">
-		AND NAME like #{nameLike,jdbcType=VARCHAR}
-	</if>	
-	<if test="enableFlag != null and enableFlag != ''.toString() ">
-		AND ENABLE_FLAG = #{enableFlag,jdbcType=VARCHAR}
+	<if test="itemSeq != null and itemSeq > 0 ">
+		AND ITEM_SEQ = #{itemSeq,jdbcType=SMALLINT}
 	</if>	
   </sql>
   
   <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     WHERE 1=1
     
     <include refid="baseConditions" />
@@ -52,7 +50,7 @@
   	<include refid="org.qifu.core.mapper.DB1Config.sql1"/>
   	
     select *
-    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     WHERE 1=1
 	
 	<include refid="baseConditions" />
@@ -61,15 +59,15 @@
   </select>  
   
   <select id="count" parameterType="java.util.HashMap" resultType="java.lang.Long">
-    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     WHERE 1=1
 	
 	<include refid="baseConditions" />
 			
   </select>  
   
-  <insert id="insert" parameterType="org.qifu.core.entity.TbOrrsTask"> 
-    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <insert id="insert" parameterType="org.qifu.core.entity.TbOrrsTaskResult"> 
+    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="oid != null">
         OID,
@@ -77,17 +75,20 @@
       <if test="taskId != null">
         TASK_ID,
       </if>
-      <if test="name != null">
-        NAME,
+      <if test="cmdId != null">
+        CMD_ID,
       </if>
-      <if test="description != null">
-        DESCRIPTION,
+      <if test="itemSeq != null">
+        ITEM_SEQ,
       </if>
-      <if test="cronExpr != null">
-        CRON_EXPR,
+      <if test="processMsT1 != null">
+        PROCESS_MS_T1,
       </if>
-      <if test="enableFlag != null">
-        ENABLE_FLAG,
+      <if test="processMsT2 != null">
+        PROCESS_MS_T2,
+      </if>
+      <if test="lastCmd != null">
+        LAST_CMD,
       </if>
       <if test="cuserid != null">
         CUSERID,
@@ -101,6 +102,9 @@
       <if test="udate != null">
         UDATE,
       </if>
+      <if test="content != null">
+        CONTENT,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="oid != null">
@@ -109,17 +113,20 @@
       <if test="taskId != null">
         #{taskId,jdbcType=VARCHAR},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
+      <if test="cmdId != null">
+        #{cmdId,jdbcType=VARCHAR},
       </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
+      <if test="itemSeq != null">
+        #{itemSeq,jdbcType=SMALLINT},
       </if>
-      <if test="cronExpr != null">
-        #{cronExpr,jdbcType=VARCHAR},
+      <if test="processMsT1 != null">
+        #{processMsT1,jdbcType=VARCHAR},
       </if>
-      <if test="enableFlag != null">
-        #{enableFlag,jdbcType=VARCHAR},
+      <if test="processMsT2 != null">
+        #{processMsT2,jdbcType=VARCHAR},
+      </if>
+      <if test="lastCmd != null">
+        #{lastCmd,jdbcType=VARCHAR},
       </if>
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
@@ -133,26 +140,32 @@
       <if test="udate != null">
         #{udate,jdbcType=TIMESTAMP},
       </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARBINARY},
+      </if>
     </trim>
   </insert>  
   
-  <update id="update" parameterType="org.qifu.core.entity.TbOrrsTask">
-    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <update id="update" parameterType="org.qifu.core.entity.TbOrrsTaskResult">
+    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     <set>
       <if test="taskId != null">
         TASK_ID = #{taskId,jdbcType=VARCHAR},
       </if>
-      <if test="name != null">
-        NAME = #{name,jdbcType=VARCHAR},
+      <if test="cmdId != null">
+        CMD_ID = #{cmdId,jdbcType=VARCHAR},
       </if>
-      <if test="description != null">
-        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      <if test="itemSeq != null">
+        ITEM_SEQ = #{itemSeq,jdbcType=SMALLINT},
       </if>
-      <if test="cronExpr != null">
-        CRON_EXPR = #{cronExpr,jdbcType=VARCHAR},
+      <if test="processMsT1 != null">
+        PROCESS_MS_T1 = #{processMsT1,jdbcType=VARCHAR},
       </if>
-      <if test="enableFlag != null">
-        ENABLE_FLAG = #{enableFlag,jdbcType=VARCHAR},
+      <if test="processMsT2 != null">
+        PROCESS_MS_T2 = #{processMsT2,jdbcType=VARCHAR},
+      </if>
+      <if test="lastCmd != null">
+        LAST_CMD = #{lastCmd,jdbcType=VARCHAR},
       </if>
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
@@ -166,12 +179,15 @@
       <if test="udate != null">
         UDATE = #{udate,jdbcType=TIMESTAMP},
       </if>
+      <if test="content != null">
+        CONTENT = #{content,jdbcType=LONGVARBINARY},
+      </if>
     </set>
     where OID = #{oid,jdbcType=CHAR}
   </update>  
   
-  <delete id="delete" parameterType="org.qifu.core.entity.TbOrrsTask">
-    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task
+  <delete id="delete" parameterType="org.qifu.core.entity.TbOrrsTaskResult">
+    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>tb_orrs_task_result
     where OID = #{oid,jdbcType=CHAR}
   </delete>
   
