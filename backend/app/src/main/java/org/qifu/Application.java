@@ -47,7 +47,7 @@ import jakarta.annotation.Resource;
 
 @SpringBootApplication
 @ComponentScans({
-	@ComponentScan("org.qifu.*")
+	@ComponentScan("org.qifu.*, org.orrs.*")
 })
 @EnableWebMvc
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})

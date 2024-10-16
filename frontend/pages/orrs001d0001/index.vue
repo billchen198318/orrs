@@ -46,7 +46,7 @@ export default {
 		btnQuery : _btnQuery,
 		btnClear : function() {
 			this.queryPageStore.queryParam.name = '';
-			this.queryPageStore.queryParam.sysId = '';
+			this.queryPageStore.queryParam.cmdId = '';
 			this.dsList = [];
 			this.clearGridConfig();
 		},
@@ -78,7 +78,6 @@ export default {
 		if (this.queryPageStore.gridConfig.total > 0) {
 			this.btnQuery();
 		}
-		alert(this.pageProgramId);
 	}
 }
 
@@ -132,27 +131,12 @@ function _initQueryGridConfig() {
 			,
 			{
 				'label' : 'Id',
-				'field' : 'sysId'
+				'field' : 'cmdId'
 			}
 			,
 			{
 				'label' : 'Name',
 				'field' : 'name'
-			}
-			,
-			{
-				'label' : 'Host',
-				'field' : 'host'
-			}
-			,
-			{
-				'label' : 'Context Path',
-				'field' : 'contextPath'
-			}
-			,
-			{
-				'label' : 'Local',
-				'field' : 'isLocal'
 			}
 		]    
 	);
@@ -165,7 +149,7 @@ function _btnQuery() {
 	var axiosInstance = getAxiosInstance();
 	axiosInstance.post(import.meta.env.VITE_API_URL + PageConstants.eventNamespace + '/findPage', {
 		"field": {
-			"sysId"     : this.queryPageStore.queryParam.sysId,
+			"cmdId"     : this.queryPageStore.queryParam.cmdId,
 			"nameLike"  : this.queryPageStore.queryParam.name
 		}
 		,
@@ -254,8 +238,8 @@ function _delItem(oid) {
 <div class="row" v-show=" qFieldShow ">
 	<div class="col-xs-6 col-md-6 col-lg-6">
 		<div class="form-group form-floating">
-			<input type="text" class="form-control" id="sysId" placeholder="輸入編號" v-model="this.queryPageStore.queryParam.sysId">
-			<label for="sysId">編號</label>
+			<input type="text" class="form-control" id="cmdId" placeholder="輸入編號" v-model="this.queryPageStore.queryParam.cmdId">
+			<label for="cmdId">編號</label>
     	</div>
   	</div>
   	<div class="col-xs-6 col-md-6 col-lg-6">

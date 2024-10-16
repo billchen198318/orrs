@@ -13,7 +13,7 @@ export const useOrrs001d0001Store = defineStore('orrs001d0001', {
             gridConfig : _gridConfigVar,
             queryParam : {
                 name : '',
-                sysId : ''
+                cmdId : ''
             }
         }
     },
@@ -26,7 +26,7 @@ export const useOrrs001d0001Store = defineStore('orrs001d0001', {
         },        
         clearData() {
             this.queryParam.name = '';
-            this.queryParam.sysId = '';
+            this.queryParam.cmdId = '';
             this.gridConfig.page = 1;
             this.gridConfig.row = 10;
             this.gridConfig.total = 0;
