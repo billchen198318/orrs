@@ -51,7 +51,11 @@
             <AppenderRef ref="appLog" />
             <AppenderRef ref="Console" />
         </Logger>
-        
+        <Logger name="org.orrs" level="trace" additivity="false">
+            <AppenderRef ref="appLog" />
+            <AppenderRef ref="Console" />
+        </Logger>
+                
         <!-- 
         <Root level="debug">
             <AppenderRef ref="Console" />

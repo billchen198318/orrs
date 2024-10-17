@@ -23,13 +23,13 @@ package org.orrs.api;
 
 import java.util.List;
 
+import org.orrs.entity.TbOrrsCommand;
+import org.orrs.service.IOrrsCommandService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.ControllerMethodAuthority;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
-import org.qifu.core.entity.TbOrrsCommand;
-import org.qifu.core.service.IOrrsCommandService;
 import org.qifu.core.util.CoreApiSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
