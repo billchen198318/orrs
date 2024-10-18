@@ -9,6 +9,7 @@
     <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
     <result column="USER_MESSAGE" jdbcType="VARCHAR" property="userMessage" />
     <result column="RESULT_VARIABLE" jdbcType="VARCHAR" property="resultVariable" />
+    <result column="RESULT_TYPE" jdbcType="VARCHAR" property="resultType" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -30,6 +31,9 @@
 	</if>
 	<if test="nameLike != null and nameLike != ''.toString() ">
 		AND NAME like #{nameLike,jdbcType=VARCHAR}
+	</if>	
+	<if test="resultType != null and resultType != ''.toString() ">
+		AND RESULT_TYPE = #{resultType,jdbcType=VARCHAR}
 	</if>	
   </sql>
   
@@ -86,6 +90,9 @@
       <if test="resultVariable != null">
         RESULT_VARIABLE,
       </if>
+      <if test="resultType != null">
+        RESULT_TYPE,
+      </if>      
       <if test="cuserid != null">
         CUSERID,
       </if>
@@ -118,6 +125,9 @@
       <if test="resultVariable != null">
         #{resultVariable,jdbcType=VARCHAR},
       </if>
+      <if test="resultType != null">
+        #{resultType,jdbcType=VARCHAR},
+      </if>      
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
       </if>
@@ -151,6 +161,9 @@
       <if test="resultVariable != null">
         RESULT_VARIABLE = #{resultVariable,jdbcType=VARCHAR},
       </if>
+      <if test="resultType != null">
+        RESULT_TYPE = #{resultType,jdbcType=VARCHAR},
+      </if>      
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
       </if>

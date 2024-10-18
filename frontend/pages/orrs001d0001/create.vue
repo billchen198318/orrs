@@ -28,6 +28,7 @@ export default {
 				name : '',
 				userMessage : '',
 				resultVariable : '',
+				resultType : 'GROOVY',
 				description : '',
 				prompts : []
 			}
@@ -46,6 +47,7 @@ export default {
 			this.formParam.name = '';
 			this.formParam.userMessage = '';
 			this.formParam.resultVariable = '';
+			this.formParam.resultType = 'GROOVY';
 			this.formParam.description = '';
 			this.formParam.prompts = []
 		},
@@ -146,10 +148,23 @@ function _btnSave() {
 		<div v-if="fieldCheckInvalid('resultVariable', checkFields)" class="invalid-feedback d-block">{{ fieldInvalidFeedback('resultVariable', checkFields) }}</div>
 	</div>
 	<div class="col-xs-6 col-md-6 col-lg-6">
-		<label for="description" class="form-label">備註</label>
-		<input type="text" class="form-control" id="description" v-model="this.formParam.description">
+
+		<label for="dialogH" class="form-label">截取內容</label>
+		<select class="form-select" aria-label="請選取截取內容" v-model="this.formParam.resultType">
+			<option value="GROOVY">GROOVY</option>
+			<option value="HTML">HTML</option>
+			<option value="TEXT">TEXT</option>
+			<option value="JAVA">JAVA</option>
+			<option value="JSON">JSON</option>
+		</select>
 	</div>
 </div>
+<div class="row">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<label for="description" class="form-label">備註</label>
+		<input type="text" class="form-control" id="description" v-model="this.formParam.description">
+	</div>	
+</div>	
 <p style="margin-bottom: 5px"></p>
 <div class="row">
 	<div class="col-xs-12 col-md-12 col-lg-12">

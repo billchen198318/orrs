@@ -148,22 +148,24 @@ export default {
                     </td>   
                     <td width="30%" align="right" valign="middle">
                         <table width="100%" border="0" cellspacing="0" cellpadding="1" >
-                            <tr>
-                                <td align="right">
-                                    <div class="btn-group me-2" role="group" aria-label="Second group">
-                                        <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow1st" @click="changeGridConfigRowMethod(10)">10</button>
-                                        <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow2st" @click="changeGridConfigRowMethod(30)">30</button>
-                                        <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow3st" @click="changeGridConfigRowMethod(50)">50</button>
-                                        <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow4st" @click="changeGridConfigRowMethod(100)">100</button>
-                                    </div>
-                                </td>
-                                <td align="left">
-                                    <h6>
-                                        Total
-                                        <span class="badge text-bg-info">{{this.gridConfig.total}}</span>
-                                    </h6>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td align="right">
+                                        <div class="btn-group me-2" role="group" aria-label="Second group">
+                                            <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow1st" @click="changeGridConfigRowMethod(10)">10</button>
+                                            <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow2st" @click="changeGridConfigRowMethod(30)">30</button>
+                                            <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow3st" @click="changeGridConfigRowMethod(50)">50</button>
+                                            <button type="button" v-bind:class="'btn btn-secondary ' + this.gBtnChangeRow4st" @click="changeGridConfigRowMethod(100)">100</button>
+                                        </div>
+                                    </td>
+                                    <td align="left">
+                                        <h6>
+                                            Total
+                                            <span class="badge text-bg-info">{{this.gridConfig.total}}</span>
+                                        </h6>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </td>             
                 </tr>

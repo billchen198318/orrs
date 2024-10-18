@@ -27,7 +27,9 @@ import org.orrs.entity.TbOrrsCommand;
 import org.orrs.service.IOrrsCommandService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
+import org.qifu.base.model.CheckControllerFieldHandler;
 import org.qifu.base.model.ControllerMethodAuthority;
+import org.qifu.base.model.DefaultControllerJsonResultObj;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
 import org.qifu.core.util.CoreApiSupport;
@@ -69,6 +71,42 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 			this.noSuccessResult(result, e);
 		} catch (Exception e) {
 			this.noSuccessResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
+	
+	private void handlerCheck(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
+		CheckControllerFieldHandler<TbOrrsCommand> chk = this.getCheckControllerFieldHandler(result);
+		chk.testField("cmdId", command, "@org.apache.commons.lang3.StringUtils@isBlank(cmdId)", "請輸入編號")
+		.testField("name", command, "@org.apache.commons.lang3.StringUtils@isBlank(name)", "請輸入名稱")
+		.testField("userMessage", command, "@org.apache.commons.lang3.StringUtils@isBlank(userMessage)", "請輸入llm請求訊息")
+		.testField("resultVariable", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultVariable)", "腳本變數")
+		.testField("resultType", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultType)", "截取類別")
+		.throwHtmlMessage();
+		
+		chk.testField("cmdId", command, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(cmdId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
+		.testField("prompts", command, "!@org.apache.commons.collections.CollectionUtils@isEmpty(prompts) && prompts.size > org.orrs.OrrsConstants.MAX_COMMAND_SIZE", "最多" + org.orrs.OrrsConstants.MAX_COMMAND_SIZE + "筆prompt")
+		.throwHtmlMessage();
+		
+	}
+	
+	private void save(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
+		this.handlerCheck(result, command);
+		
+	}
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0001C", check = true)
+	@Operation(summary = "ORRS001D0001C - save", description = "新增TB_ORRS_COMMAND資料")
+	@ResponseBody
+	@PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsCommand>> doSave(@RequestBody TbOrrsCommand command) {
+		DefaultControllerJsonResultObj<TbOrrsCommand> result = this.initDefaultJsonResult();
+		try {
+			this.save(result, command);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
 		}
 		return ResponseEntity.ok().body(result);
 	}	

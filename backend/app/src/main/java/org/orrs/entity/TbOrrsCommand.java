@@ -1,6 +1,7 @@
 package org.orrs.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.qifu.base.model.CreateDateField;
 import org.qifu.base.model.CreateUserField;
@@ -18,10 +19,13 @@ public class TbOrrsCommand implements java.io.Serializable {
     private String description;
     private String userMessage;
     private String resultVariable;
+    private String resultType;
     private String cuserid;
     private Date cdate;
     private String uuserid;
     private Date udate;
+    
+    private List<TbOrrsCommandPrompt> prompts = null;
     
     @EntityPK(name = "oid", autoUUID = true)
     public String getOid() {
@@ -73,6 +77,14 @@ public class TbOrrsCommand implements java.io.Serializable {
         this.resultVariable = resultVariable;
     }
     
+	public String getResultType() {
+		return resultType;
+	}
+
+	public void setResultType(String resultType) {
+		this.resultType = resultType;
+	}
+
 	@CreateUserField(name = "cuserid")
 	public String getCuserid() {
 		return cuserid;
@@ -107,6 +119,14 @@ public class TbOrrsCommand implements java.io.Serializable {
 	
 	public void setUdate(Date udate) {
 		this.udate = udate;
+	}
+
+	public List<TbOrrsCommandPrompt> getPrompts() {
+		return prompts;
+	}
+
+	public void setPrompts(List<TbOrrsCommandPrompt> prompts) {
+		this.prompts = prompts;
 	}
     
 }
