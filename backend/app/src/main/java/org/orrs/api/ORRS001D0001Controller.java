@@ -117,4 +117,21 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		return ResponseEntity.ok().body(result);
 	}	
 	
+	@ControllerMethodAuthority(programId = "ORRS001D0001D", check = true)
+	@Operation(summary = "ORRS001D0001D - delete", description = "刪除TB_ORRS_COMMAND資料")
+	@ResponseBody
+	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbOrrsCommand command) {
+		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<Boolean> delResult = this.orrsLogicService.deleteCommand(command);
+			this.setDefaultResponseJsonResult(delResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}
+	
 }

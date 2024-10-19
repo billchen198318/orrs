@@ -8,4 +8,6 @@ public interface IOrrsLogicService {
 	
 	public DefaultResult<TbOrrsCommand> createCommand(TbOrrsCommand command) throws ServiceException, Exception;
 	
+	public DefaultResult<Boolean> deleteCommand(TbOrrsCommand command) throws ServiceException, Exception;
+	
 }

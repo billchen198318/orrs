@@ -1,7 +1,9 @@
 package org.orrs.logic.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,10 +11,12 @@ import org.orrs.OrrsConstants;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
+import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
+import org.orrs.service.IOrrsTaskCmdService;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.DefaultResult;
@@ -43,6 +47,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	
 	@Autowired
 	IOrrsCommandAdvService<TbOrrsCommandAdv, String> orrsCommandAdvService;
+	
+	@Autowired
+	IOrrsTaskCmdService<TbOrrsTaskCmd, String> orrsTaskCmdService;
 	
 	public OrrsLogicServiceImpl() {
 		super();
@@ -80,6 +87,39 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			this.setStringValueMaxLength(prompt, "promptContent", OrrsConstants.MAX_USER_MESSAGE_SIZE);
 			this.orrsCommandPromptService.insert(prompt);
 		}
+	}
+
+	@ServiceMethodAuthority(type = ServiceMethodType.DELETE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
+	@Override
+	public DefaultResult<Boolean> deleteCommand(TbOrrsCommand command) throws ServiceException, Exception {
+		if (null == command || this.isBlank(command.getOid())) {
+			throw new ServiceException( BaseSystemMessage.parameterBlank() );
+		}
+		DefaultResult<TbOrrsCommand> cmdResult = this.orrsCommandService.selectByEntityPrimaryKey(command);
+		if (cmdResult.getValue() == null) {
+			throw new ServiceException(cmdResult.getMessage());
+		}
+		TbOrrsCommand oldCommand = cmdResult.getValue();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cmdId", oldCommand.getCmdId());
+		if (this.orrsTaskCmdService.count(paramMap) > 0) {
+			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
+		}
+		DefaultResult<List<TbOrrsCommandPrompt>> promptsResult = this.orrsCommandPromptService.selectListByParams(paramMap);
+		DefaultResult<List<TbOrrsCommandAdv>> advResult = this.orrsCommandAdvService.selectListByParams(paramMap);
+		List<TbOrrsCommandPrompt> promptList = promptsResult.getValue();
+		List<TbOrrsCommandAdv> advList = advResult.getValue();
+		for (int i = 0; !CollectionUtils.isEmpty(promptList) && i < promptList.size(); i++) {
+			this.orrsCommandPromptService.delete(promptList.get(i));
+		}
+		for (int i = 0; !CollectionUtils.isEmpty(advList) && i < advList.size(); i++) {
+			this.orrsCommandAdvService.delete(advList.get(i));
+		}
+		return this.orrsCommandService.delete(command);
 	}
 	
 }
