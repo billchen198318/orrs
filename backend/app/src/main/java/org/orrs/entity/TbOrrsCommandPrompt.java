@@ -39,6 +39,7 @@ public class TbOrrsCommandPrompt implements java.io.Serializable {
         this.cmdId = cmdId;
     }
     
+    @EntityUK(name = "itemSeq")
     public Short getItemSeq() {
         return itemSeq;
     }

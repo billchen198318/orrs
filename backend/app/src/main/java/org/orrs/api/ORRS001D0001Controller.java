@@ -21,10 +21,14 @@
  */
 package org.orrs.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.orrs.entity.TbOrrsCommand;
+import org.orrs.entity.TbOrrsCommandPrompt;
 import org.orrs.logic.IOrrsLogicService;
+import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
@@ -57,6 +61,9 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	
 	@Autowired
 	IOrrsCommandService<TbOrrsCommand, String> orrsCommandService;
+	
+	@Autowired
+	IOrrsCommandPromptService<TbOrrsCommandPrompt, String> orrsCommandPromptService;
 	
 	@Autowired
 	IOrrsLogicService orrsLogicService;
@@ -101,6 +108,12 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		this.setDefaultResponseJsonResult(cResult, result);
 	}
 	
+	private void update(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
+		this.handlerCheck(result, command);
+		DefaultResult<TbOrrsCommand> uResult = this.orrsLogicService.update(command);
+		this.setDefaultResponseJsonResult(uResult, result);
+	}
+	
 	@ControllerMethodAuthority(programId = "ORRS001D0001C", check = true)
 	@Operation(summary = "ORRS001D0001C - save", description = "新增TB_ORRS_COMMAND資料")
 	@ResponseBody
@@ -126,6 +139,51 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		try {
 			DefaultResult<Boolean> delResult = this.orrsLogicService.deleteCommand(command);
 			this.setDefaultResponseJsonResult(delResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}
+	
+	private void fillPrompt(TbOrrsCommand command) throws ServiceException, Exception {
+		if (null == command) {
+			return;
+		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cmdId", command.getCmdId());
+		command.setPrompts( this.orrsCommandPromptService.selectListByParams(paramMap).getValue() );
+	}
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0001E", check = true)
+	@Operation(summary = "ORRS001D0001E - load", description = "讀取TB_ORRS_COMMAND資料")
+	@ResponseBody
+	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsCommand>> doLoad(@RequestBody TbOrrsCommand command) {
+		DefaultControllerJsonResultObj<TbOrrsCommand> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<TbOrrsCommand> lResult = this.orrsCommandService.selectByEntityPrimaryKey(command);
+			if (lResult.getValue() != null) {
+				this.fillPrompt(lResult.getValue());
+			}
+			this.setDefaultResponseJsonResult(lResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0001U", check = true)
+	@Operation(summary = "ORRS001D0001U - update", description = "更新TB_ORRS_COMMAND資料")
+	@ResponseBody
+	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsCommand>> doUpdate(@RequestBody TbOrrsCommand command) {
+		DefaultControllerJsonResultObj<TbOrrsCommand> result = this.initDefaultJsonResult();
+		try {
+			this.update(result, command);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
 		} catch (Exception e) {

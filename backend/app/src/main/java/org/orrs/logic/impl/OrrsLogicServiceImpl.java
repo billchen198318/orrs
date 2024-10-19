@@ -104,22 +104,56 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			throw new ServiceException(cmdResult.getMessage());
 		}
 		TbOrrsCommand oldCommand = cmdResult.getValue();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("cmdId", oldCommand.getCmdId());
-		if (this.orrsTaskCmdService.count(paramMap) > 0) {
-			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
+		this.deletePrompts(oldCommand);
+		this.deleteAdv(oldCommand);
+		return this.orrsCommandService.delete(command);
+	}
+	
+	private void deletePrompts(TbOrrsCommand command) throws ServiceException, Exception {
+		if (null == command || this.isBlank(command.getOid())) {
+			return;
 		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cmdId", command.getCmdId());
 		DefaultResult<List<TbOrrsCommandPrompt>> promptsResult = this.orrsCommandPromptService.selectListByParams(paramMap);
-		DefaultResult<List<TbOrrsCommandAdv>> advResult = this.orrsCommandAdvService.selectListByParams(paramMap);
 		List<TbOrrsCommandPrompt> promptList = promptsResult.getValue();
-		List<TbOrrsCommandAdv> advList = advResult.getValue();
 		for (int i = 0; !CollectionUtils.isEmpty(promptList) && i < promptList.size(); i++) {
 			this.orrsCommandPromptService.delete(promptList.get(i));
+		}		
+	}
+	
+	private void deleteAdv(TbOrrsCommand command) throws ServiceException, Exception {
+		if (null == command || this.isBlank(command.getOid())) {
+			return;
 		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cmdId", command.getCmdId());
+		DefaultResult<List<TbOrrsCommandAdv>> advResult = this.orrsCommandAdvService.selectListByParams(paramMap);
+		List<TbOrrsCommandAdv> advList = advResult.getValue();
 		for (int i = 0; !CollectionUtils.isEmpty(advList) && i < advList.size(); i++) {
 			this.orrsCommandAdvService.delete(advList.get(i));
+		}	
+	}	
+	
+	@ServiceMethodAuthority(type = ServiceMethodType.UPDATE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
+	@Override
+	public DefaultResult<TbOrrsCommand> update(TbOrrsCommand command) throws ServiceException, Exception {
+		if (null == command || this.isBlank(command.getOid())) {
+			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		return this.orrsCommandService.delete(command);
+		DefaultResult<TbOrrsCommand> cmdResult = this.orrsCommandService.selectByEntityPrimaryKey(command);
+		if (cmdResult.getValue() == null) {
+			throw new ServiceException(cmdResult.getMessage());
+		}
+		TbOrrsCommand oldCommand = cmdResult.getValue();
+		this.deletePrompts(oldCommand);
+		this.deleteAdv(oldCommand);
+		this.createPrompts(oldCommand, command.getPrompts());
+		return this.orrsCommandService.update(command);
 	}
 	
 }

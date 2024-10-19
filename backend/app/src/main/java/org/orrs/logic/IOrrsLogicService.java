@@ -10,4 +10,6 @@ public interface IOrrsLogicService {
 	
 	public DefaultResult<Boolean> deleteCommand(TbOrrsCommand command) throws ServiceException, Exception;
 	
+	public DefaultResult<TbOrrsCommand> update(TbOrrsCommand command) throws ServiceException, Exception;
+	
 }
