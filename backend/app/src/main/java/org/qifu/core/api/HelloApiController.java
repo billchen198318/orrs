@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.orrs.util.MarkdownCodeExtractor;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.YesNo;
 import org.qifu.core.util.CoreApiSupport;
-import org.qifu.core.util.MarkdownCodeExtractor;
 import org.qifu.core.vo.TestModel;
 import org.qifu.util.ScriptExpressionUtils;
 import org.springframework.ai.chat.prompt.Prompt;

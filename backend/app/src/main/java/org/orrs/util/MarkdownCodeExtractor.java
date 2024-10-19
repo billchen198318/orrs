@@ -1,10 +1,10 @@
-package org.qifu.core.util;
+package org.orrs.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.qifu.core.model.MarkdownCodeType;
+import org.orrs.model.MarkdownCodeType;
 
 public class MarkdownCodeExtractor {
 	private static final String _regexAll = "```(?:[a-zA-Z]*)\\s*([\\s\\S]*?)```";

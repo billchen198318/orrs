@@ -1,4 +1,4 @@
-package org.qifu.core.model;
+package org.orrs.model;
 
 public enum MarkdownCodeType {
 	JAVA, HTML, GROOVY

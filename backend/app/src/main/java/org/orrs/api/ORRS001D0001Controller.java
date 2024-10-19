@@ -24,12 +24,14 @@ package org.orrs.api;
 import java.util.List;
 
 import org.orrs.entity.TbOrrsCommand;
+import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsCommandService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.CheckControllerFieldHandler;
 import org.qifu.base.model.ControllerMethodAuthority;
 import org.qifu.base.model.DefaultControllerJsonResultObj;
+import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
 import org.qifu.core.util.CoreApiSupport;
@@ -55,6 +57,9 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	
 	@Autowired
 	IOrrsCommandService<TbOrrsCommand, String> orrsCommandService;
+	
+	@Autowired
+	IOrrsLogicService orrsLogicService;
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0001Q", check = true)
 	@Operation(summary = "ORRS001D0001 - findPage", description = "查核tb_orrs_command資料")
@@ -92,7 +97,8 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	
 	private void save(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
 		this.handlerCheck(result, command);
-		
+		DefaultResult<TbOrrsCommand> cResult = this.orrsLogicService.createCommand(command);
+		this.setDefaultResponseJsonResult(cResult, result);
 	}
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0001C", check = true)
