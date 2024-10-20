@@ -34,14 +34,12 @@ import org.qifu.base.service.BaseLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@ServiceAuthority(check = false)
-@Component
 @Service
+@ServiceAuthority(check = true)
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class OrrsTaskSchedServiceImpl extends BaseLogicService implements IOrrsTaskSchedService {
 	protected Logger logger = LogManager.getLogger(OrrsTaskSchedServiceImpl.class);

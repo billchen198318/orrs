@@ -95,7 +95,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		.throwHtmlMessage();
 		
 		chk.testField("cmdId", command, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(cmdId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
-		.testField("prompts", command, "!@org.apache.commons.collections.CollectionUtils@isEmpty(prompts) && prompts.size > org.orrs.OrrsConstants.MAX_PROMPT_RECORD", "最多" + org.orrs.OrrsConstants.MAX_PROMPT_RECORD + "筆prompt")
+		.testField("prompts", command, "!@org.apache.commons.collections.CollectionUtils@isEmpty(prompts) && prompts.size > @org.orrs.OrrsConstants@MAX_PROMPT_RECORD", "最多" + org.orrs.OrrsConstants.MAX_PROMPT_RECORD + "筆prompt")
 		.throwHtmlMessage();
 	}
 	
