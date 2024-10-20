@@ -36,6 +36,8 @@ import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
+import org.orrs.logic.IOrrsTaskSchedService;
+import org.orrs.runnable.OrrsTaskRunnable;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
@@ -84,6 +86,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	
 	@Autowired
 	IOrrsTaskResultService<TbOrrsTaskResult, String> orrsTaskResultService;
+	
+	@Autowired
+	IOrrsTaskSchedService orrsTaskSchedService;	
 	
 	public OrrsLogicServiceImpl() {
 		super();
@@ -222,6 +227,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.setStringValueMaxLength(task, "description", MAX_DESCRIPTION_LENGTH);
 		DefaultResult<TbOrrsTask> result = this.orrsTaskService.insert(task);
 		this.createTaskCmds(task, task.getCmds());
+		if (YesNo.YES.equals(result.getSuccess())) {
+			this.orrsTaskSchedService.scheduleTask(task.getTaskId(), new OrrsTaskRunnable(task.getTaskId()), task.getCronExpr());
+		}
 		return result;
 	}
 	
@@ -254,7 +262,11 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		TbOrrsTask oldTask = this.orrsTaskService.selectByEntityPrimaryKey(task).getValueEmptyThrowMessage();
 		this.deleteTaskCmds(oldTask);
 		this.deleteTaskResult(oldTask);
-		return this.orrsTaskService.delete(task);
+		DefaultResult<Boolean> result = this.orrsTaskService.delete(task);
+		if (result.getValue()) {
+			this.orrsTaskSchedService.removeScheduledTask(oldTask.getTaskId());
+		}
+		return result;
 	}
 	
 	private void deleteTaskCmds(TbOrrsTask task) throws ServiceException, Exception {
@@ -318,7 +330,12 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.setStringValueMaxLength(task, "description", MAX_DESCRIPTION_LENGTH);
 		this.deleteTaskCmds(oldTask);
 		this.createTaskCmds(task, task.getCmds());
-		return this.orrsTaskService.update(task);
+		DefaultResult<TbOrrsTask> result = this.orrsTaskService.update(task);
+		if (YesNo.YES.equals(result.getSuccess())) {
+			this.orrsTaskSchedService.removeScheduledTask(oldTask.getTaskId());
+			this.orrsTaskSchedService.scheduleTask(task.getTaskId(), new OrrsTaskRunnable(task.getTaskId()), task.getCronExpr());
+		}
+		return result;
 	}
 	
 }
