@@ -34,11 +34,13 @@ import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
 import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
+import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
 import org.orrs.service.IOrrsTaskCmdService;
+import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
@@ -79,6 +81,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	
 	@Autowired
 	IOrrsTaskService<TbOrrsTask, String> orrsTaskService;
+	
+	@Autowired
+	IOrrsTaskResultService<TbOrrsTaskResult, String> orrsTaskResultService;
 	
 	public OrrsLogicServiceImpl() {
 		super();
@@ -129,6 +134,11 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			throw new ServiceException( BaseSystemMessage.parameterBlank() );
 		}
 		TbOrrsCommand oldCommand = this.orrsCommandService.selectByEntityPrimaryKey(command).getValueEmptyThrowMessage();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cmdId", oldCommand.getCmdId());
+		if (this.orrsTaskCmdService.count(paramMap) > 0) {
+			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
+		}
 		this.deletePrompts(oldCommand);
 		this.deleteAdv(oldCommand);
 		return this.orrsCommandService.delete(command);
@@ -166,7 +176,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
 	@Override
-	public DefaultResult<TbOrrsCommand> update(TbOrrsCommand command) throws ServiceException, Exception {
+	public DefaultResult<TbOrrsCommand> updateCommand(TbOrrsCommand command) throws ServiceException, Exception {
 		if (null == command || this.isBlank(command.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -174,6 +184,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.deletePrompts(oldCommand);
 		this.deleteAdv(oldCommand);
 		this.createPrompts(oldCommand, command.getPrompts());
+		this.setStringValueMaxLength(command, "description", MAX_DESCRIPTION_LENGTH);
 		return this.orrsCommandService.update(command);
 	}
 
@@ -201,7 +212,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
 	@Override
-	public DefaultResult<TbOrrsTask> createCommand(TbOrrsTask task) throws ServiceException, Exception {
+	public DefaultResult<TbOrrsTask> createTask(TbOrrsTask task) throws ServiceException, Exception {
 		if (null == task || this.isBlank(task.getTaskId()) || this.isBlank(task.getName()) || this.isBlank(task.getCronExpr())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -210,11 +221,11 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		}
 		this.setStringValueMaxLength(task, "description", MAX_DESCRIPTION_LENGTH);
 		DefaultResult<TbOrrsTask> result = this.orrsTaskService.insert(task);
-		this.createCmds(task, task.getCmds());
+		this.createTaskCmds(task, task.getCmds());
 		return result;
 	}
 	
-	private void createCmds(TbOrrsTask task, List<TbOrrsTaskCmd> cmds) throws ServiceException, Exception {
+	private void createTaskCmds(TbOrrsTask task, List<TbOrrsTaskCmd> cmds) throws ServiceException, Exception {
 		if (CollectionUtils.isEmpty(task.getCmds())) {
 			return;
 		}
@@ -242,6 +253,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		}
 		TbOrrsTask oldTask = this.orrsTaskService.selectByEntityPrimaryKey(task).getValueEmptyThrowMessage();
 		this.deleteTaskCmds(oldTask);
+		this.deleteTaskResult(oldTask);
 		return this.orrsTaskService.delete(task);
 	}
 	
@@ -255,6 +267,19 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		List<TbOrrsTaskCmd> taskCmdList = taskCmdResult.getValue();
 		for (int i = 0; !CollectionUtils.isEmpty(taskCmdList) && i < taskCmdList.size(); i++) {
 			this.orrsTaskCmdService.delete(taskCmdList.get(i));
+		}		
+	}
+	
+	private void deleteTaskResult(TbOrrsTask task) throws ServiceException, Exception {
+		if (null == task || this.isBlank(task.getOid())) {
+			return;
+		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("taskId", task.getTaskId());
+		DefaultResult<List<TbOrrsTaskResult>> taskCmdResult = this.orrsTaskResultService.selectListByParams(paramMap);
+		List<TbOrrsTaskResult> taskResultList = taskCmdResult.getValue();
+		for (int i = 0; !CollectionUtils.isEmpty(taskResultList) && i < taskResultList.size(); i++) {
+			this.orrsTaskResultService.delete(taskResultList.get(i));
 		}		
 	}
 
@@ -274,6 +299,26 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		paramMap.put("taskId", oldTask.getTaskId());
 		oldTask.setCmds( this.orrsTaskCmdService.selectListByParams(paramMap).getValue() );
 		return taskResult;
+	}
+	
+	@ServiceMethodAuthority(type = ServiceMethodType.UPDATE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
+	@Override
+	public DefaultResult<TbOrrsTask> updateTask(TbOrrsTask task) throws ServiceException, Exception {
+		if (null == task || this.isBlank(task.getOid())) {
+			throw new ServiceException(BaseSystemMessage.parameterBlank());
+		}
+		TbOrrsTask oldTask = this.orrsTaskService.selectByEntityPrimaryKey(task).getValueEmptyThrowMessage();
+		if (!CronExpression.isValidExpression(task.getCronExpr())) {
+			throw new ServiceException(BaseSystemMessage.parameterIncorrect());
+		}		
+		this.setStringValueMaxLength(task, "description", MAX_DESCRIPTION_LENGTH);
+		this.deleteTaskCmds(oldTask);
+		this.createTaskCmds(task, task.getCmds());
+		return this.orrsTaskService.update(task);
 	}
 	
 }

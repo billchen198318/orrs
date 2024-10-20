@@ -99,8 +99,14 @@ public class ORRS001D0002Controller extends CoreApiSupport {
 	
 	private void save(DefaultControllerJsonResultObj<TbOrrsTask> result, TbOrrsTask task) throws ControllerException, ServiceException, Exception {
 		this.handlerCheck(result, task);
-		DefaultResult<TbOrrsTask> cResult = this.orrsLogicService.createCommand(task);
+		DefaultResult<TbOrrsTask> cResult = this.orrsLogicService.createTask(task);
 		this.setDefaultResponseJsonResult(cResult, result);
+	}
+	
+	private void update(DefaultControllerJsonResultObj<TbOrrsTask> result, TbOrrsTask task) throws ControllerException, ServiceException, Exception {
+		this.handlerCheck(result, task);
+		DefaultResult<TbOrrsTask> uResult = this.orrsLogicService.updateTask(task);
+		this.setDefaultResponseJsonResult(uResult, result);
 	}
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0002C", check = true)
@@ -169,5 +175,21 @@ public class ORRS001D0002Controller extends CoreApiSupport {
 		}
 		return ResponseEntity.ok().body(result);
 	}		
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0002U", check = true)
+	@Operation(summary = "ORRS001D0002U - update", description = "更新TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsTask>> doUpdate(@RequestBody TbOrrsTask task) {
+		DefaultControllerJsonResultObj<TbOrrsTask> result = this.initDefaultJsonResult();
+		try {
+			this.update(result, task);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
 	
 }

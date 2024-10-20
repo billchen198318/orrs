@@ -107,7 +107,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	
 	private void update(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
 		this.handlerCheck(result, command);
-		DefaultResult<TbOrrsCommand> uResult = this.orrsLogicService.update(command);
+		DefaultResult<TbOrrsCommand> uResult = this.orrsLogicService.updateCommand(command);
 		this.setDefaultResponseJsonResult(uResult, result);
 	}
 	

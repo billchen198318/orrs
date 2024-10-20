@@ -32,14 +32,16 @@ public interface IOrrsLogicService {
 	
 	public DefaultResult<Boolean> deleteCommand(TbOrrsCommand command) throws ServiceException, Exception;
 	
-	public DefaultResult<TbOrrsCommand> update(TbOrrsCommand command) throws ServiceException, Exception;
+	public DefaultResult<TbOrrsCommand> updateCommand(TbOrrsCommand command) throws ServiceException, Exception;
 	
 	public DefaultResult<TbOrrsCommand> selectCommand(TbOrrsCommand command) throws ServiceException, Exception;
 	
-	public DefaultResult<TbOrrsTask> createCommand(TbOrrsTask task) throws ServiceException, Exception;
+	public DefaultResult<TbOrrsTask> createTask(TbOrrsTask task) throws ServiceException, Exception;
 	
 	public DefaultResult<Boolean> deleteTask(TbOrrsTask task) throws ServiceException, Exception;
 	
 	public DefaultResult<TbOrrsTask> selectTask(TbOrrsTask task) throws ServiceException, Exception;
+	
+	public DefaultResult<TbOrrsTask> updateTask(TbOrrsTask task) throws ServiceException, Exception;
 	
 }

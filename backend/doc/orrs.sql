@@ -170,6 +170,7 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
+INSERT INTO `tb_orrs_task` VALUES ('547b0de8-8eb5-11ef-a863-db388c6bd01b','task02','測試task-bbb','test','0 */30 * * * *','Y','admin','2024-10-20 15:31:32','admin','2024-10-20 16:33:21');
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -201,6 +202,7 @@ CREATE TABLE `tb_orrs_task_cmd` (
 
 LOCK TABLES `tb_orrs_task_cmd` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
+INSERT INTO `tb_orrs_task_cmd` VALUES ('f709c3a2-8ebd-11ef-a6c4-fbe6b546fed0','task02','test001',0,'Y','admin','2024-10-20 16:33:21',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1100,4 +1102,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-19 22:34:14
+-- Dump completed on 2024-10-20 16:41:28
