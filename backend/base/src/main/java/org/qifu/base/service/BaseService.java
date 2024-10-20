@@ -40,6 +40,7 @@ import org.qifu.base.model.PageOf;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SortType;
 import org.qifu.base.model.UpdateField;
+import org.qifu.base.model.YesNo;
 import org.qifu.base.util.EntityParameterGenerateUtil;
 import org.qifu.base.util.UserLocalUtils;
 import org.qifu.util.SimpleUtils;
@@ -286,6 +287,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		if (this.getBaseMapper().insert(mapperObj) < 1) {
 			throw new ServiceException(BaseSystemMessage.insertFail());
 		}
+		result.setSuccess( YesNo.YES );
 		result.setValue(mapperObj);
 		result.setMessage(BaseSystemMessage.insertSuccess());
 		return result;
@@ -326,6 +328,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		if (this.getBaseMapper().update(mapperObj) < 1) {
 			throw new ServiceException(BaseSystemMessage.updateFail());
 		}
+		result.setSuccess( YesNo.YES );
 		result.setValue(mapperObj);
 		result.setMessage(BaseSystemMessage.updateSuccess());
 		return result;
