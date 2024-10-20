@@ -1,6 +1,7 @@
 package org.orrs.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.qifu.base.model.CreateDateField;
 import org.qifu.base.model.CreateUserField;
@@ -22,6 +23,8 @@ public class TbOrrsTask implements java.io.Serializable {
 	private Date cdate;
 	private String uuserid;
 	private Date udate;
+	
+	private List<TbOrrsTaskCmd> cmds = null;
 	
 	@EntityPK(name = "oid", autoUUID = true)
 	public String getOid() {
@@ -107,6 +110,14 @@ public class TbOrrsTask implements java.io.Serializable {
 	
 	public void setUdate(Date udate) {
 		this.udate = udate;
+	}
+
+	public List<TbOrrsTaskCmd> getCmds() {
+		return cmds;
+	}
+
+	public void setCmds(List<TbOrrsTaskCmd> cmds) {
+		this.cmds = cmds;
 	}
 	
 }

@@ -21,9 +21,7 @@
  */
 package org.orrs.api;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandPrompt;
@@ -97,9 +95,8 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		.throwHtmlMessage();
 		
 		chk.testField("cmdId", command, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(cmdId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
-		.testField("prompts", command, "!@org.apache.commons.collections.CollectionUtils@isEmpty(prompts) && prompts.size > org.orrs.OrrsConstants.MAX_COMMAND_SIZE", "最多" + org.orrs.OrrsConstants.MAX_COMMAND_SIZE + "筆prompt")
+		.testField("prompts", command, "!@org.apache.commons.collections.CollectionUtils@isEmpty(prompts) && prompts.size > org.orrs.OrrsConstants.MAX_PROMPT_RECORD", "最多" + org.orrs.OrrsConstants.MAX_PROMPT_RECORD + "筆prompt")
 		.throwHtmlMessage();
-		
 	}
 	
 	private void save(DefaultControllerJsonResultObj<TbOrrsCommand> result, TbOrrsCommand command) throws ControllerException, ServiceException, Exception {
@@ -147,15 +144,6 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		return ResponseEntity.ok().body(result);
 	}
 	
-	private void fillPrompt(TbOrrsCommand command) throws ServiceException, Exception {
-		if (null == command) {
-			return;
-		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("cmdId", command.getCmdId());
-		command.setPrompts( this.orrsCommandPromptService.selectListByParams(paramMap).getValue() );
-	}
-	
 	@ControllerMethodAuthority(programId = "ORRS001D0001E", check = true)
 	@Operation(summary = "ORRS001D0001E - load", description = "讀取TB_ORRS_COMMAND資料")
 	@ResponseBody
@@ -163,10 +151,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsCommand>> doLoad(@RequestBody TbOrrsCommand command) {
 		DefaultControllerJsonResultObj<TbOrrsCommand> result = this.initDefaultJsonResult();
 		try {
-			DefaultResult<TbOrrsCommand> lResult = this.orrsCommandService.selectByEntityPrimaryKey(command);
-			if (lResult.getValue() != null) {
-				this.fillPrompt(lResult.getValue());
-			}
+			DefaultResult<TbOrrsCommand> lResult = this.orrsLogicService.selectCommand(command);
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
