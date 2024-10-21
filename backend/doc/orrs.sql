@@ -76,7 +76,7 @@ CREATE TABLE `tb_orrs_command` (
 
 LOCK TABLES `tb_orrs_command` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command` VALUES ('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json輸出, 給我 groovy code','result','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-21 20:14:55');
+INSERT INTO `tb_orrs_command` VALUES ('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','mariadb 帳戶 root 密碼 password , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json輸出 return 出來, 給我 groovy code','result','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-21 20:14:55');
 /*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +170,7 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 */1 * * * *','Y','admin','2024-10-21 20:16:22',NULL,NULL);
+INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 */10 * * * *','Y','admin','2024-10-21 20:16:22',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1102,4 +1102,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-21 20:20:16
+-- Dump completed on 2024-10-21 21:46:36
