@@ -76,7 +76,7 @@ CREATE TABLE `tb_orrs_command` (
 
 LOCK TABLES `tb_orrs_command` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command` VALUES ('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','mariadb 帳戶 root 密碼 password , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] OID字串格式,USER字串格式,SYS_ID字串格式,EXECUTE_EVENT字串格式 , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json輸出 放到result變數中(不要宣告result), 給我 groovy code','result','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-21 22:14:18');
+INSERT INTO `tb_orrs_command` VALUES ('2defe1af-907a-11ef-9c7f-bb129a46f93f','test002','輸出資料轉為html','測試用的','嘗試將以下json內容轉成 html, 建議用table把資料列顯示出來, table 內容請用以下json資料為依據\n$P{prevResult} \nhtml代碼需引用 bootstrap 5.3 css 與 js, 給我HTML code','prevResult','HTML','admin','2024-10-22 21:33:10','admin','2024-10-22 21:34:46'),('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','mariadb 帳戶 root 密碼 password , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] OID字串格式,USER字串格式,SYS_ID字串格式,EXECUTE_EVENT字串格式 , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json輸出 放到result變數中(不要宣告result), 給我 groovy code','result','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-22 21:07:29');
 /*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +137,7 @@ CREATE TABLE `tb_orrs_command_prompt` (
 
 LOCK TABLES `tb_orrs_command_prompt` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command_prompt` VALUES ('c27015e4-8fb6-11ef-8a2d-d9c460ea1e9b','test001',0,'jdbc driver class 為 org.mariadb.jdbc.Drive','admin','2024-10-21 22:14:18',NULL,NULL),('c270b225-8fb6-11ef-8a2d-c3815c9c9bbf','test001',1,'json library 是 com.fasterxml.jackson','admin','2024-10-21 22:14:18',NULL,NULL),('c2719c86-8fb6-11ef-8a2d-091fdf92e8a7','test001',2,'mariadb IP位置 127.0.0.1 , 服務 port 號是 3306','admin','2024-10-21 22:14:18',NULL,NULL),('c27238c7-8fb6-11ef-8a2d-d9d94bd7c3c7','test001',3,'資料庫檔案 orrs ','admin','2024-10-21 22:14:18',NULL,NULL),('c2732328-8fb6-11ef-8a2d-133396090b66','test001',4,'DriverManager 建議需要 import java.sql.DriverManager','admin','2024-10-21 22:14:18',NULL,NULL);
+INSERT INTO `tb_orrs_command_prompt` VALUES ('67661e03-907a-11ef-9c7f-7be1bc27ca56','test002',0,'bootstrap 5.3 css cdn 位置 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css','admin','2024-10-22 21:34:46',NULL,NULL),('67670864-907a-11ef-9c7f-8fe71401708a','test002',1,'bootstrap 5.3 js cdn 位置 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js','admin','2024-10-22 21:34:46',NULL,NULL),('9799202f-9076-11ef-ad77-f50711223ef6','test001',0,'jdbc driver class 為 org.mariadb.jdbc.Drive 所以JDBC url 開頭因該為 jdbc:mariadb','admin','2024-10-22 21:07:29',NULL,NULL),('979a30a0-9076-11ef-ad77-6b3cb12c8e10','test001',1,'json library 是 com.fasterxml.jackson 不需要給 implementation 資訊','admin','2024-10-22 21:07:29',NULL,NULL),('979b4211-9076-11ef-ad77-7f0577773d18','test001',2,'mariadb IP位置 127.0.0.1 , 服務 port 號是 3306 資料庫檔案 orrs ','admin','2024-10-22 21:07:29',NULL,NULL),('979c7a92-9076-11ef-ad77-8f30ac61642e','test001',3,'DriverManager 建議需要 import java.sql.DriverManager','admin','2024-10-22 21:07:29',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +170,7 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 41 22 * * ?','Y','admin','2024-10-21 20:16:22',NULL,NULL);
+INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 1 22 * * ?','Y','admin','2024-10-21 20:16:22','admin','2024-10-22 21:47:37');
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,7 +202,7 @@ CREATE TABLE `tb_orrs_task_cmd` (
 
 LOCK TABLES `tb_orrs_task_cmd` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task_cmd` VALUES ('48c6dcef-8fa6-11ef-92b7-6dfac9a2abfd','task01','test001',0,'Y','admin','2024-10-21 20:16:22',NULL,NULL);
+INSERT INTO `tb_orrs_task_cmd` VALUES ('32ac1f6c-907c-11ef-9c7f-1d849808b448','task01','test001',0,'Y','admin','2024-10-22 21:47:37',NULL,NULL),('32ac1f6d-907c-11ef-9c7f-fd09d23cfc4d','task01','test002',1,'Y','admin','2024-10-22 21:47:37',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -221,6 +221,7 @@ CREATE TABLE `tb_orrs_task_result` (
   `PROCESS_MS_T1` varchar(13) NOT NULL,
   `PROCESS_MS_T2` varchar(13) NOT NULL,
   `CONTENT` mediumblob DEFAULT NULL,
+  `INVOKE_CONTENT` mediumblob DEFAULT NULL,
   `LAST_CMD` varchar(1) NOT NULL DEFAULT 'N',
   `CUSERID` varchar(24) NOT NULL,
   `CDATE` datetime NOT NULL,
@@ -1102,4 +1103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-21 22:48:03
+-- Dump completed on 2024-10-22 22:16:43
