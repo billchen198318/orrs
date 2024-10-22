@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.orrs.entity.TbOrrsCommand;
@@ -42,10 +43,13 @@ import org.orrs.service.IOrrsCommandService;
 import org.orrs.service.IOrrsTaskCmdService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
+import org.orrs.util.MarkdownCodeExtractor;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
+import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.SortType;
 import org.qifu.base.model.YesNo;
+import org.qifu.util.ScriptExpressionUtils;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
@@ -147,11 +151,26 @@ public class OrrsTaskRunnable implements Runnable {
 			paramMap.put("cmdId", cmd.getCmdId());
 			logger.info("\ncommand: {} \nuserMessage: {} ", cmd.getCmdId(), cmd.getUserMessage());
 			List<TbOrrsCommandPrompt> prompts = this.orrsCommandPromptService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValueEmptyThrowMessage();
-			this.processTaskWithCommand(task, taskCmd, cmd, prompts);
+			TbOrrsTaskResult taskRes = new TbOrrsTaskResult();
+			taskRes.setProcessMsT1(String.valueOf(System.currentTimeMillis()));
+			taskRes.setTaskId(task.getTaskId());
+			taskRes.setCmdId(taskCmd.getCmdId());
+			taskRes.setItemSeq(taskCmd.getItemSeq());
+			taskRes.setLastCmd(YesNo.NO);
+			if (i == taskCmdList.size()-1) {
+				taskRes.setLastCmd(YesNo.YES);
+			}
+			try {
+				this.processTaskWithCommand(task, taskCmd, cmd, prompts, taskRes);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
+			this.orrsTaskResultService.insert(taskRes);
 		}
 	}
 	
-	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts) throws ServiceException, Exception {
+	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		for (TbOrrsCommandPrompt prompt : prompts) {
 			logger.info("prompt: {}", prompt.getPromptContent());
@@ -161,8 +180,24 @@ public class OrrsTaskRunnable implements Runnable {
 		var req = ChatRequest.builder(env.getProperty("spring.ai.ollama.chat.options.model"))
 				.withStream(false).withMessages(messageList).build();
 		ChatResponse response = ollamaApi.chat(req);
-		String content = response.message().content();
+		String content = StringUtils.defaultString(response.message().content());		
 		logger.info("response content: {}", content);
+		taskRes.setContent( content.getBytes() );
+		if (ScriptTypeCode.isTypeCode(command.getResultType())) {
+			logger.info("TYPE: {} , cannot process!", command.getResultType());
+			return;
+		}
+		Map<String, Object> invokeResultParam = this.invokeScript(command, content);
+		logger.info("invoke result: {}", invokeResultParam.get(command.getResultType()));		
+	}
+	
+	private Map<String, Object> invokeScript(TbOrrsCommand command, String llmResponseContent) throws ServiceException, Exception {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put(command.getResultVariable(), null);
+		String script = MarkdownCodeExtractor.parseGroovy(llmResponseContent);
+		logger.info("script: {}", script);
+		ScriptExpressionUtils.execute(command.getResultType(), script, param, param);
+		return param;
 	}
 	
 }

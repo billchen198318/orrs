@@ -116,5 +116,13 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 	public void setUdate(Date udate) {
 		this.udate = udate;
 	}
+
+	public byte[] getContent() {
+		return content;
+	}
+
+	public void setContent(byte[] content) {
+		this.content = content;
+	}
     
 }
