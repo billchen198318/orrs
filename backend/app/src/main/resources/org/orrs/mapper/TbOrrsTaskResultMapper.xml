@@ -9,6 +9,8 @@
     <result column="ITEM_SEQ" jdbcType="SMALLINT" property="itemSeq" />
     <result column="PROCESS_MS_T1" jdbcType="VARCHAR" property="processMsT1" />
     <result column="PROCESS_MS_T2" jdbcType="VARCHAR" property="processMsT2" />
+    <result column="CONTENT" jdbcType="LONGVARBINARY" property="content" />
+    <result column="INVOKE_CONTENT" jdbcType="LONGVARBINARY" property="invokeContent" />
     <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
@@ -105,6 +107,9 @@
       <if test="content != null">
         CONTENT,
       </if>
+      <if test="invokeContent != null">
+        INVOKE_CONTENT,
+      </if>      
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="oid != null">
@@ -143,6 +148,9 @@
       <if test="content != null">
         #{content,jdbcType=LONGVARBINARY},
       </if>
+      <if test="invokeContent != null">
+        #{invokeContent,jdbcType=LONGVARBINARY},
+      </if>      
     </trim>
   </insert>  
   
@@ -181,6 +189,9 @@
       </if>
       <if test="content != null">
         CONTENT = #{content,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="invokeContent != null">
+        INVOKE_CONTENT = #{invokeContent,jdbcType=LONGVARBINARY},
       </if>
     </set>
     where OID = #{oid,jdbcType=CHAR}

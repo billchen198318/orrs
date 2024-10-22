@@ -17,12 +17,13 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private Short itemSeq;
     private String processMsT1;
     private String processMsT2;
+    private byte[] content;
+    private byte[] invokeContent;    
     private String lastCmd;
     private String cuserid;
     private Date cdate;
     private String uuserid;
     private Date udate;
-    private byte[] content;
     
     @EntityPK(name = "oid", autoUUID = true)
     public String getOid() {
@@ -123,6 +124,14 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 
 	public void setContent(byte[] content) {
 		this.content = content;
+	}
+
+	public byte[] getInvokeContent() {
+		return invokeContent;
+	}
+
+	public void setInvokeContent(byte[] invokeContent) {
+		this.invokeContent = invokeContent;
 	}
     
 }

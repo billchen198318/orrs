@@ -21,6 +21,7 @@
  */
 package org.orrs.runnable;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.SortType;
 import org.qifu.base.model.YesNo;
+import org.qifu.base.scheduled.BaseScheduledTasksProvide;
 import org.qifu.util.ScriptExpressionUtils;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
@@ -58,7 +60,7 @@ import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.beans.BeansException;
 import org.springframework.core.env.Environment;
 
-public class OrrsTaskRunnable implements Runnable {
+public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runnable {
 	protected Logger logger = LogManager.getLogger(OrrsTaskRunnable.class);
 	
 	private String taskId;
@@ -93,8 +95,9 @@ public class OrrsTaskRunnable implements Runnable {
 	}	
 	
 	@Override
-	public void run() {
+	public void execute() {
 		try {
+			this.login();
 			this.initBeans();	
 			this.process();
 		} catch (BeansException e) {
@@ -106,7 +109,14 @@ public class OrrsTaskRunnable implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error( e != null && e.getMessage() != null ? e.getMessage() : "null" );
+		} finally {
+			this.logout();
 		}
+	}	
+	
+	@Override
+	public void run() {
+		this.execute();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -142,6 +152,8 @@ public class OrrsTaskRunnable implements Runnable {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("taskId", task.getTaskId());
 		List<TbOrrsTaskCmd> taskCmdList = this.orrsTaskCmdService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValue();
+		boolean doNext = true;
+		TbOrrsTaskResult taskResPrev = null;
 		for (int i = 0; !CollectionUtils.isEmpty(taskCmdList) && i < taskCmdList.size(); i++) {
 			TbOrrsTaskCmd taskCmd = taskCmdList.get(i);
 			TbOrrsCommand cmd = new TbOrrsCommand();
@@ -161,34 +173,54 @@ public class OrrsTaskRunnable implements Runnable {
 				taskRes.setLastCmd(YesNo.YES);
 			}
 			try {
-				this.processTaskWithCommand(task, taskCmd, cmd, prompts, taskRes);
+				if (!doNext) {
+					logger.warn("CANNOT EXECUTE>>> taskId: {} , commandId: {} , seq: {} , because previously command work fail!", taskCmd.getTaskId(), taskCmd.getCmdId(), taskCmd.getItemSeq());
+					continue;
+				}
+				this.processTaskWithCommand(task, taskCmd, cmd, prompts, taskRes, taskResPrev);
 			} catch (Exception e) {
 				e.printStackTrace();
+				logger.error("{}", e.getMessage());
+				doNext = false;
 			}
 			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
 			this.orrsTaskResultService.insert(taskRes);
+			taskResPrev = taskRes;
 		}
 	}
 	
-	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes) throws ServiceException, Exception {
+	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		for (TbOrrsCommandPrompt prompt : prompts) {
 			logger.info("prompt: {}", prompt.getPromptContent());
 			messageList.add(Message.builder(Message.Role.SYSTEM).withContent(prompt.getPromptContent()).build());
 		}
-		messageList.add(Message.builder(Message.Role.USER).withContent(command.getUserMessage()).build());
+		String userMessage = command.getUserMessage();
+		if (null != taskResPrev && taskResPrev.getInvokeContent() != null) {
+			String prevInvokeContent = new String(taskResPrev.getInvokeContent(), StandardCharsets.UTF_8);
+			String parameterName = "$P{" + command.getResultVariable() + "}";
+			if (userMessage.indexOf(parameterName) > -1) {
+				userMessage = StringUtils.replaceOnce(userMessage, parameterName, prevInvokeContent);
+				logger.info("userMessage replace to: {}", userMessage);
+			}
+		}
+		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
 		var req = ChatRequest.builder(env.getProperty("spring.ai.ollama.chat.options.model"))
 				.withStream(false).withMessages(messageList).build();
 		ChatResponse response = ollamaApi.chat(req);
 		String content = StringUtils.defaultString(response.message().content());		
 		logger.info("response content: {}", content);
-		taskRes.setContent( content.getBytes() );
-		if (ScriptTypeCode.isTypeCode(command.getResultType())) {
+		taskRes.setContent( content.getBytes(StandardCharsets.UTF_8) );
+		if (!ScriptTypeCode.isTypeCode(command.getResultType())) {
 			logger.info("TYPE: {} , cannot process!", command.getResultType());
 			return;
 		}
 		Map<String, Object> invokeResultParam = this.invokeScript(command, content);
-		logger.info("invoke result: {}", invokeResultParam.get(command.getResultType()));		
+		Object invokeResultObj = invokeResultParam.get(command.getResultVariable());
+		logger.info("invoke result: {}", (invokeResultObj != null && invokeResultObj instanceof String) ? (String) invokeResultObj : "result is object!");
+		if (invokeResultObj != null && invokeResultObj instanceof String) {
+			taskRes.setInvokeContent( ((String) invokeResultObj).getBytes(StandardCharsets.UTF_8) );
+		}
 	}
 	
 	private Map<String, Object> invokeScript(TbOrrsCommand command, String llmResponseContent) throws ServiceException, Exception {
