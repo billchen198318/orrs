@@ -162,7 +162,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			paramMap.clear();
 			paramMap.put("cmdId", cmd.getCmdId());
 			logger.info("\ncommand: {} \nuserMessage: {} ", cmd.getCmdId(), cmd.getUserMessage());
-			List<TbOrrsCommandPrompt> prompts = this.orrsCommandPromptService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValueEmptyThrowMessage();
+			List<TbOrrsCommandPrompt> prompts = this.orrsCommandPromptService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValue();
 			TbOrrsTaskResult taskRes = new TbOrrsTaskResult();
 			taskRes.setProcessMsT1(String.valueOf(System.currentTimeMillis()));
 			taskRes.setTaskId(task.getTaskId());
@@ -191,9 +191,11 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	
 	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
-		for (TbOrrsCommandPrompt prompt : prompts) {
-			logger.info("prompt: {}", prompt.getPromptContent());
-			messageList.add(Message.builder(Message.Role.SYSTEM).withContent(prompt.getPromptContent()).build());
+		if (!CollectionUtils.isEmpty(prompts)) {
+			for (TbOrrsCommandPrompt prompt : prompts) {
+				logger.info("prompt: {}", prompt.getPromptContent());
+				messageList.add(Message.builder(Message.Role.SYSTEM).withContent(prompt.getPromptContent()).build());
+			}			
 		}
 		String userMessage = command.getUserMessage();
 		if (null != taskResPrev && taskResPrev.getInvokeContent() != null) {
