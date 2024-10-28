@@ -31,6 +31,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.orrs.OrrsConstants;
+import org.orrs.OrrsResultType;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
@@ -154,6 +156,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		List<TbOrrsTaskCmd> taskCmdList = this.orrsTaskCmdService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValue();
 		boolean doNext = true;
 		TbOrrsTaskResult taskResPrev = null;
+		TbOrrsCommand cmdPrev = null;
 		for (int i = 0; !CollectionUtils.isEmpty(taskCmdList) && i < taskCmdList.size(); i++) {
 			TbOrrsTaskCmd taskCmd = taskCmdList.get(i);
 			TbOrrsCommand cmd = new TbOrrsCommand();
@@ -177,7 +180,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 					logger.warn("CANNOT EXECUTE>>> taskId: {} , commandId: {} , seq: {} , because previously command work fail!", taskCmd.getTaskId(), taskCmd.getCmdId(), taskCmd.getItemSeq());
 					continue;
 				}
-				this.processTaskWithCommand(task, taskCmd, cmd, prompts, taskRes, taskResPrev);
+				this.processTaskWithCommand(task, taskCmd, cmd, prompts, taskRes, cmdPrev, taskResPrev);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("{}", e.getMessage());
@@ -186,10 +189,11 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
 			this.orrsTaskResultService.insert(taskRes);
 			taskResPrev = taskRes;
+			cmdPrev = cmd;
 		}
 	}
 	
-	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
+	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsCommand commandPrev, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		if (!CollectionUtils.isEmpty(prompts)) {
 			for (TbOrrsCommandPrompt prompt : prompts) {
@@ -198,12 +202,23 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			}			
 		}
 		String userMessage = command.getUserMessage();
-		if (null != taskResPrev && taskResPrev.getInvokeContent() != null) {
-			String prevInvokeContent = new String(taskResPrev.getInvokeContent(), StandardCharsets.UTF_8);
-			String parameterName = "$P{" + command.getResultVariable() + "}";
-			if (userMessage.indexOf(parameterName) > -1) {
-				userMessage = StringUtils.replaceOnce(userMessage, parameterName, prevInvokeContent);
-				logger.info("userMessage replace to: {}", userMessage);
+		if (null != taskResPrev) {
+			if (taskResPrev.getContent() != null && userMessage.indexOf(OrrsConstants.VARIABLE_PREVIOUS_MESSAGE) > -1) {
+				String prevContent = new String(taskResPrev.getContent(), StandardCharsets.UTF_8);
+				if (commandPrev.getResultType().equals(OrrsResultType.GROOVY.name())) {
+					prevContent = MarkdownCodeExtractor.parseGroovy(prevContent);
+				}
+				if (commandPrev.getResultType().equals(OrrsResultType.JAVA.name())) {
+					prevContent = MarkdownCodeExtractor.parseJava(prevContent);
+				}
+				if (commandPrev.getResultType().equals(OrrsResultType.HTML.name())) {
+					prevContent = MarkdownCodeExtractor.parseHtml(prevContent);
+				}				
+				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_MESSAGE, prevContent);
+			}
+			if (taskResPrev.getInvokeContent() != null && userMessage.indexOf(OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT) > -1) {
+				String prevInvokeContent = new String(taskResPrev.getInvokeContent(), StandardCharsets.UTF_8);
+				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_MESSAGE, prevInvokeContent);
 			}
 		}
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
@@ -217,9 +232,13 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			logger.info("TYPE: {} , cannot process!", command.getResultType());
 			return;
 		}
+		if (StringUtils.isBlank(command.getResultVariable())) {
+			logger.info("TYPE: {} , no setting result variable, cannot process!", command.getResultType());
+			return;
+		}
 		Map<String, Object> invokeResultParam = this.invokeScript(command, content);
 		Object invokeResultObj = invokeResultParam.get(command.getResultVariable());
-		logger.info("invoke result: {}", (invokeResultObj != null && invokeResultObj instanceof String) ? (String) invokeResultObj : "result is object!");
+		logger.info("invoke result: {}", (invokeResultObj != null && invokeResultObj instanceof String) ? (String) invokeResultObj : (invokeResultObj == null ? "Result is null..." : "Result is object...") );
 		if (invokeResultObj != null && invokeResultObj instanceof String) {
 			taskRes.setInvokeContent( ((String) invokeResultObj).getBytes(StandardCharsets.UTF_8) );
 		}

@@ -31,7 +31,9 @@ export default {
 				resultType : 'GROOVY',
 				description : '',
 				prompts : []
-			}
+			},
+			variablePreviousMessage : import.meta.env.VITE_VARIABLE_PREVIOUS_MESSAGE,
+			variablePreviousInvokeResult : import.meta.env.VITE_VARIABLE_PREVIOUS_INVOKE_RESULT
 		}
 	},
 	methods: { 
@@ -66,6 +68,9 @@ export default {
 				return;
 			}
 			this.formParam.prompts.splice(position, 1);
+		},
+		btnAddUserMessage : function(variable) {
+			this.formParam.userMessage = this.formParam.userMessage + ' ' + variable;
 		}
 	},
 	created() { 
@@ -141,6 +146,15 @@ function _btnSave() {
 		<div v-if="fieldCheckInvalid('userMessage', checkFields)" class="invalid-feedback d-block">{{ fieldInvalidFeedback('userMessage', checkFields) }}</div>
 	</div>
 </div>
+<p style="margin-bottom: 5px"></p>
+<div class="row">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<button type="button" class="btn btn-info" v-on:click="btnAddUserMessage(this.variablePreviousMessage)"><i class="'bi bi-p-circle"></i>&nbsp;上一個任務的訊息</button>
+		&nbsp;
+		<button type="button" class="btn btn-info" v-on:click="btnAddUserMessage(this.variablePreviousInvokeResult)"><i class="'bi bi-p-circle-fill"></i>&nbsp;上一個任務的Invoke結果</button>
+	</div>
+</div>		
+<p style="margin-bottom: 5px"></p>
 <div class="row">
 	<div class="col-xs-6 col-md-6 col-lg-6">
 		<label for="resultVariable" class="form-label">腳本變數</label>

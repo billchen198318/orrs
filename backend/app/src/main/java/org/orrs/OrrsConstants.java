@@ -29,4 +29,8 @@ public class OrrsConstants {
 	
 	public static final int MAX_COMMAND_RECORD = 10;
 	
+	public static final String VARIABLE_PREVIOUS_MESSAGE = "$P{previousMessage}";
+	
+	public static final String VARIABLE_PREVIOUS_INVOKE_RESULT = "$P{previousInvokeResult}";
+	
 }

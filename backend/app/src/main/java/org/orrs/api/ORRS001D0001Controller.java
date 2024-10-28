@@ -90,7 +90,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		chk.testField("cmdId", command, "@org.apache.commons.lang3.StringUtils@isBlank(cmdId)", "請輸入編號")
 		.testField("name", command, "@org.apache.commons.lang3.StringUtils@isBlank(name)", "請輸入名稱")
 		.testField("userMessage", command, "@org.apache.commons.lang3.StringUtils@isBlank(userMessage)", "請輸入llm請求訊息")
-		.testField("resultVariable", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultVariable)", "腳本變數")
+		//.testField("resultVariable", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultVariable)", "腳本變數")
 		.testField("resultType", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultType)", "截取類別")
 		.throwHtmlMessage();
 		
