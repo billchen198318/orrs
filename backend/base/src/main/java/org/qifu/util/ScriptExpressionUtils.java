@@ -74,7 +74,7 @@ public class ScriptExpressionUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, Object> execute(String type, String scriptExpression, 
+	public static Object execute(String type, String scriptExpression, 
 			Map<String, Object> results, Map<String, Object> parameters) throws Exception {
 //		if (!ScriptTypeCode.isTypeCode(type)) {
 //			throw new java.lang.IllegalArgumentException("no support script language of : " + type);
@@ -85,8 +85,8 @@ public class ScriptExpressionUtils {
 //		if (ScriptTypeCode.GROOVY.equals(type)) {
 //			executeGroovy(scriptExpression, results, parameters);
 //		}
-		executeGroovy(scriptExpression, results, parameters);
-		return results;
+		Object r = executeGroovy(scriptExpression, results, parameters);
+		return r;
 	}	
 	
 //	private static void executeBsh(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws Exception {
@@ -104,7 +104,7 @@ public class ScriptExpressionUtils {
 //		}
 //	}
 	
-	private static void executeGroovy(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws Exception {	
+	private static Object executeGroovy(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws Exception {	
 		GroovyShell groovyShell = buildGroovyShell(false);
 		Binding binding = groovyShell.getContext();		
 		if (parameters!=null) {			
@@ -112,12 +112,13 @@ public class ScriptExpressionUtils {
 				binding.setVariable(entry.getKey(), entry.getValue());				
 			}
 		}		
-		groovyShell.evaluate(scriptExpression);
+		Object r = groovyShell.evaluate(scriptExpression);
 		if (results!=null) {
 			for (Map.Entry<String, Object> entry : results.entrySet()) {
 				entry.setValue( binding.getVariable(entry.getKey()) );
 			}
 		}
+		return r;
 	}	
 	
 }

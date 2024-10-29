@@ -218,7 +218,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			}
 			if (taskResPrev.getInvokeContent() != null && userMessage.indexOf(OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT) > -1) {
 				String prevInvokeContent = new String(taskResPrev.getInvokeContent(), StandardCharsets.UTF_8);
-				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_MESSAGE, prevInvokeContent);
+				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT, prevInvokeContent);
 			}
 		}
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
@@ -249,7 +249,12 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		param.put(command.getResultVariable(), null);
 		String script = MarkdownCodeExtractor.parseGroovy(llmResponseContent);
 		logger.info("script: {}", script);
-		ScriptExpressionUtils.execute(command.getResultType(), script, param, param);
+		Object r = ScriptExpressionUtils.execute(command.getResultType(), script, param, param);
+		if (r != null && r instanceof String) {
+			if (param.get(command.getResultVariable()) == null) {
+				param.put(command.getResultVariable(), (String)r);
+			}
+		}
 		return param;
 	}
 	

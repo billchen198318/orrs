@@ -76,7 +76,7 @@ CREATE TABLE `tb_orrs_command` (
 
 LOCK TABLES `tb_orrs_command` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command` VALUES ('2defe1af-907a-11ef-9c7f-bb129a46f93f','test002','輸出資料轉為html','測試用的','給我HTML code, 把下列json內容轉成html <tr> <td> 展示出來, 資料如下:\n$P{previousInvokeResult}\n資料列 各 td 內容為 json 項目的資料值, 給我HTML code ','result','HTML','admin','2024-10-22 21:33:10','admin','2024-10-28 21:12:58'),('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','mariadb 帳戶 root 密碼 password , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] OID字串格式,USER字串格式,SYS_ID字串格式,EXECUTE_EVENT字串格式 , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json 放至 \"result\" 變數 , 給我 groovy code','','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-28 21:37:53'),('ddc4175d-952c-11ef-8da6-c37141e5613c','help001','檢查腳本正確性-執行腳本','','取代 \"String result\" 或 \"def result\" 取代為 \"result\" , 原始 groovy 程式碼內容如下:\n```groovy\n$P{previousMessage}\n```\n給我取代後的groovy程式碼','result','GROOVY','admin','2024-10-28 21:02:20','admin','2024-10-28 22:32:23');
+INSERT INTO `tb_orrs_command` VALUES ('2defe1af-907a-11ef-9c7f-bb129a46f93f','test002','輸出資料轉為html','測試用的','給我HTML code, 把下列json內容轉成html <tr> <td> 展示出來, 資料如下:\n$P{previousInvokeResult}\n資料列 各 td 內容為 json 項目的資料值, 給我HTML code ','result','HTML','admin','2024-10-22 21:33:10','admin','2024-10-28 21:12:58'),('6fef7cd7-8e18-11ef-ad17-4132272e35db','test001','資料庫代碼','測試用的','mariadb 帳戶 root 密碼 password , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] OID字串格式,USER字串格式,SYS_ID字串格式,EXECUTE_EVENT字串格式 , 用 groovy 產出連線資料庫取出資料, 先將資料放入List<Map> 中,  再用com.fasterxml.jackson 將 List<Map> 內容轉成 json 放到jsonResult變數, 在return jsonResult變數, 給我 groovy code','result','GROOVY','admin','2024-10-19 20:48:28','admin','2024-10-29 21:53:13');
 /*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +137,7 @@ CREATE TABLE `tb_orrs_command_prompt` (
 
 LOCK TABLES `tb_orrs_command_prompt` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command_prompt` VALUES ('59ddb131-952e-11ef-8e50-d3a29e83b5aa','test002',0,'You are a professional json data master','admin','2024-10-28 21:12:58',NULL,NULL),('59de9b92-952e-11ef-8e50-6342120ce35f','test002',1,'把 json 資料列 用 html <tr> <td> 顯示出來 , 第一列標題列欄位分別為 json資料第一列的key ','admin','2024-10-28 21:12:58',NULL,NULL),('d56c861f-9531-11ef-a27c-ed3803c47e27','test001',0,'jdbc driver class 為 org.mariadb.jdbc.Drive 所以JDBC url 開頭因該為 jdbc:mariadb , 建議需要 import java.sql.*','admin','2024-10-28 21:37:53',NULL,NULL),('d56d7080-9531-11ef-a27c-81bab00ad4f6','test001',1,'json library 是 com.fasterxml.jackson 不需要給 implementation 資訊','admin','2024-10-28 21:37:53',NULL,NULL),('d56e33d1-9531-11ef-a27c-d37e432c3a23','test001',2,'mariadb IP位置 127.0.0.1 , 服務 port 號是 3306 資料庫檔案 orrs ','admin','2024-10-28 21:37:53',NULL,NULL),('d56ed012-9531-11ef-a27c-ab9fb577ad0a','test001',3,'需要 import 的 package 依序放在groovy程式碼上方','admin','2024-10-28 21:37:53',NULL,NULL);
+INSERT INTO `tb_orrs_command_prompt` VALUES ('23ce1e83-95fd-11ef-9a47-17aca584f2fd','test001',0,'jdbc driver class 為 org.mariadb.jdbc.Drive 所以JDBC url 開頭因該為 jdbc:mariadb , 建議需要 import java.sql.*','admin','2024-10-29 21:53:13',NULL,NULL),('23d179e4-95fd-11ef-9a47-3b21bbd4bbf3','test001',1,'json library 是 com.fasterxml.jackson 不需要給 implementation 資訊','admin','2024-10-29 21:53:13',NULL,NULL),('23d411f5-95fd-11ef-9a47-3b260c7186f7','test001',2,'mariadb IP位置 127.0.0.1 , 服務 port 號是 3306 資料庫檔案 orrs ','admin','2024-10-29 21:53:13',NULL,NULL),('23d96926-95fd-11ef-9a47-ff0d79902670','test001',3,'需要 import 的 package 放在groovy程式碼上方','admin','2024-10-29 21:53:13',NULL,NULL),('59ddb131-952e-11ef-8e50-d3a29e83b5aa','test002',0,'You are a professional json data master','admin','2024-10-28 21:12:58',NULL,NULL),('59de9b92-952e-11ef-8e50-6342120ce35f','test002',1,'把 json 資料列 用 html <tr> <td> 顯示出來 , 第一列標題列欄位分別為 json資料第一列的key ','admin','2024-10-28 21:12:58',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +170,7 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 25 22 * * ?','Y','admin','2024-10-21 20:16:22','admin','2024-10-28 22:24:46');
+INSERT INTO `tb_orrs_task` VALUES ('48c57d5e-8fa6-11ef-92b7-397a3006944e','task01','測試任務01','for test!','0 17 22 * * ?','Y','admin','2024-10-21 20:16:22','admin','2024-10-29 22:16:23');
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,7 +202,7 @@ CREATE TABLE `tb_orrs_task_cmd` (
 
 LOCK TABLES `tb_orrs_task_cmd` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task_cmd` VALUES ('62149d2d-9538-11ef-8af2-47f88137d5a8','task01','test001',0,'Y','admin','2024-10-28 22:24:46',NULL,NULL),('62149d2e-9538-11ef-8af2-49650e73948b','task01','help001',1,'Y','admin','2024-10-28 22:24:46',NULL,NULL),('6215fcbf-9538-11ef-8af2-ebe9b5ce3434','task01','test002',2,'Y','admin','2024-10-28 22:24:46',NULL,NULL);
+INSERT INTO `tb_orrs_task_cmd` VALUES ('60c73915-9600-11ef-85d8-5bc7a3988d03','task01','test001',0,'Y','admin','2024-10-29 22:16:23',NULL,NULL),('60c7d556-9600-11ef-85d8-ed9e12f4d3c1','task01','test002',1,'Y','admin','2024-10-29 22:16:23',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1103,4 +1103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-28 22:34:27
+-- Dump completed on 2024-10-29 22:31:46
