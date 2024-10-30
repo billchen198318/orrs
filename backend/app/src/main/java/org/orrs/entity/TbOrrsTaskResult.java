@@ -20,6 +20,7 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private byte[] content;
     private byte[] invokeContent;    
     private String lastCmd;
+    private String processId;
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -132,6 +133,14 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 
 	public void setInvokeContent(byte[] invokeContent) {
 		this.invokeContent = invokeContent;
+	}
+
+	public String getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(String processId) {
+		this.processId = processId;
 	}
     
 }

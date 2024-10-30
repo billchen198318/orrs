@@ -54,6 +54,7 @@ import org.qifu.base.model.SortType;
 import org.qifu.base.model.YesNo;
 import org.qifu.base.scheduled.BaseScheduledTasksProvide;
 import org.qifu.util.ScriptExpressionUtils;
+import org.qifu.util.SimpleUtils;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
@@ -157,6 +158,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		boolean doNext = true;
 		TbOrrsTaskResult taskResPrev = null;
 		TbOrrsCommand cmdPrev = null;
+		String processId = StringUtils.EMPTY;
 		for (int i = 0; !CollectionUtils.isEmpty(taskCmdList) && i < taskCmdList.size(); i++) {
 			TbOrrsTaskCmd taskCmd = taskCmdList.get(i);
 			TbOrrsCommand cmd = new TbOrrsCommand();
@@ -187,6 +189,10 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				doNext = false;
 			}
 			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
+			if (StringUtils.isEmpty(processId)) {
+				processId = this.orrsTaskResultService.selectMaxProcessId(task.getTaskId(), SimpleUtils.getStrYMD(""));
+			}
+			taskRes.setProcessId(processId);
 			this.orrsTaskResultService.insert(taskRes);
 			taskResPrev = taskRes;
 			cmdPrev = cmd;

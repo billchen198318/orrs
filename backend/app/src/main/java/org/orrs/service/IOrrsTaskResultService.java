@@ -22,8 +22,11 @@
 package org.orrs.service;
 
 import org.orrs.entity.TbOrrsTaskResult;
+import org.qifu.base.exception.ServiceException;
 import org.qifu.base.service.IBaseService;
 
 public interface IOrrsTaskResultService<T, E> extends IBaseService<TbOrrsTaskResult, String> {
+	
+	public String selectMaxProcessId(String taskId, String yyyyMMdd) throws ServiceException, Exception;
 	
 }

@@ -102,8 +102,11 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	@Override
 	public DefaultResult<TbOrrsCommand> createCommand(TbOrrsCommand command) throws ServiceException, Exception {
 		if (null == command || this.isBlank(command.getCmdId()) || this.isBlank(command.getName()) || this.isBlank(command.getUserMessage())
-				|| this.isBlank(command.getResultVariable()) || this.isBlank(command.getResultType())) {
+				/* || this.isBlank(command.getResultVariable()) */ || this.isBlank(command.getResultType())) {
 			throw new ServiceException( BaseSystemMessage.parameterBlank() );
+		}
+		if (null == command.getResultVariable()) {
+			command.setResultVariable(StringUtils.EMPTY);
 		}
 		this.setStringValueMaxLength(command, "description", MAX_DESCRIPTION_LENGTH);
 		this.setStringValueMaxLength(command, "userMessage", OrrsConstants.MAX_USER_MESSAGE_SIZE);

@@ -12,6 +12,7 @@
     <result column="CONTENT" jdbcType="LONGVARBINARY" property="content" />
     <result column="INVOKE_CONTENT" jdbcType="LONGVARBINARY" property="invokeContent" />
     <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
+    <result column="PROCESS_ID" jdbcType="VARCHAR" property="processId" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -34,6 +35,12 @@
 	<if test="itemSeq != null and itemSeq > 0 ">
 		AND ITEM_SEQ = #{itemSeq,jdbcType=SMALLINT}
 	</if>	
+	<if test="processId != null and processId != ''.toString() ">
+		AND PROCESS_ID = #{processId,jdbcType=SMALLINT}
+	</if>	
+	<if test="processIdLike != null and processIdLike != ''.toString() ">
+		AND PROCESS_ID like #{processIdLike,jdbcType=VARCHAR}
+	</if>		
   </sql>
   
   <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
@@ -89,9 +96,18 @@
       <if test="processMsT2 != null">
         PROCESS_MS_T2,
       </if>
+      <if test="content != null">
+        CONTENT,
+      </if>
+      <if test="invokeContent != null">
+        INVOKE_CONTENT,
+      </if>          
       <if test="lastCmd != null">
         LAST_CMD,
       </if>
+      <if test="processId != null">
+        PROCESS_ID,
+      </if>      
       <if test="cuserid != null">
         CUSERID,
       </if>
@@ -103,13 +119,7 @@
       </if>
       <if test="udate != null">
         UDATE,
-      </if>
-      <if test="content != null">
-        CONTENT,
-      </if>
-      <if test="invokeContent != null">
-        INVOKE_CONTENT,
-      </if>      
+      </if>  
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="oid != null">
@@ -130,9 +140,18 @@
       <if test="processMsT2 != null">
         #{processMsT2,jdbcType=VARCHAR},
       </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="invokeContent != null">
+        #{invokeContent,jdbcType=LONGVARBINARY},
+      </if>         
       <if test="lastCmd != null">
         #{lastCmd,jdbcType=VARCHAR},
       </if>
+      <if test="processId != null">
+        #{processId,jdbcType=VARCHAR},
+      </if>      
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
       </if>
@@ -144,13 +163,7 @@
       </if>
       <if test="udate != null">
         #{udate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=LONGVARBINARY},
-      </if>
-      <if test="invokeContent != null">
-        #{invokeContent,jdbcType=LONGVARBINARY},
-      </if>      
+      </if>   
     </trim>
   </insert>  
   
@@ -172,9 +185,18 @@
       <if test="processMsT2 != null">
         PROCESS_MS_T2 = #{processMsT2,jdbcType=VARCHAR},
       </if>
+      <if test="content != null">
+        CONTENT = #{content,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="invokeContent != null">
+        INVOKE_CONTENT = #{invokeContent,jdbcType=LONGVARBINARY},
+      </if>
       <if test="lastCmd != null">
         LAST_CMD = #{lastCmd,jdbcType=VARCHAR},
-      </if>
+      </if>      
+      <if test="processId != null">
+        PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      </if>         
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
       </if>
@@ -186,13 +208,7 @@
       </if>
       <if test="udate != null">
         UDATE = #{udate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="content != null">
-        CONTENT = #{content,jdbcType=LONGVARBINARY},
-      </if>
-      <if test="invokeContent != null">
-        INVOKE_CONTENT = #{invokeContent,jdbcType=LONGVARBINARY},
-      </if>
+      </if>   
     </set>
     where OID = #{oid,jdbcType=CHAR}
   </update>  
@@ -201,5 +217,11 @@
     delete from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result
     where OID = #{oid,jdbcType=CHAR}
   </delete>
+  
+  <select id="selectMaxProcessId" parameterType="java.util.HashMap" resultType="java.lang.String">
+	select IFNULL(MAX(PROCESS_ID), '') AS PROCESS_ID
+	from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result 
+	where PROCESS_ID LIKE #{processIdLike,jdbcType=VARCHAR}
+  </select>      
   
 </mapper>

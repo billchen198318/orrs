@@ -21,11 +21,15 @@
  */
 package org.orrs.mapper;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.qifu.base.mapper.IBaseMapper;
 
 @Mapper
 public interface TbOrrsTaskResultMapper extends IBaseMapper<TbOrrsTaskResult, String> {
+	
+	public String selectMaxProcessId(Map<String, String> param);
 	
 }
