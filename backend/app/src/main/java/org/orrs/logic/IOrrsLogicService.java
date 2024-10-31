@@ -23,6 +23,7 @@ package org.orrs.logic;
 
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsTask;
+import org.orrs.entity.TbOrrsTaskResult;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.DefaultResult;
 
@@ -43,5 +44,7 @@ public interface IOrrsLogicService {
 	public DefaultResult<TbOrrsTask> selectTask(TbOrrsTask task) throws ServiceException, Exception;
 	
 	public DefaultResult<TbOrrsTask> updateTask(TbOrrsTask task) throws ServiceException, Exception;
+	
+	public DefaultResult<Boolean> deleteTaskResult(TbOrrsTaskResult taskResult) throws ServiceException, Exception;
 	
 }

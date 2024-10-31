@@ -24,6 +24,7 @@ package org.orrs.api;
 import java.util.List;
 
 import org.orrs.entity.TbOrrsTaskResult;
+import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
@@ -55,6 +56,9 @@ public class ORRS001D0003Controller extends CoreApiSupport {
 	
 	@Autowired
 	IOrrsTaskResultService<TbOrrsTaskResult, String> orrsTaskResultService;
+	
+	@Autowired
+	IOrrsLogicService orrsLogicService;		
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0003Q", check = true)
 	@Operation(summary = "ORRS001D0003 - findPage", description = "查核TB_ORRS_TASK_RESULT資料")
@@ -93,5 +97,22 @@ public class ORRS001D0003Controller extends CoreApiSupport {
 		}
 		return ResponseEntity.ok().body(result);
 	}		
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0003D", check = true)
+	@Operation(summary = "ORRS001D0003D - delete", description = "刪除TB_ORRS_TASK資料")
+	@ResponseBody
+	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbOrrsTaskResult taskResult) {
+		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<Boolean> delResult = this.orrsLogicService.deleteTaskResult(taskResult);
+			this.setDefaultResponseJsonResult(delResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
 	
 }

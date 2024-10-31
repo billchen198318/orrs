@@ -341,4 +341,36 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		return result;
 	}
 	
+	private void deleteTaskResult(String processId) throws ServiceException, Exception {
+		if (StringUtils.isBlank(processId)) {
+			return;
+		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("processId", processId);
+		DefaultResult<List<TbOrrsTaskResult>> taskCmdResult = this.orrsTaskResultService.selectListByParams(paramMap);
+		List<TbOrrsTaskResult> taskResultList = taskCmdResult.getValue();
+		for (int i = 0; !CollectionUtils.isEmpty(taskResultList) && i < taskResultList.size(); i++) {
+			this.orrsTaskResultService.delete(taskResultList.get(i));
+		}		
+	}	
+
+	@ServiceMethodAuthority(type = ServiceMethodType.DELETE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
+	@Override
+	public DefaultResult<Boolean> deleteTaskResult(TbOrrsTaskResult taskResult) throws ServiceException, Exception {
+		if (null == taskResult || this.isBlank(taskResult.getOid())) {
+			throw new ServiceException(BaseSystemMessage.parameterBlank());
+		}		
+		TbOrrsTaskResult r = this.orrsTaskResultService.selectByEntityPrimaryKey(taskResult).getValueEmptyThrowMessage();
+		this.deleteTaskResult(r.getProcessId());
+		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		result.setSuccess(YesNo.YES);
+		result.setValue(Boolean.TRUE);
+		result.setMessage(BaseSystemMessage.deleteSuccess());
+		return result;
+	}
+	
 }
