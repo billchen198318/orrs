@@ -19,6 +19,26 @@
     <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />
   </resultMap>
   
+  <resultMap id="SimpleFindPageResultMap" type="org.orrs.entity.TbOrrsTaskResult">
+    <id column="OID" jdbcType="CHAR" property="oid" />
+    <result column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
+    <result column="CMD_ID" jdbcType="VARCHAR" property="cmdId" />
+    <result column="ITEM_SEQ" jdbcType="SMALLINT" property="itemSeq" />
+    <result column="PROCESS_MS_T1" jdbcType="VARCHAR" property="processMsT1" />
+    <result column="PROCESS_MS_T2" jdbcType="VARCHAR" property="processMsT2" />
+    <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
+    <result column="PROCESS_ID" jdbcType="VARCHAR" property="processId" />
+    <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
+    <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
+    <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
+    <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />
+    <result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
+    <result column="TASK_DESCRIPTION" jdbcType="VARCHAR" property="taskDescription" />
+    <result column="CMD_NAME" jdbcType="VARCHAR" property="cmdName" />
+    <result column="CMD_DESCRIPTION" jdbcType="VARCHAR" property="cmdDescription" />
+    <result column="CMD_RESULT_TYPE" jdbcType="VARCHAR" property="cmdResultType" />
+  </resultMap>  
+  
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select *
     from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result
@@ -223,5 +243,68 @@
 	from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result 
 	where PROCESS_ID LIKE #{processIdLike,jdbcType=VARCHAR}
   </select>      
+  
+  
+  <select id="findSimpleFindPage" parameterType="java.util.HashMap" resultMap="SimpleFindPageResultMap">
+  	<include refid="org.orrs.mapper.DBOrrsConfig.sql1"/>
+    select 
+    	m.OID, m.TASK_ID, m.CMD_ID, m.ITEM_SEQ, m.PROCESS_MS_T1, m.PROCESS_MS_T2, m.LAST_CMD, m.PROCESS_ID, m.CUSERID, m.CDATE, m.UUSERID, m.UDATE, 
+    	a.NAME AS TASK_NAME, a.DESCRIPTION AS TASK_DESCRIPTION, 
+    	b.NAME AS CMD_NAME, b.DESCRIPTION AS CMD_DESCRIPTION, b.RESULT_TYPE AS CMD_RESULT_TYPE
+    	
+    from 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result m, 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task a, 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_command b
+    WHERE 1=1
+    AND m.TASK_ID = a.TASK_ID
+    AND m.CMD_ID = b.CMD_ID
+    
+	<if test="taskId != null and taskId != ''.toString() ">
+		AND m.TASK_ID = #{taskId,jdbcType=VARCHAR}
+	</if>	  
+	<if test="processIdLike != null and processIdLike != ''.toString() ">
+		AND m.PROCESS_ID like #{processIdLike,jdbcType=VARCHAR}
+	</if>		
+	<if test="lastCmd != null and lastCmd != ''.toString() ">
+		AND m.LAST_CMD = #{lastCmd,jdbcType=VARCHAR}
+	</if>	
+	<if test="date1 != null and date1 != ''.toString() ">
+		<if test="date2 != null and date2 != ''.toString() ">
+		AND m.CDATE <![CDATA[>=]]> CAST(#{date1,jdbcType=VARCHAR} AS DATETIME)
+		AND m.CDATE <![CDATA[<=]]> CAST(#{date2,jdbcType=VARCHAR} AS DATETIME)
+		</if>
+	</if>
+			
+	<include refid="org.orrs.mapper.DBOrrsConfig.sql2"/>
+  </select>  
+  
+  <select id="countSimpleFindPage" parameterType="java.util.HashMap" resultType="java.lang.Long">
+    select count(*)
+    from 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task_result m, 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_task a, 
+    <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_command b
+    WHERE 1=1
+    AND m.TASK_ID = a.TASK_ID
+    AND m.CMD_ID = b.CMD_ID
+    
+	<if test="taskId != null and taskId != ''.toString() ">
+		AND m.TASK_ID = #{taskId,jdbcType=VARCHAR}
+	</if>	  
+	<if test="processIdLike != null and processIdLike != ''.toString() ">
+		AND m.PROCESS_ID like #{processIdLike,jdbcType=VARCHAR}
+	</if>		
+	<if test="lastCmd != null and lastCmd != ''.toString() ">
+		AND m.LAST_CMD = #{lastCmd,jdbcType=VARCHAR}
+	</if>	
+	<if test="date1 != null and date1 != ''.toString() ">
+		<if test="date2 != null and date2 != ''.toString() ">
+		AND m.CDATE <![CDATA[>=]]> CAST(#{date1,jdbcType=VARCHAR} AS DATETIME)
+		AND m.CDATE <![CDATA[<=]]> CAST(#{date2,jdbcType=VARCHAR} AS DATETIME)
+		</if>
+	</if>
+					
+  </select>    
   
 </mapper>

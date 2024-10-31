@@ -26,6 +26,12 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private String uuserid;
     private Date udate;
     
+    private String taskName;
+    private String taskDescription;
+    private String cmdName;
+    private String cmdDescription;
+    private String cmdResultType;
+    
     @EntityPK(name = "oid", autoUUID = true)
     public String getOid() {
         return oid;
@@ -142,5 +148,45 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 	public void setProcessId(String processId) {
 		this.processId = processId;
 	}
-    
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+
+	public String getTaskDescription() {
+		return taskDescription;
+	}
+
+	public void setTaskDescription(String taskDescription) {
+		this.taskDescription = taskDescription;
+	}
+
+	public String getCmdName() {
+		return cmdName;
+	}
+
+	public void setCmdName(String cmdName) {
+		this.cmdName = cmdName;
+	}
+
+	public String getCmdDescription() {
+		return cmdDescription;
+	}
+
+	public void setCmdDescription(String cmdDescription) {
+		this.cmdDescription = cmdDescription;
+	}
+
+	public String getCmdResultType() {
+		return cmdResultType;
+	}
+
+	public void setCmdResultType(String cmdResultType) {
+		this.cmdResultType = cmdResultType;
+	}
+	
 }

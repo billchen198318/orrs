@@ -21,6 +21,7 @@
  */
 package org.orrs.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -31,5 +32,9 @@ import org.qifu.base.mapper.IBaseMapper;
 public interface TbOrrsTaskResultMapper extends IBaseMapper<TbOrrsTaskResult, String> {
 	
 	public String selectMaxProcessId(Map<String, String> param);
+	
+	public Long countSimpleFindPage(Map<String, Object> paramMap);	
+	
+	public List<TbOrrsTaskResult> findSimpleFindPage(Map<String, Object> paramMap);	
 	
 }
