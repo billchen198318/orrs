@@ -18,7 +18,9 @@ npm install --save @bytemd/plugin-gfm
 npm install --save @bytemd/plugin-import-html
 npm install --save echarts
 npm install --save vue-echarts
-
+npm install --save vue-markdown
+npm install --save vue-markdown-render
+npm install --save markdown-it
 
 # build & test
 npm run build

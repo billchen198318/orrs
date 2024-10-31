@@ -8,6 +8,7 @@ import HiddenQueryFieldAlertInfo from '@/components/HiddenQueryFieldAlertInfo.vu
 import { PageConstants } from './config';
 import { useOrrs001d0003Store } from './QueryPageStore'; 
 import { 
+	getAccessTokenCookie,
 	getAxiosInstance, 
 	getProgItem, 
 	getUrlPrefixFromProgItem 
@@ -46,7 +47,32 @@ export default {
 
 			this.dsList = [];
 		},
-		delItem : _delItem
+		delItem : _delItem,
+		btnPreview : function(oid) {
+			var url = import.meta.env.VITE_BACKGROUND_SERVER_SITE + 'previewResult?qifutoken=' + getAccessTokenCookie() + '&oid=' + oid;
+			window.open(url, '_blank');
+		},
+		btnViewResultData : function(oid) {
+			var thatRouter = this.$router;
+			var url = getUrlPrefixFromProgItem( getProgItem(PageConstants.EditId) ) + '/' + oid;
+			thatRouter.push( url );			
+		},
+		btnDelete : function(oid) {
+			var that = this;
+			Swal.fire({
+				title: '刪除,此刪除會將相關執行序項目都刪除?',
+				icon: 'question',
+				iconHtml: '?',
+				confirmButtonText: 'Yes',
+				cancelButtonText: 'No',
+				showCancelButton: true,
+				showCloseButton: true
+			}).then((result) => {
+				if (result.isConfirmed) {
+					that.delItem(oid);
+				}
+			}); 			
+		}
 	},
 	created() {
 
@@ -224,11 +250,11 @@ function _delItem(oid) {
 					<br>
 					<p class="card-text">{{ item.taskDescription }}</p>
 					<br>
-					<button type="button" class="btn btn-primary" v-if=" 'Y' == item.lastCmd "><i class="bi bi-play-btn"></i>&nbsp;檢視結果</button>
+					<button type="button" class="btn btn-primary" v-if=" 'Y' == item.lastCmd " v-on:click="btnPreview(item.oid)"><i class="bi bi-play-btn"></i>&nbsp;檢視結果</button>
 					&nbsp;
-					<button type="button" class="btn btn-secondary"><i class="bi bi-file-earmark-text"></i>&nbsp;檢視內容</button>
+					<button type="button" class="btn btn-secondary" v-on:click="btnViewResultData(item.oid)"><i class="bi bi-file-earmark-text"></i>&nbsp;執行紀錄</button>
 					&nbsp;
-					<button type="button" class="btn btn-danger"><i class="bi bi-trash"></i>&nbsp;刪除</button>
+					<button type="button" class="btn btn-danger" v-on:click="btnDelete(item.oid)"><i class="bi bi-trash"></i>&nbsp;刪除</button>
 				</div>
 			</div>
 		</div>	

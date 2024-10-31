@@ -28,6 +28,8 @@ import org.orrs.service.IOrrsTaskResultService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.ControllerMethodAuthority;
+import org.qifu.base.model.DefaultControllerJsonResultObj;
+import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
 import org.qifu.core.util.CoreApiSupport;
@@ -71,6 +73,23 @@ public class ORRS001D0003Controller extends CoreApiSupport {
 			this.noSuccessResult(result, e);
 		} catch (Exception e) {
 			this.noSuccessResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}		
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0003E", check = true)
+	@Operation(summary = "ORRS001D0003E - load", description = "讀取TB_ORRS_TASK_RESULT資料")
+	@ResponseBody
+	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<TbOrrsTaskResult>> doLoad(@RequestBody TbOrrsTaskResult taskResult) {
+		DefaultControllerJsonResultObj<TbOrrsTaskResult> result = this.initDefaultJsonResult();
+		try {
+			DefaultResult<TbOrrsTaskResult> lResult = this.orrsTaskResultService.selectByEntityPrimaryKey(taskResult);
+			this.setDefaultResponseJsonResult(lResult, result);
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
 		}
 		return ResponseEntity.ok().body(result);
 	}		

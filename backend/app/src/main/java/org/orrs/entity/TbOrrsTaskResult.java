@@ -1,12 +1,16 @@
 package org.orrs.entity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.model.CreateDateField;
 import org.qifu.base.model.CreateUserField;
 import org.qifu.base.model.EntityPK;
 import org.qifu.base.model.UpdateDateField;
 import org.qifu.base.model.UpdateUserField;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TbOrrsTaskResult implements java.io.Serializable {
 	private static final long serialVersionUID = 6100582624088972776L;
@@ -17,8 +21,13 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private Short itemSeq;
     private String processMsT1;
     private String processMsT2;
+    
+    @JsonIgnore
     private byte[] content;
+    
+    @JsonIgnore
     private byte[] invokeContent;    
+    
     private String lastCmd;
     private String processId;
     private String cuserid;
@@ -31,6 +40,20 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private String cmdName;
     private String cmdDescription;
     private String cmdResultType;
+    
+    public String getContentString() {
+    	if (content != null) {
+    		return new String(this.content, StandardCharsets.UTF_8);
+    	}
+    	return StringUtils.EMPTY;
+    }
+    
+    public String getInvokeContentString() {
+    	if (invokeContent != null) {
+            return new String(this.invokeContent, StandardCharsets.UTF_8);
+        }
+        return StringUtils.EMPTY;
+    }
     
     @EntityPK(name = "oid", autoUUID = true)
     public String getOid() {
