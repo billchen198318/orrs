@@ -14,12 +14,15 @@ import {
 	getUrlPrefixFromProgItem
 } from '../../../components/BaseHelper';
 
-import VueMarkdown from 'vue-markdown-render';
+import '../../../node_modules/bytemd/dist/index.css';
+import gfm from '@bytemd/plugin-gfm';
+import { Editor, Viewer } from '@bytemd/vue-next';
+import importHtml from '@bytemd/plugin-import-html';
 
 let checkFields = new Object();
 
 export default {
-	components: { Toolbar, VueMarkdown },
+	components: { Toolbar, Editor },
 	setup() { 
 		definePageMeta({ middleware : ['auth'] });
 	},
@@ -38,7 +41,8 @@ export default {
 				invokeContentString : '',
 				lastCmd : '',
 				processId : ''
-			}	
+			},
+			plugins : null
 		}
 	},
 	methods: { 
@@ -53,6 +57,7 @@ export default {
 		loadData : _loadData
 	},
 	created() { 
+		this.plugins = [ importHtml() ];
 	},
 	mounted() { 
 		this.loadData(); 
@@ -98,6 +103,11 @@ function _loadData() {
     -webkit-mask-image: var(--mask-image);
     mask-image: var(--mask-image);
 }
+
+.bytemd {
+	height: calc(100vh - 230px);
+}
+
 </style>
 
 <template>
@@ -122,15 +132,9 @@ function _loadData() {
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-secondary">llm回應訊息(原始內容)</span></h5>
-        	<textarea rows="10" style="width: 100%;" v-model="this.formParam.contentString"></textarea>
+			<Editor :value="this.formParam.contentString" :plugins="plugins" style="height: 100%;" />
 		</div>				
 	</div>
-	<div class="row">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-secondary">llm回應訊息(markdown)</span></h5>
-        	<vue-markdown style="width: 100%;" :source="this.formParam.contentString" :watches="['show','html','breaks','linkify','emoji','typographer','toc']" />
-		</div>				
-	</div>	
 
 	<br>
 	<hr class="hr-twill-colorful" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
@@ -139,14 +143,8 @@ function _loadData() {
 	<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
-        	<textarea rows="10" style="width: 100%;" v-model="this.formParam.invokeContentString"></textarea>
+			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" />
 		</div>				
 	</div>
-	<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-secondary">invoke結果/Server端觸發(markdown)</span></h5>
-        	<vue-markdown style="width: 100%;" :source="this.formParam.invokeContentString" :watches="['show','html','breaks','linkify','emoji','typographer','toc']" />
-		</div>				
-	</div>	
 
 </template>

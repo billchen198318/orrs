@@ -235,24 +235,43 @@ function _delItem(oid) {
 			<div class="card text-bg-light mb-3" style="max-width: 25rem;" v-for="item in this.dsList">
 				<div class="card-header">{{  new Date(item.cdate).toLocaleString() }}</div>
 				<div class="card-body">
-					<h5 class="card-title">{{ item.taskName }}</h5>
-					<span class="badge text-bg-info">Process Id</span>&nbsp;{{ item.processId }}
-					<br>
-					<span class="badge text-bg-info">Task</span>&nbsp;{{ item.taskId }}&nbsp;/&nbsp;{{ item.taskName }}
-					<br>
-					<span class="badge text-bg-info">Command</span>&nbsp;{{ item.cmdId }}&nbsp;/&nbsp;{{ item.cmdName }}
-					<br>		
-					<span class="badge text-bg-info">Seq</span>&nbsp;<span class="badge text-bg-warning">{{ item.itemSeq }}</span>
-					<br>							
-					最後命令的任務<span class="badge text-bg-success">{{ item.lastCmd }}</span>
-					<br><br>
-					說明:
-					<br>
-					<p class="card-text">{{ item.taskDescription }}</p>
-					<br>
-					<button type="button" class="btn btn-primary" v-if=" 'Y' == item.lastCmd " v-on:click="btnPreview(item.oid)"><i class="bi bi-play-btn"></i>&nbsp;檢視結果</button>
+					<h5 class="card-title">{{ item.taskName }}&nbsp;({{ item.itemSeq }})</h5>
+
+					<table class="table">
+						<tbody>
+							<tr>
+								<td width="40%">Process Id</td>
+								<td width="60%">{{ item.processId }}</td>
+							</tr>
+							<tr>
+								<td width="40%">Task</td>
+								<td width="60%">{{ item.taskId }}&nbsp;/&nbsp;{{ item.taskName }}</td>
+							</tr>		
+							<tr>
+								<td width="40%">Command</td>
+								<td width="60%">{{ item.cmdId }}&nbsp;/&nbsp;{{ item.cmdName }}</td>
+							</tr>			
+							<tr>
+								<td width="40%">Seq</td>
+								<td width="60%">{{ item.itemSeq }}</td>
+							</tr>	
+							<tr>
+								<td width="40%">使用時間/秒</td>
+								<td width="60%">{{ (Number(item.processMsT2) - Number(item.processMsT1))/1000 }}</td>
+							</tr>			
+							<tr>
+								<td width="40%">最後命令的任務</td>
+								<td width="60%">{{ item.lastCmd }}</td>
+							</tr>	
+							<tr>
+								<td width="100%" colspan="2">說明:<br>{{ item.taskDescription }}</td>
+							</tr>																																				
+						</tbody>
+					</table>
+
+					<button type="button" class="btn btn-success" v-if=" 'Y' == item.lastCmd " v-on:click="btnPreview(item.oid)"><i class="bi bi-play-btn"></i>&nbsp;檢視結果</button>
 					&nbsp;
-					<button type="button" class="btn btn-secondary" v-on:click="btnViewResultData(item.oid)"><i class="bi bi-file-earmark-text"></i>&nbsp;執行紀錄</button>
+					<button type="button" class="btn btn-info" v-on:click="btnViewResultData(item.oid)"><i class="bi bi-file-earmark-text"></i>&nbsp;執行紀錄</button>
 					&nbsp;
 					<button type="button" class="btn btn-danger" v-on:click="btnDelete(item.oid)"><i class="bi bi-trash"></i>&nbsp;刪除</button>
 				</div>
