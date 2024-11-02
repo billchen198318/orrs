@@ -30,6 +30,7 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     
     private String lastCmd;
     private String processId;
+    private String processFlag;
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -170,6 +171,14 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 
 	public void setProcessId(String processId) {
 		this.processId = processId;
+	}
+
+	public String getProcessFlag() {
+		return processFlag;
+	}
+
+	public void setProcessFlag(String processFlag) {
+		this.processFlag = processFlag;
 	}
 
 	public String getTaskName() {

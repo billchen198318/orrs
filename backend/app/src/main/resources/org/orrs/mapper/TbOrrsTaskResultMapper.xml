@@ -13,6 +13,7 @@
     <result column="INVOKE_CONTENT" jdbcType="LONGVARBINARY" property="invokeContent" />
     <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
     <result column="PROCESS_ID" jdbcType="VARCHAR" property="processId" />
+    <result column="PROCESS_FLAG" jdbcType="VARCHAR" property="processFlag" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -28,6 +29,7 @@
     <result column="PROCESS_MS_T2" jdbcType="VARCHAR" property="processMsT2" />
     <result column="LAST_CMD" jdbcType="VARCHAR" property="lastCmd" />
     <result column="PROCESS_ID" jdbcType="VARCHAR" property="processId" />
+    <result column="PROCESS_FLAG" jdbcType="VARCHAR" property="processFlag" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -128,6 +130,9 @@
       <if test="processId != null">
         PROCESS_ID,
       </if>      
+      <if test="processFlag != null">
+        PROCESS_FLAG,
+      </if>      
       <if test="cuserid != null">
         CUSERID,
       </if>
@@ -171,6 +176,9 @@
       </if>
       <if test="processId != null">
         #{processId,jdbcType=VARCHAR},
+      </if>      
+      <if test="processFlag != null">
+        #{processFlag,jdbcType=VARCHAR},
       </if>      
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
@@ -217,6 +225,9 @@
       <if test="processId != null">
         PROCESS_ID = #{processId,jdbcType=VARCHAR},
       </if>         
+      <if test="processFlag != null">
+        PROCESS_FLAG = #{processFlag,jdbcType=VARCHAR},
+      </if>      
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
       </if>
@@ -248,7 +259,7 @@
   <select id="findSimpleFindPage" parameterType="java.util.HashMap" resultMap="SimpleFindPageResultMap">
   	<include refid="org.orrs.mapper.DBOrrsConfig.sql1"/>
     select 
-    	m.OID, m.TASK_ID, m.CMD_ID, m.ITEM_SEQ, m.PROCESS_MS_T1, m.PROCESS_MS_T2, m.LAST_CMD, m.PROCESS_ID, m.CUSERID, m.CDATE, m.UUSERID, m.UDATE, 
+    	m.OID, m.TASK_ID, m.CMD_ID, m.ITEM_SEQ, m.PROCESS_MS_T1, m.PROCESS_MS_T2, m.LAST_CMD, m.PROCESS_ID, m.PROCESS_FLAG, m.CUSERID, m.CDATE, m.UUSERID, m.UDATE, 
     	a.NAME AS TASK_NAME, a.DESCRIPTION AS TASK_DESCRIPTION, 
     	b.NAME AS CMD_NAME, b.DESCRIPTION AS CMD_DESCRIPTION, b.RESULT_TYPE AS CMD_RESULT_TYPE
     	

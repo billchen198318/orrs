@@ -193,6 +193,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				processId = this.orrsTaskResultService.selectMaxProcessId(task.getTaskId(), SimpleUtils.getStrYMD(""));
 			}
 			taskRes.setProcessId(processId);
+			taskRes.setProcessFlag(doNext ? YesNo.YES : YesNo.NO);
 			this.orrsTaskResultService.insert(taskRes);
 			taskResPrev = taskRes;
 			cmdPrev = cmd;
