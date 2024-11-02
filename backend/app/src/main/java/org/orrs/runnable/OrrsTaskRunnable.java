@@ -138,22 +138,22 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	
 	private void process() throws ServiceException, Exception {
 		logger.info("{} >>> TASK_ID: {} - process start...", this.getClass().getSimpleName(), this.taskId);
-		List<TbOrrsTask> taskList = this.orrsTaskService.selectList().getValue();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("taskId", this.taskId);		
+		List<TbOrrsTask> taskList = this.orrsTaskService.selectListByParams(paramMap).getValue();
 		if (CollectionUtils.isEmpty(taskList)) {
 			return;
 		}
 		for (TbOrrsTask task : taskList) {
-			this.processTask(task);
+			this.processTask(task, paramMap);
 		}
 	}
 	
-	private void processTask(TbOrrsTask task) throws ServiceException, Exception {
+	private void processTask(TbOrrsTask task, Map<String, Object> paramMap) throws ServiceException, Exception {
 		logger.info("process task: {} name: {} enable: {}", task.getTaskId(), task.getName(), task.getEnableFlag());
 		if (!YesNo.YES.equals(task.getEnableFlag())) {
 			return;
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("taskId", task.getTaskId());
 		List<TbOrrsTaskCmd> taskCmdList = this.orrsTaskCmdService.selectListByParams(paramMap, "ITEM_SEQ", SortType.ASC).getValue();
 		boolean doNext = true;
 		TbOrrsTaskResult taskResPrev = null;

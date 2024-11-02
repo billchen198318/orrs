@@ -156,7 +156,7 @@ function _delItem(oid) {
   <div class="col-xs-12 col-md-12 col-lg-12">
     <Toolbar 
         :progId="this.pageProgramId" 
-        description="任務結果." 
+        description="任務結果查詢." 
         marginBottom="Y"
         refreshFlag="Y"
         @refreshMethod="tbRefresh"
@@ -233,47 +233,58 @@ function _delItem(oid) {
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<div class="card-group card-deck">
 			<div class="card text-bg-light mb-3" style="max-width: 25rem;" v-for="item in this.dsList">
-				<div class="card-header">{{  new Date(item.cdate).toLocaleString() }}</div>
+				<div class="card-header fw-bold text-secondary">{{  new Date(item.cdate).toLocaleString() }}</div>
 				<div class="card-body">
-					<h5 class="card-title">{{ item.taskName }}&nbsp;({{ item.itemSeq }})</h5>
-
-					<table class="table">
+					<table class="table table-bordered">
+						<thead class="table-info">
+							<tr>
+								<th colspan="2"><i class="bi bi-info-circle" v-if=" 'Y' == item.processFlag "></i><i class="bi bi-x-octagon-fill" v-if=" 'Y' != item.processFlag "></i>&nbsp;{{ item.taskName }}&nbsp;<i class="bi bi-dash-lg"></i>&nbsp;{{ item.itemSeq }}</th>
+							</tr>
+						</thead>
 						<tbody>
 							<tr>
-								<td width="40%">Process Id</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">Process Id</td>
 								<td width="60%">{{ item.processId }}</td>
 							</tr>
 							<tr>
-								<td width="40%">Task</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">Task</td>
 								<td width="60%">{{ item.taskId }}&nbsp;/&nbsp;{{ item.taskName }}</td>
 							</tr>		
 							<tr>
-								<td width="40%">Command</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">Command</td>
 								<td width="60%">{{ item.cmdId }}&nbsp;/&nbsp;{{ item.cmdName }}</td>
 							</tr>			
 							<tr>
-								<td width="40%">Seq</td>
-								<td width="60%">{{ item.itemSeq }}</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">Seq</td>
+								<td width="60%"><span class="badge rounded-pill text-bg-warning">{{ item.itemSeq }}</span></td>
 							</tr>	
 							<tr>
-								<td width="40%">使用時間/秒</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">使用時間/秒</td>
 								<td width="60%">{{ (Number(item.processMsT2) - Number(item.processMsT1))/1000 }}</td>
 							</tr>			
 							<tr>
-								<td width="40%">最後命令的任務</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">最後命令的任務</td>
 								<td width="60%">{{ item.lastCmd }}</td>
 							</tr>	
 							<tr>
-								<td width="100%" colspan="2">說明:<br>{{ item.taskDescription }}</td>
+								<td width="40%" class="table-secondary fw-bold text-secondary">完成執行</td>
+								<td width="60%">
+									<span class="badge rounded-pill text-bg-success" v-if=" 'Y' == item.processFlag ">{{ item.processFlag }}</span>
+									<span class="badge rounded-pill text-bg-danger" v-if=" 'Y' != item.processFlag ">{{ item.processFlag }}</span>
+								</td>
+							</tr>								
+							<tr>
+								<td width="100%" colspan="2">{{ item.taskDescription }}</td>
 							</tr>																																				
 						</tbody>
 					</table>
 
-					<button type="button" class="btn btn-success" v-if=" 'Y' == item.lastCmd " v-on:click="btnPreview(item.oid)"><i class="bi bi-play-btn"></i>&nbsp;檢視結果</button>
+					<button type="button" class="btn btn-sm btn-success" v-if=" 'Y' == item.lastCmd " v-on:click="btnPreview(item.oid)" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="檢視結果"><i class="bi bi-play-btn"></i></button>
 					&nbsp;
-					<button type="button" class="btn btn-info" v-on:click="btnViewResultData(item.oid)"><i class="bi bi-file-earmark-text"></i>&nbsp;執行紀錄</button>
+					<button type="button" class="btn btn-sm btn-info" v-on:click="btnViewResultData(item.oid)" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="執行紀錄"><i class="bi bi-file-earmark-text"></i></button>
 					&nbsp;
-					<button type="button" class="btn btn-danger" v-on:click="btnDelete(item.oid)"><i class="bi bi-trash"></i>&nbsp;刪除</button>
+					<button type="button" class="btn btn-sm btn-danger" v-on:click="btnDelete(item.oid)" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="刪除"><i class="bi bi-trash"></i></button>
+
 				</div>
 			</div>
 		</div>	
