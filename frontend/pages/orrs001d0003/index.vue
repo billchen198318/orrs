@@ -256,7 +256,7 @@ function _delItem(oid) {
 							</tr>			
 							<tr>
 								<td width="40%" class="table-secondary fw-bold text-secondary">Seq</td>
-								<td width="60%"><span class="badge rounded-pill text-bg-warning">{{ item.itemSeq }}</span></td>
+								<td width="60%"><span class="badge text-bg-warning">{{ item.itemSeq }}</span></td>
 							</tr>	
 							<tr>
 								<td width="40%" class="table-secondary fw-bold text-secondary">使用時間/秒</td>
