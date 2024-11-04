@@ -36,6 +36,7 @@ import org.qifu.base.model.DefaultControllerJsonResultObj;
 import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
+import org.qifu.base.model.SortType;
 import org.qifu.core.util.CoreApiSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -118,7 +119,7 @@ public class ORRS001D0002Controller extends CoreApiSupport {
 	public ResponseEntity<DefaultControllerJsonResultObj<List<TbOrrsCommand>>> doLoadCommandList() {
 		DefaultControllerJsonResultObj<List<TbOrrsCommand>> result = this.initDefaultJsonResult();
 		try {
-			DefaultResult<List<TbOrrsCommand>> lResult = this.orrsCommandService.selectList();
+			DefaultResult<List<TbOrrsCommand>> lResult = this.orrsCommandService.selectList("CMD_ID", SortType.ASC);
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
