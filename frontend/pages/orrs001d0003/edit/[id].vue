@@ -54,7 +54,13 @@ export default {
 		btnClear : function() {
 			this.checkFields = new Object();
 		},
-		loadData : _loadData
+		loadData : _loadData,
+		handleChange1 : function(v) {
+			this.formParam.contentString = v;
+		},
+		handleChange2 : function(v) {
+			this.formParam.invokeContentString = v;
+		}					
 	},
 	created() { 
 		this.plugins = [ importHtml() ];
@@ -132,7 +138,7 @@ function _loadData() {
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-secondary">llm回應訊息(原始內容)</span></h5>
-			<Editor :value="this.formParam.contentString" :plugins="plugins" style="height: 100%;" />
+			<Editor :value="this.formParam.contentString" :plugins="plugins" @change="handleChange1" style="height: 100%;" />
 		</div>				
 	</div>
 
@@ -143,7 +149,7 @@ function _loadData() {
 	<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
-			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" />
+			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" />
 		</div>				
 	</div>
 
