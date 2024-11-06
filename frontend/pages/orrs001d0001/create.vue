@@ -30,10 +30,12 @@ export default {
 				resultVariable : '',
 				resultType : 'GROOVY',
 				description : '',
-				prompts : []
+				prompts : [],
+				llmModel : 'gemma2'
 			},
 			variablePreviousMessage : import.meta.env.VITE_VARIABLE_PREVIOUS_MESSAGE,
-			variablePreviousInvokeResult : import.meta.env.VITE_VARIABLE_PREVIOUS_INVOKE_RESULT
+			variablePreviousInvokeResult : import.meta.env.VITE_VARIABLE_PREVIOUS_INVOKE_RESULT,
+			llmModelList : []
 		}
 	},
 	methods: { 
@@ -51,7 +53,8 @@ export default {
 			this.formParam.resultVariable = '';
 			this.formParam.resultType = 'GROOVY';
 			this.formParam.description = '';
-			this.formParam.prompts = []
+			this.formParam.prompts = [],
+			this.formParam.llmModel = 'gemma2';
 		},
 		btnAddPrompt : function() {
 			if (this.formParam.prompts.length >= 5) {
@@ -71,11 +74,32 @@ export default {
 		},
 		btnAddUserMessage : function(variable) {
 			this.formParam.userMessage = this.formParam.userMessage + ' ' + variable;
+		},
+		loadLlmModel : function() {
+			Swal.fire({title: "Loading...", html: "請等待", showConfirmButton: false, allowOutsideClick: false});
+			Swal.showLoading();      
+			let axiosInstance = getAxiosInstance();
+			axiosInstance.post(import.meta.env.VITE_API_URL + PageConstants.eventNamespace + '/loadLlmModelList', this.formParam)
+			.then(response => {
+				Swal.hideLoading();
+				Swal.close();
+				if (null != response.data) {
+					this.llmModelList = response.data.value;
+				} else {
+					toast.error('error, null');
+				}
+			})
+			.catch(e => {
+				Swal.hideLoading();
+				Swal.close();        
+				alert(e);
+			});
 		}
 	},
 	created() { 
 	},
 	mounted() { 
+		this.loadLlmModel();
 	}
 }
 
@@ -173,6 +197,14 @@ function _btnSave() {
 		</select>
 	</div>
 </div>
+<div class="row">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<label for="dialogH" class="form-label">LLM模組</label>
+		<select class="form-select" aria-label="請選取LLM模組" v-model="this.formParam.llmModel">
+			<option v-bind:value="llmItem" v-for="(llmItem, idx) in this.llmModelList">{{ llmItem }}</option>
+		</select>
+	</div>	
+</div>	
 <div class="row">
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<label for="description" class="form-label">備註</label>

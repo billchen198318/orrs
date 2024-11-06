@@ -20,6 +20,7 @@ public class TbOrrsCommand implements java.io.Serializable {
     private String userMessage;
     private String resultVariable;
     private String resultType;
+    private String llmModel;
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -83,6 +84,14 @@ public class TbOrrsCommand implements java.io.Serializable {
 
 	public void setResultType(String resultType) {
 		this.resultType = resultType;
+	}
+
+	public String getLlmModel() {
+		return llmModel;
+	}
+
+	public void setLlmModel(String llmModel) {
+		this.llmModel = llmModel;
 	}
 
 	@CreateUserField(name = "cuserid")

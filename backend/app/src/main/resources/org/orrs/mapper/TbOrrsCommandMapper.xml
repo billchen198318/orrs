@@ -9,7 +9,8 @@
     <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
     <result column="USER_MESSAGE" jdbcType="VARCHAR" property="userMessage" />
     <result column="RESULT_VARIABLE" jdbcType="VARCHAR" property="resultVariable" />
-    <result column="RESULT_TYPE" jdbcType="VARCHAR" property="resultType" />
+    <result column="RESULT_TYPE" jdbcType="VARCHAR" property="resultType" />    
+    <result column="LLM_MODEL" jdbcType="VARCHAR" property="llmModel" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
@@ -93,6 +94,9 @@
       <if test="resultType != null">
         RESULT_TYPE,
       </if>      
+      <if test="llmModel != null">
+        LLM_MODEL,
+      </if>          
       <if test="cuserid != null">
         CUSERID,
       </if>
@@ -128,6 +132,9 @@
       <if test="resultType != null">
         #{resultType,jdbcType=VARCHAR},
       </if>      
+      <if test="llmModel != null">
+        #{llmModel,jdbcType=VARCHAR},
+      </if>           
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
       </if>
@@ -164,6 +171,9 @@
       <if test="resultType != null">
         RESULT_TYPE = #{resultType,jdbcType=VARCHAR},
       </if>      
+      <if test="llmModel != null">
+        LLM_MODEL = #{llmModel,jdbcType=VARCHAR},
+      </if>            
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},
       </if>

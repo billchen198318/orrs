@@ -26,6 +26,7 @@ import java.util.List;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandPrompt;
 import org.orrs.logic.IOrrsLogicService;
+import org.orrs.model.LlmModels;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
 import org.qifu.base.exception.ControllerException;
@@ -36,6 +37,7 @@ import org.qifu.base.model.DefaultControllerJsonResultObj;
 import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
+import org.qifu.base.model.SortType;
 import org.qifu.core.util.CoreApiSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -92,6 +94,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		.testField("userMessage", command, "@org.apache.commons.lang3.StringUtils@isBlank(userMessage)", "請輸入llm請求訊息")
 		//.testField("resultVariable", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultVariable)", "腳本變數")
 		.testField("resultType", command, "@org.apache.commons.lang3.StringUtils@isBlank(resultType)", "截取類別")
+		.testField("llmModel", command, "@org.apache.commons.lang3.StringUtils@isBlank(llmModel)", "請輸入llm模型")
 		.throwHtmlMessage();
 		
 		chk.testField("cmdId", command, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(cmdId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
@@ -111,6 +114,23 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 		DefaultResult<TbOrrsCommand> uResult = this.orrsLogicService.updateCommand(command);
 		this.setDefaultResponseJsonResult(uResult, result);
 	}
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0001C", check = true)
+	@Operation(summary = "ORRS001D0001C - load llm list", description = "讀取llm model清單")
+	@ResponseBody
+	@PostMapping(value = "/loadLlmModelList", produces = {MediaType.APPLICATION_JSON_VALUE})	
+	public ResponseEntity<DefaultControllerJsonResultObj<List<String>>> doLoadCommandList() {
+		DefaultControllerJsonResultObj<List<String>> result = this.initDefaultJsonResult();
+		try {
+			result.setValue( LlmModels.list );
+			result.setSuccess( YES );
+		} catch (ServiceException | ControllerException e) {
+			this.exceptionResult(result, e);
+		} catch (Exception e) {
+			this.exceptionResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}			
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0001C", check = true)
 	@Operation(summary = "ORRS001D0001C - save", description = "新增TB_ORRS_COMMAND資料")
