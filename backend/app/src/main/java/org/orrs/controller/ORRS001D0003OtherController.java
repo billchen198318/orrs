@@ -119,7 +119,7 @@ public class ORRS001D0003OtherController {
 			
 			if (!StringUtils.isBlank(content)) {
 				response.setContentType("text/html");
-				response.getOutputStream().print(content);
+				response.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
 				response.flushBuffer();						
 			} else {
 				response.setContentType("application/octet-stream");

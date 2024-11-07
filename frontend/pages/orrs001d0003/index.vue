@@ -232,7 +232,7 @@ function _delItem(oid) {
 <div class="row">
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<div class="card-group card-deck">
-			<div class="card text-bg-light mb-3" style="max-width: 25rem;" v-for="item in this.dsList">
+			<div class="card text-bg-light mb-3 border-secondary" style="max-width: 25rem;" v-for="item in this.dsList">
 				<div class="card-header fw-bold text-secondary">{{  new Date(item.cdate).toLocaleString() }}</div>
 				<div class="card-body">
 					<table class="table table-bordered">
