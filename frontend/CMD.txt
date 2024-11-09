@@ -21,6 +21,15 @@ npm install --save vue-echarts
 # npm install --save vue-markdown
 # npm install --save vue-markdown-render
 # npm install --save markdown-it
+npm install --save codemirror vue-codemirror
+npm install --save @codemirror/lang-html
+npm install --save @codemirror/lang-json
+npm install --save @codemirror/lang-javascript
+npm install --save @codemirror/lang-java
+npm install --save @codemirror/lang-markdown
+npm install --save @codemirror/language-data
+npm install --save @codemirror/theme-one-dark
+
 
 # build & test
 npm run build

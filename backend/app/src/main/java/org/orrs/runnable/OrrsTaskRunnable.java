@@ -67,6 +67,8 @@ import org.springframework.core.env.Environment;
 public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runnable {
 	protected Logger logger = LogManager.getLogger(OrrsTaskRunnable.class);
 	
+	private final int MAX_CAUSE_LENGTH = 5000;
+	
 	private String taskId;
 	
 	private Environment env;
@@ -188,7 +190,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				e.printStackTrace();
 				logger.error("{}", e.getMessage());
 				doNext = false;
-				taskRes.setCauseMessage( e != null ? ExceptionUtils.getStackTrace(e).substring(0, 5000) : "null" );
+				taskRes.setCauseMessage( e != null ? StringUtils.substring(ExceptionUtils.getStackTrace(e), 0, MAX_CAUSE_LENGTH) : "null" );
 			}
 			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
 			if (StringUtils.isEmpty(processId)) {

@@ -3,6 +3,11 @@ import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
+import { Codemirror } from 'vue-codemirror'
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { languages } from '@codemirror/language-data'
+import { oneDark } from '@codemirror/theme-one-dark'
+
 import Toolbar from '@/components/Toolbar.vue';
 import { PageConstants } from '../config';
 import { 
@@ -17,9 +22,26 @@ import {
 let checkFields = new Object();
 
 export default {
-	components: { Toolbar },
+	components: { Toolbar, Codemirror },
 	setup() { 
 		definePageMeta({ middleware : ['auth'] });
+
+		const cmRef = ref();
+		const cmOptions = {
+			mode: "text/x-markdown",
+		};
+
+		const cmExtensions = [
+			markdown({ base: markdownLanguage, codeLanguages: languages })
+			/*, oneDark*/ 
+		];
+
+		return {
+			cmRef,
+			cmOptions,
+			cmExtensions
+		};
+
 	},
 	data() {
 		return {
@@ -100,6 +122,15 @@ export default {
 				Swal.close();        
 				alert(e);
 			});
+		},
+		cmOnChange : function(val, cm) {
+			this.formParam.userMessage = val;
+		},
+		cmOnInput : function(val) {
+			this.formParam.userMessage = val;
+		},
+		cmOnReady : function(cm) {
+
 		}		
 	},
 	created() { 
@@ -200,7 +231,17 @@ function _btnUpdate() {
 <div class="row">
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<label for="userMessage" class="form-label">使用者訊息</label>
-		<textarea row="3" col="25" v-bind:class="'form-control ' + ( fieldCheckInvalid('userMessage', checkFields) ? 'is-invalid' : ' ')" id="userMessage" placeholder="輸入使用者訊息" v-model="this.formParam.userMessage"></textarea>
+		<Codemirror
+			v-model="this.formParam.userMessage"
+			:options="cmOptions"
+			:extensions="cmExtensions"
+			:style="{ height: '200px' }"
+			 ref="cmRef"
+			 @change="cmOnChange"
+			 @input="cmOnInput"
+			 @ready="cmOnReady"
+			 id="userMessage">
+		</Codemirror>				
 		<div v-if="fieldCheckInvalid('userMessage', checkFields)" class="invalid-feedback d-block">{{ fieldInvalidFeedback('userMessage', checkFields) }}</div>
 	</div>
 </div>
