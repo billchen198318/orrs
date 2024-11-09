@@ -31,6 +31,12 @@ public class TbOrrsTaskResult implements java.io.Serializable {
     private String lastCmd;
     private String processId;
     private String processFlag;
+    
+    @JsonIgnore
+    private byte[] taskUserMessage;
+    
+    private String causeMessage;
+    
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -55,6 +61,13 @@ public class TbOrrsTaskResult implements java.io.Serializable {
         }
         return StringUtils.EMPTY;
     }
+    
+    public String getTaskUserMessageString() {
+    	if (taskUserMessage != null) {
+    		return new String(this.taskUserMessage, StandardCharsets.UTF_8);
+    	}
+    	return StringUtils.EMPTY;
+    }    
     
     @EntityPK(name = "oid", autoUUID = true)
     public String getOid() {
@@ -179,6 +192,22 @@ public class TbOrrsTaskResult implements java.io.Serializable {
 
 	public void setProcessFlag(String processFlag) {
 		this.processFlag = processFlag;
+	}
+
+	public byte[] getTaskUserMessage() {
+		return taskUserMessage;
+	}
+
+	public void setTaskUserMessage(byte[] taskUserMessage) {
+		this.taskUserMessage = taskUserMessage;
+	}
+
+	public String getCauseMessage() {
+		return causeMessage;
+	}
+
+	public void setCauseMessage(String causeMessage) {
+		this.causeMessage = causeMessage;
 	}
 
 	public String getTaskName() {

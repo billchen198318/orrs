@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.orrs.OrrsConstants;
@@ -187,6 +188,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				e.printStackTrace();
 				logger.error("{}", e.getMessage());
 				doNext = false;
+				taskRes.setCauseMessage( e != null ? ExceptionUtils.getStackTrace(e).substring(0, 5000) : "null" );
 			}
 			taskRes.setProcessMsT2(String.valueOf(System.currentTimeMillis()));
 			if (StringUtils.isEmpty(processId)) {
@@ -228,6 +230,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT, prevInvokeContent);
 			}
 		}
+		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
 		var req = ChatRequest.builder(env.getProperty("spring.ai.ollama.chat.options.model"))
 				.withStream(false).withMessages(messageList).build();
