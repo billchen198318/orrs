@@ -232,8 +232,8 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		}
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
-		var req = ChatRequest.builder(env.getProperty("spring.ai.ollama.chat.options.model"))
-				.withStream(false).withMessages(messageList).build();
+		// env.getProperty("spring.ai.ollama.chat.options.model")
+		var req = ChatRequest.builder(command.getLlmModel()).withStream(false).withMessages(messageList).build();
 		ChatResponse response = ollamaApi.chat(req);
 		String content = StringUtils.defaultString(response.message().content());		
 		logger.info("response content: {}", content);
