@@ -143,13 +143,8 @@ function _loadData() {
 </script>
 
 <style>
-.hr-twill-colorful {
-    border: 0;
-    padding: 3px;
-    background: linear-gradient(135deg, red, orange,green, blue, purple);
-    --mask-image: repeating-linear-gradient(135deg, #000 0px, #000 1px, transparent 1px, transparent 6px);
-    -webkit-mask-image: var(--mask-image);
-    mask-image: var(--mask-image);
+hr.solid {
+    border-top: 2px solid #999;
 }
 
 .bytemd {
@@ -179,25 +174,22 @@ function _loadData() {
 
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-secondary">llm回應訊息(原始內容)</span></h5>
+			<h5><span class="badge text-bg-success">llm回應訊息(原始內容)</span></h5>
 			<Editor :value="this.formParam.contentString" :plugins="plugins" @change="handleChange1" style="height: 100%;" />
 		</div>				
 	</div>
-
-	<br>
-	<hr class="hr-twill-colorful" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
+	
 	<br v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
-
+	<hr class="solid" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
 	<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
 			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" />
 		</div>				
 	</div>
-
-	<br>
-	<hr class="hr-twill-colorful" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+	
 	<br v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+	<hr class="solid" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-info">送出llm訊息(userMessage)</span></h5>
@@ -215,9 +207,8 @@ function _loadData() {
 		</div>
 	</div>
 
-	<br>
-	<hr class="hr-twill-colorful" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
 	<br v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
+	<hr class="solid" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
@@ -234,5 +225,8 @@ function _loadData() {
 			</Codemirror>					
 		</div>
 	</div>	
+
+	<br>
+	<br>
 
 </template>
