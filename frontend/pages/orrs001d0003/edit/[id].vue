@@ -190,7 +190,7 @@ hr.solid {
 	
 	<br v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
 	<hr class="solid" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
-	<div class="row">
+	<div class="row" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-info">送出llm訊息(userMessage)</span></h5>
 			<Codemirror
@@ -209,7 +209,7 @@ hr.solid {
 
 	<br v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
 	<hr class="solid" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
-	<div class="row">
+	<div class="row" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<h5><span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
 			<Codemirror
