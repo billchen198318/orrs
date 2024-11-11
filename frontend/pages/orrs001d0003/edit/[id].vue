@@ -3,6 +3,11 @@ import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
+import { Codemirror } from 'vue-codemirror'
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { languages } from '@codemirror/language-data'
+import { oneDark } from '@codemirror/theme-one-dark'
+
 import Toolbar from '@/components/Toolbar.vue';
 import { PageConstants } from '../config';
 import { 
@@ -22,9 +27,26 @@ import importHtml from '@bytemd/plugin-import-html';
 let checkFields = new Object();
 
 export default {
-	components: { Toolbar, Editor },
+	components: { Toolbar, Editor, Codemirror },
 	setup() { 
 		definePageMeta({ middleware : ['auth'] });
+
+		const cmRef = ref();
+		const cmOptions = {
+			mode: "text/x-markdown",
+		};
+
+		const cmExtensions = [
+			markdown({ base: markdownLanguage, codeLanguages: languages })
+			/*, oneDark*/ 
+		];
+
+		return {
+			cmRef,
+			cmOptions,
+			cmExtensions
+		};
+				
 	},
 	data() {
 		return {
@@ -40,7 +62,9 @@ export default {
 				contentString : '',
 				invokeContentString : '',
 				lastCmd : '',
-				processId : ''
+				processId : '',
+				taskUserMessageString : '',
+				causeMessage : ''
 			},
 			plugins : null
 		}
@@ -60,6 +84,24 @@ export default {
 		},
 		handleChange2 : function(v) {
 			this.formParam.invokeContentString = v;
+		},
+		cmOnChange1 : function(val, cm) {
+			this.formParam.taskUserMessageString = val;
+		},
+		cmOnInput1 : function(val) {
+			this.formParam.taskUserMessageString = val;
+		},
+		cmOnReady1 : function(cm) {
+
+		},
+		cmOnChange2 : function(val, cm) {
+			this.formParam.causeMessage = val;
+		},
+		cmOnInput2 : function(val) {
+			this.formParam.causeMessage = val;
+		},
+		cmOnReady2 : function(cm) {
+
 		}					
 	},
 	created() { 
@@ -152,5 +194,45 @@ function _loadData() {
 			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" />
 		</div>				
 	</div>
+
+	<br>
+	<hr class="hr-twill-colorful" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+	<br v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<h5><span class="badge text-bg-info">送出llm訊息(userMessage)</span></h5>
+			<Codemirror
+				v-model="this.formParam.taskUserMessageString"
+				:options="cmOptions"
+				:extensions="cmExtensions"
+				:style="{ height: '200px' }"
+				ref="cmRef"
+				@change="cmOnChange1"
+				@input="cmOnInput1"
+				@ready="cmOnReady1"
+				id="taskUserMessageString">
+			</Codemirror>					
+		</div>
+	</div>
+
+	<br>
+	<hr class="hr-twill-colorful" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
+	<br v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<h5><span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
+			<Codemirror
+				v-model="this.formParam.causeMessage"
+				:options="cmOptions"
+				:extensions="cmExtensions"
+				:style="{ height: '300px' }"
+				ref="cmRef"
+				@change="cmOnChange2"
+				@input="cmOnInput2"
+				@ready="cmOnReady2"
+				id="causeMessage">
+			</Codemirror>					
+		</div>
+	</div>	
 
 </template>
