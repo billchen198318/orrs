@@ -151,82 +151,118 @@ hr.solid {
 	height: calc(100vh - 230px);
 }
 
+.tab-content-custom {
+	height: 93vh;
+	background: #ffffff;
+	margin-left: -10px;
+	margin-right: -10px;
+	overflow:auto;
+	padding: 4px;
+	
+}
+
 </style>
 
 <template>
-	<div class="row">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<Toolbar 
-				:progId="this.pageProgramId" 
-				description="任務紀錄." 
-				marginBottom="Y"
-				refreshFlag="Y"
-				@refreshMethod="loadData"
-				backFlag="Y"
-				@backMethod="btnBack"
-				createFlag="N"
-				@createMethod="null"
-				saveFlag="N"
-				@saveMethod="null"
-			></Toolbar>		
+
+<div class="row">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<Toolbar 
+			:progId="this.pageProgramId" 
+			description="任務紀錄." 
+			marginBottom="Y"
+			refreshFlag="Y"
+			@refreshMethod="loadData"
+			backFlag="Y"
+			@backMethod="btnBack"
+			createFlag="N"
+			@createMethod="null"
+			saveFlag="N"
+			@saveMethod="null"
+		></Toolbar>		
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link active" id="tb01-tab" data-bs-toggle="tab" data-bs-target="#tb01" type="button" role="tab" aria-controls="tb01" aria-selected="true"><b>llm回應訊息(原始內容)</b></button>
+			</li>
+			<li class="nav-item" role="presentation" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
+				<button class="nav-link" id="tb02-tab" data-bs-toggle="tab" data-bs-target="#tb02" type="button" role="tab" aria-controls="tb02" aria-selected="false"><b>invoke結果/Server端觸發(內容)</b></button>
+			</li>
+			<li class="nav-item" role="presentation" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+				<button class="nav-link" id="tb03-tab" data-bs-toggle="tab" data-bs-target="#tb03" type="button" role="tab" aria-controls="tb03" aria-selected="false"><b>送出llm訊息(userMessage)</b></button>
+			</li>
+			<li class="nav-item" role="presentation" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
+				<button class="nav-link" id="tb04-tab" data-bs-toggle="tab" data-bs-target="#tb04" type="button" role="tab" aria-controls="tb04" aria-selected="false"><b>invoke script錯誤訊息</b></button>
+			</li>
+		</ul>	
+
+		<div class="tab-content tab-content-custom" id="resultTabContent">
+			<div class="tab-pane fade show active" id="tb01" role="tabpanel" aria-labelledby="tb01">
+				<div class="row">
+					<div class="col-xs-12 col-md-12 col-lg-12">
+						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-success">llm回應訊息(原始內容)</span></h5>
+						<Editor :value="this.formParam.contentString" :plugins="plugins" @change="handleChange1" style="height: 100%; width: 97%;" />
+					</div>				
+				</div>
+			</div>
+			<div class="tab-pane fade" id="tb02" role="tabpanel" aria-labelledby="tb02" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">			
+				<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
+					<div class="col-xs-12 col-md-12 col-lg-12">
+						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
+						<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" style="height: 100%; width: 97%;" />
+					</div>				
+				</div>
+			</div>
+			<div class="tab-pane fade" id="tb03" role="tabpanel" aria-labelledby="tb03">
+				<div class="row" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
+					<div class="col-xs-12 col-md-12 col-lg-12">
+						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-info">送出llm訊息(userMessage)</span></h5>
+						<Codemirror
+							v-model="this.formParam.taskUserMessageString"
+							:options="cmOptions"
+							:extensions="cmExtensions"
+							:style="{ height: '500px', width: '97%' }"
+							ref="cmRef"
+							@change="cmOnChange1"
+							@input="cmOnInput1"
+							@ready="cmOnReady1"
+							id="taskUserMessageString">
+						</Codemirror>					
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="tb04" role="tabpanel" aria-labelledby="tb04">
+				<div class="row" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
+					<div class="col-xs-12 col-md-12 col-lg-12">
+						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
+						<Codemirror
+							v-model="this.formParam.causeMessage"
+							:options="cmOptions"
+							:extensions="cmExtensions"
+							:style="{ height: '500px', width: '97%' }"
+							ref="cmRef"
+							@change="cmOnChange2"
+							@input="cmOnInput2"
+							@ready="cmOnReady2"
+							id="causeMessage">
+						</Codemirror>					
+					</div>
+				</div>	
+			</div>
 		</div>
+
+
 	</div>
 
-	<div class="row">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-success">llm回應訊息(原始內容)</span></h5>
-			<Editor :value="this.formParam.contentString" :plugins="plugins" @change="handleChange1" style="height: 100%;" />
-		</div>				
-	</div>
-	
-	<br v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
-	<hr class="solid" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
-	<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
-			<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" />
-		</div>				
-	</div>
-	
-	<br v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
-	<hr class="solid" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
-	<div class="row" v-if=" null != this.formParam.taskUserMessageString && this.formParam.taskUserMessageString.length > 0 ">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-info">送出llm訊息(userMessage)</span></h5>
-			<Codemirror
-				v-model="this.formParam.taskUserMessageString"
-				:options="cmOptions"
-				:extensions="cmExtensions"
-				:style="{ height: '200px' }"
-				ref="cmRef"
-				@change="cmOnChange1"
-				@input="cmOnInput1"
-				@ready="cmOnReady1"
-				id="taskUserMessageString">
-			</Codemirror>					
-		</div>
-	</div>
-
-	<br v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
-	<hr class="solid" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
-	<div class="row" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<h5><span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
-			<Codemirror
-				v-model="this.formParam.causeMessage"
-				:options="cmOptions"
-				:extensions="cmExtensions"
-				:style="{ height: '300px' }"
-				ref="cmRef"
-				@change="cmOnChange2"
-				@input="cmOnInput2"
-				@ready="cmOnReady2"
-				id="causeMessage">
-			</Codemirror>					
-		</div>
-	</div>	
 
 	<br>
 	<br>
+
+</div>			
 
 </template>

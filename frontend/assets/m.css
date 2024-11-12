@@ -10,29 +10,10 @@ body {
 	height: 93vh;
 	background: #ffffff;
 	margin-left: -25px;
-	margin-right: -23px; /* margin-right: -25px; */
+	margin-right: -25px;
 	overflow:auto;
-	padding: 4px; /* 2024-03-01 add */
-}
-
-.nav-tabs {
-	margin-top: -35px; /* 2021-01-29 rem -25px */
-	margin-left: -25px;
-	height: 43px; /* 2021-02-02 add */
-}
-
-/* 2021-01-29 add */
-.tabbable .nav-tabs {
-	overflow-x: auto;
-	overflow-y: hidden;
-	flex-wrap: nowrap;
-}
-.tabbable .nav-tabs .nav-link {
-	white-space: nowrap;
-}
-.nav-tabs .nav-link.active {
-	background-color: #f8f9fa;
-	background: linear-gradient(0deg, rgba(255,148,16,1) 0%, rgba(248,249,250,1) 22%);
+	padding: 4px;
+	
 }
 
 /* Let's get this party started */
