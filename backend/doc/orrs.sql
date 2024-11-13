@@ -77,7 +77,7 @@ CREATE TABLE `tb_orrs_command` (
 
 LOCK TABLES `tb_orrs_command` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command` VALUES ('974b7fff-9aaa-11ef-b609-a1eae7d5353c','PP01','取得水量拆分檔內容','','### 資料庫資訊\n1. sql server 帳戶 sa 密碼 P@ssw0rd@@@@\n2. sql server IP位置 127.0.0.1 , 服務 port 號是 1433\n3. database file is: NSC_B21\n\n### 資料表資訊\n1. 資料表 WATER_QUANTITY_SPLIT\n2. 資料表 WATER_QUANTITY_SPLIT欄位 [W_ID, QUANTITY, TOTAL_AMOUNT, CHARGE_SDATE, CHARGE_EDATE]\n3. 資料表 WATER_QUANTITY_SPLIT欄位型態 [W_ID(int), QUANTITY(decimal), TOTAL_AMOUNT(decimal), CHARGE_SDATE(datetime), CHARGE_EDATE(datetime)]\n4. 資料表 COMPANY 欄位[F_NAMEC] , COMPANY資料表欄位型態 [ F_NAMEC(varchar2)]\n5. 資料表 WATER_SOURCES_HISTORY 欄位[ WATER_SOURCES_ID ] , WATER_SOURCES_HISTORY 資料表欄位型態 [ WATER_SOURCES_ID(varchar2) ]\n\n### 資料表關聯關係\n1. 資料表關聯關係 \n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n\n### 最後步驟產生groovy規範\n1. 用 groovy 產出連線資料庫, 資料表要串聯關係, \n	並取出資料 WATER_QUANTITY_SPLIT,COMPANY,WATER_SOURCES_HISTORY 這3個資料表定義的欄位 前10筆(如: select top 10 * from ....) \n	條件: \n		a. CHARGE_SDATE 大於等於2023年2月1日 , 且 CHARGE_EDATE 小於等於2023年4月30日\n		b. FACTORY_HISTORY.BASE_ID 為字串 \'01\'\n		c. 以QUANTITY desc排序\n2. 建議需要 import java.sql.*\n3. jdbc driver class 為 com.microsoft.sqlserver.jdbc.SQLServerDriver 所以JDBC url 開頭因該為 jdbc:sqlserver://\n4. 請一定要在 jdbc url 加上 encrypt=false; 參數\n5. 程式碼不要產在自訂義method中, 請用平舖直敘式方式產生程式碼\n6. 需要 import 的 package 或 class 請寫在程式最上方\n7. 將資料放入List<Map> 中\n8. 用 com.fasterxml.jackson 將 List<Map> 內容轉成字串 json資料, 配置到jsonResult變數  \n9. 最後 return  jsonResult, 給我 groovy code','result','GROOVY','qwen2.5-coder','admin','2024-11-04 20:44:54','admin','2024-11-12 21:38:31'),('a34e225a-9d17-11ef-a316-d9ccce9e80b5','PP02','產生echarts 圖表','','### json資料內容\n```json\n $P{previousInvokeResult}\n```\n### 產生html code條件\n1. 請將json資料, 使用 echarts 產生 pie, bar, line圖,\n2. 請在html下方以table tr , td 把json資料列顯示出來, table 第一列為json 第一筆資料的key\n3. 各項目標題為 json資料的 F_NAMEC 加上 \'-\'分隔號, 在加上json資料 WATER_SOURCES_ID\n4. 各項目的實際值為 json資料的 QUANTITY \n5. 給我 html code','','HTML','qwen2.5-coder','admin','2024-11-07 22:50:32','admin','2024-11-12 22:09:29');
+INSERT INTO `tb_orrs_command` VALUES ('974b7fff-9aaa-11ef-b609-a1eae7d5353c','PP01','取得水量拆分檔內容','','### 資料庫資訊\n1. sql server 帳戶 sa 密碼 P@ssw0rd@@@@\n2. sql server IP位置 127.0.0.1 , 服務 port 號是 1433\n3. database file is: NSC_B21\n\n### 資料表資訊\n1. 資料表 WATER_QUANTITY_SPLIT\n2. 資料表 WATER_QUANTITY_SPLIT欄位 [W_ID, QUANTITY, TOTAL_AMOUNT]\n3. 資料表 WATER_QUANTITY_SPLIT欄位型態 [W_ID(int), QUANTITY(decimal), TOTAL_AMOUNT(decimal)]\n4. 資料表 COMPANY 欄位[F_NAMEC] , COMPANY資料表欄位型態 [ F_NAMEC(varchar2)]\n5. 資料表 WATER_SOURCES_HISTORY 欄位[ WATER_SOURCES_ID ] , WATER_SOURCES_HISTORY 資料表欄位型態 [ WATER_SOURCES_ID(varchar2) ]\n\n### 資料表關聯關係\n1. 資料表關聯關係 \n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n\n### 最後步驟產生groovy規範\n1. 用 groovy 產出連線資料庫, 資料表要串聯關係, \n	並取出資料 WATER_QUANTITY_SPLIT,COMPANY,WATER_SOURCES_HISTORY 這3個資料表定義的欄位 前10筆(如: select top 10 * from ....) \n	條件: \n		a. WATER_QUANTITY_SPLIT.CHARGE_SDATE 大於等於2023年2月1日 , 且 WATER_QUANTITY_SPLIT.CHARGE_EDATE 小於等於2023年4月30日\n		b. FACTORY_HISTORY.BASE_ID 為字串 \'01\'\n		c. 以QUANTITY desc排序\n2. 建議需要 import java.sql.*\n3. jdbc driver class 為 com.microsoft.sqlserver.jdbc.SQLServerDriver 所以JDBC url 開頭因該為 jdbc:sqlserver://\n4. 請一定要在 jdbc url 加上 encrypt=false; 參數\n5. 程式碼不要產在自訂義method中, 請用平舖直敘式方式產生程式碼\n6. 需要 import 的 package 或 class 請寫在程式最上方\n7. 將資料放入List<Map> 中\n8. 用 com.fasterxml.jackson 將 List<Map> 內容轉成字串 json資料, 配置到jsonResult變數  \n9. 最後用 return  jsonResult, 給我 groovy code','result','GROOVY','qwen2.5-coder','admin','2024-11-04 20:44:54','admin','2024-11-13 21:14:36'),('a34e225a-9d17-11ef-a316-d9ccce9e80b5','PP02','產生echarts 圖表','','### json資料內容\n```json\n $P{previousInvokeResult}\n```\n### 產生html code條件\n1. 請將json資料, 使用 echarts 產生 pie, bar, line圖 (這3個圖表id必須不相同)\n2. 各項目標題為 json資料的 F_NAMEC 加上 \'(\' 符號 再加上 json資料 WATER_SOURCES_ID 在加上 \')\'符號\n3. 各項目的實際值為 json資料的 QUANTITY \n4. 給我 html code','','HTML','gemma2','admin','2024-11-07 22:50:32','admin','2024-11-13 21:48:23');
 /*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -138,7 +138,7 @@ CREATE TABLE `tb_orrs_command_prompt` (
 
 LOCK TABLES `tb_orrs_command_prompt` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command_prompt` VALUES ('68467d2f-a0fb-11ef-b1ba-97eb002f8e7d','PP01',0,'json library 是 com.fasterxml.jackson','admin','2024-11-12 21:38:31',NULL,NULL),('6846cb50-a0fb-11ef-b1ba-d5ff8ff2fa1e','PP01',1,'你必須遵守: 1. 不要把結果用 print 或 println 方式輸出, 請用 return 方式輸出值 , 2. 不需要給 implementation , maven, gradle 資訊','admin','2024-11-12 21:38:31',NULL,NULL),('bb738733-a0ff-11ef-b1ba-f565c447bcdf','PP02',0,'echarts 版本請用 5.3.3 ','admin','2024-11-12 22:09:29',NULL,NULL),('bb73ae44-a0ff-11ef-b1ba-b963bd0c63a7','PP02',1,'echarts 5.3.3 CDN 位置 https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js','admin','2024-11-12 22:09:29',NULL,NULL),('bb742375-a0ff-11ef-b1ba-9f4dc58b3a70','PP02',2,'echarts 圖表寬度740px , 高度600px','admin','2024-11-12 22:09:29',NULL,NULL);
+INSERT INTO `tb_orrs_command_prompt` VALUES ('3b1c86df-a1c1-11ef-ab5c-1db09e1087d3','PP01',0,'json library 使用的是 com.fasterxml.jackson','admin','2024-11-13 21:14:36',NULL,NULL),('3b1dbf60-a1c1-11ef-ab5c-4589971c36e7','PP01',1,'回應訊息不需要給 implementation , maven, gradle 資訊','admin','2024-11-13 21:14:36',NULL,NULL),('3b1f4601-a1c1-11ef-ab5c-051c9b0776d0','PP01',2,'你必須遵守: 不要把結果用 print 或 println 方式輸出, 請用 return 方式輸出值','admin','2024-11-13 21:14:36',NULL,NULL),('f341ce09-a1c5-11ef-bfd5-e1cc970577fc','PP02',0,'echarts 版本請用 5.3.3 , CDN 位置 https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js','admin','2024-11-13 21:48:23',NULL,NULL),('f3426a4a-a1c5-11ef-bfd5-f1542acae4a9','PP02',1,'echarts 圖表寬度740px , 高度600px','admin','2024-11-13 21:48:23',NULL,NULL),('f342df7b-a1c5-11ef-bfd5-83f75b93e4db','PP02',2,'json資料筆數不要刪減','admin','2024-11-13 21:48:23',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,7 +171,7 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task` VALUES ('7590bed3-9aab-11ef-b609-854d67a445fb','task02','我的水量拆分檔任務','水量資料','0 49 21 * * ?','Y','admin','2024-11-04 20:51:07','admin','2024-11-12 21:48:48');
+INSERT INTO `tb_orrs_task` VALUES ('7590bed3-9aab-11ef-b609-854d67a445fb','task02','我的水量拆分檔任務','水量資料','0 49 21 * * ?','Y','admin','2024-11-04 20:51:07','admin','2024-11-13 21:48:49');
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE `tb_orrs_task_cmd` (
 
 LOCK TABLES `tb_orrs_task_cmd` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task_cmd` VALUES ('d81852f5-a0fc-11ef-b1ba-634dd242745e','task02','PP01',0,'Y','admin','2024-11-12 21:48:48',NULL,NULL),('d818a116-a0fc-11ef-b1ba-7be5a1680341','task02','PP02',1,'Y','admin','2024-11-12 21:48:48',NULL,NULL);
+INSERT INTO `tb_orrs_task_cmd` VALUES ('02d86fa3-a1c6-11ef-bfd5-1f87a0318a61','task02','PP01',0,'Y','admin','2024-11-13 21:48:49',NULL,NULL),('02d90be4-a1c6-11ef-bfd5-811015becce9','task02','PP02',1,'Y','admin','2024-11-13 21:48:49',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1108,4 +1108,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-12 22:11:47
+-- Dump completed on 2024-11-13 21:54:07

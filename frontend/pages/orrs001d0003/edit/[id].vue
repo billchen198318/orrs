@@ -154,8 +154,8 @@ hr.solid {
 .tab-content-custom {
 	height: 93vh;
 	background: #ffffff;
-	margin-left: -10px;
-	margin-right: -10px;
+	margin-left: -5px;
+	margin-right: -5px;
 	overflow:auto;
 	padding: 4px;
 	
