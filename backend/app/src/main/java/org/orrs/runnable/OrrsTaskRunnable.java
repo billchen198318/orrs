@@ -278,6 +278,8 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		logger.info("invoke result: {}", (invokeResultObj != null && invokeResultObj instanceof String) ? (String) invokeResultObj : (invokeResultObj == null ? "Result is null..." : "Result is object...") );
 		if (invokeResultObj != null && invokeResultObj instanceof String) {
 			taskRes.setInvokeContent( ((String) invokeResultObj).getBytes(StandardCharsets.UTF_8) );
+		} else {
+			throw new ServiceException("invoke result is null.");
 		}
 	}
 	

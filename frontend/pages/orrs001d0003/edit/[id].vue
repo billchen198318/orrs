@@ -82,8 +82,15 @@ export default {
 		handleChange1 : function(v) {
 			this.formParam.contentString = v;
 		},
-		handleChange2 : function(v) {
-			this.formParam.invokeContentString = v;
+
+		cmOnChange0 : function(val, cm) {
+			this.formParam.invokeContentString = val;
+		},
+		cmOnInput0 : function(val) {
+			this.formParam.invokeContentString = val;
+		},
+		cmOnReady0 : function(cm) {
+
 		},
 		cmOnChange1 : function(val, cm) {
 			this.formParam.taskUserMessageString = val;
@@ -214,7 +221,17 @@ hr.solid {
 				<div class="row" v-if=" null != this.formParam.invokeContentString && this.formParam.invokeContentString.length > 0 ">
 					<div class="col-xs-12 col-md-12 col-lg-12">
 						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-secondary">invoke結果/Server端觸發(內容)</span></h5>
-						<Editor :value="this.formParam.invokeContentString" :plugins="plugins" @change="handleChange2" style="height: 100%; width: 97%;" />
+						<Codemirror
+							v-model="this.formParam.invokeContentString"
+							:options="cmOptions"
+							:extensions="cmExtensions"
+							:style="{ height: '500px', width: '97%' }"
+							ref="cmRef"
+							@change="cmOnChange0"
+							@input="cmOnInput0"
+							@ready="cmOnReady0"
+							id="invokeContentString">
+						</Codemirror>
 					</div>				
 				</div>
 			</div>
