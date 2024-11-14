@@ -256,7 +256,7 @@ hr.solid {
 			<div class="tab-pane fade" id="tb04" role="tabpanel" aria-labelledby="tb04">
 				<div class="row" v-if=" null != this.formParam.causeMessage && this.formParam.causeMessage.length > 0 ">
 					<div class="col-xs-12 col-md-12 col-lg-12">
-						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-warning">invoke script錯誤訊息</span></h5>
+						<h5>&nbsp;&nbsp;&nbsp;<span class="badge text-bg-warning">錯誤訊息</span></h5>
 						<Codemirror
 							v-model="this.formParam.causeMessage"
 							:options="cmOptions"
