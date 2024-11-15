@@ -108,6 +108,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		if (null == command.getResultVariable()) {
 			command.setResultVariable(StringUtils.EMPTY);
 		}
+		if (StringUtils.isBlank(command.getResultAlwNul())) {
+			command.setResultAlwNul(YesNo.NO);
+		}
 		this.setStringValueMaxLength(command, "description", MAX_DESCRIPTION_LENGTH);
 		this.setStringValueMaxLength(command, "userMessage", OrrsConstants.MAX_USER_MESSAGE_SIZE);
 		DefaultResult<TbOrrsCommand> result = this.orrsCommandService.insert(command);
@@ -193,6 +196,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.deleteAdv(oldCommand);
 		this.createPrompts(oldCommand, command.getPrompts());
 		this.setStringValueMaxLength(command, "description", MAX_DESCRIPTION_LENGTH);
+		if (StringUtils.isBlank(command.getResultAlwNul())) {
+			command.setResultAlwNul(YesNo.NO);
+		}		
 		return this.orrsCommandService.update(command);
 	}
 

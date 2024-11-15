@@ -29,9 +29,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.orrs.OrrsResultType;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsTaskResult;
+import org.orrs.model.MarkdownCodeType;
 import org.orrs.service.IOrrsCommandService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.util.MarkdownCodeExtractor;
@@ -88,7 +88,7 @@ public class ORRS001D0003OtherController {
 				content = "<html><body><h2>permission denied!</h2></body></html>";
 				return null;
 			}
-			if (OrrsResultType.HTML.name().equals(command.getResultType())) {
+			if (MarkdownCodeType.HTML.name().equals(command.getResultType())) {
 				String htmlString = "";
 				if (taskResult.getContent() != null) {
 					htmlString = new String(taskResult.getContent(), StandardCharsets.UTF_8);

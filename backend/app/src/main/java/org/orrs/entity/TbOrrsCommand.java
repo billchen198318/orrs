@@ -21,6 +21,7 @@ public class TbOrrsCommand implements java.io.Serializable {
     private String resultVariable;
     private String resultType;
     private String llmModel;
+    private String resultAlwNul;
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -92,6 +93,14 @@ public class TbOrrsCommand implements java.io.Serializable {
 
 	public void setLlmModel(String llmModel) {
 		this.llmModel = llmModel;
+	}
+
+	public String getResultAlwNul() {
+		return resultAlwNul;
+	}
+
+	public void setResultAlwNul(String resultAlwNul) {
+		this.resultAlwNul = resultAlwNul;
 	}
 
 	@CreateUserField(name = "cuserid")

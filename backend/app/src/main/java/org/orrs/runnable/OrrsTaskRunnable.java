@@ -34,7 +34,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.orrs.OrrsConstants;
-import org.orrs.OrrsResultType;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
@@ -42,6 +41,7 @@ import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
+import org.orrs.model.MarkdownCodeType;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
@@ -241,15 +241,24 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		if (null != taskResPrev) {
 			if (taskResPrev.getContent() != null && userMessage.indexOf(OrrsConstants.VARIABLE_PREVIOUS_MESSAGE) > -1) {
 				String prevContent = new String(taskResPrev.getContent(), StandardCharsets.UTF_8);
-				if (commandPrev.getResultType().equals(OrrsResultType.GROOVY.name())) {
+				if (commandPrev.getResultType().equals(MarkdownCodeType.GROOVY.name())) {
 					prevContent = MarkdownCodeExtractor.parseGroovy(prevContent);
 				}
-				if (commandPrev.getResultType().equals(OrrsResultType.JAVA.name())) {
+				if (commandPrev.getResultType().equals(MarkdownCodeType.JAVA.name())) {
 					prevContent = MarkdownCodeExtractor.parseJava(prevContent);
 				}
-				if (commandPrev.getResultType().equals(OrrsResultType.HTML.name())) {
+				if (commandPrev.getResultType().equals(MarkdownCodeType.HTML.name())) {
 					prevContent = MarkdownCodeExtractor.parseHtml(prevContent);
 				}				
+				if (commandPrev.getResultType().equals(MarkdownCodeType.JSON.name())) {
+					prevContent = MarkdownCodeExtractor.parseJson(prevContent);
+				}
+				if (commandPrev.getResultType().equals(MarkdownCodeType.SQL.name())) {
+					prevContent = MarkdownCodeExtractor.parseSql(prevContent);
+				}
+				if (commandPrev.getResultType().equals(MarkdownCodeType.XML.name())) {
+					prevContent = MarkdownCodeExtractor.parseXml(prevContent);
+				}
 				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_MESSAGE, prevContent);
 			}
 			if (taskResPrev.getInvokeContent() != null && userMessage.indexOf(OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT) > -1) {
@@ -279,7 +288,9 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		if (invokeResultObj != null && invokeResultObj instanceof String) {
 			taskRes.setInvokeContent( ((String) invokeResultObj).getBytes(StandardCharsets.UTF_8) );
 		} else {
-			throw new ServiceException("invoke result is null.");
+			if (!YesNo.YES.equals(command.getResultAlwNul())) {
+				throw new ServiceException("invoke result is null.");
+			}
 		}
 	}
 	

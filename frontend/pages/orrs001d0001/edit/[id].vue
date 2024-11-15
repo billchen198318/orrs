@@ -1,4 +1,5 @@
 <script>
+import { watch } from "vue";
 import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -56,11 +57,13 @@ export default {
 				resultType : 'GROOVY',
 				description : '',
 				prompts : [],
-				llmModel : 'gemma2'
+				llmModel : 'gemma2',
+				resultAlwNul : 'N'
 			},
 			variablePreviousMessage : import.meta.env.VITE_VARIABLE_PREVIOUS_MESSAGE,
 			variablePreviousInvokeResult : import.meta.env.VITE_VARIABLE_PREVIOUS_INVOKE_RESULT,
-			llmModelList : []
+			llmModelList : [],
+			resultAlwNulSw : false
 		}
 	},
 	methods: { 
@@ -78,8 +81,10 @@ export default {
 			this.formParam.resultVariable = '';
 			this.formParam.resultType = 'GROOVY';
 			this.formParam.description = '';
-			this.formParam.prompts = [],
+			this.formParam.prompts = [];
 			this.formParam.llmModel = 'gemma2';
+			this.formParam.resultAlwNul = 'N';
+			this.resultAlwNulSw = false;			
 		},
 		loadData : _loadData,
 		btnAddPrompt : function() {
@@ -134,6 +139,13 @@ export default {
 		}		
 	},
 	created() { 
+		watch(() => this.resultAlwNulSw, (newVal, oldVal) => {
+			if (newVal) {
+				this.formParam.resultAlwNul = 'Y';
+			} else {
+				this.formParam.resultAlwNul = 'N';
+			}
+		});		
 	},
 	mounted() { 
 		//this.loadData();
@@ -156,6 +168,11 @@ function _loadData() {
                 return;
             }
             this.formParam = response.data.value;
+			if ('Y' == this.formParam.resultAlwNul) {
+				this.resultAlwNulSw = true;
+			} else {
+				this.resultAlwNulSw = false;
+			}
         } else {
             toast.error('error, null');
             this.$router.push( getUrlPrefixFromProgItem( getProgItem(PageConstants.QueryId) ) );
@@ -261,7 +278,22 @@ function _btnUpdate() {
 		<div v-if="fieldCheckInvalid('resultVariable', checkFields)" class="invalid-feedback d-block">{{ fieldInvalidFeedback('resultVariable', checkFields) }}</div>
 	</div>
 	<div class="col-xs-6 col-md-6 col-lg-6">
-
+    	<div class="form-group form-floating">
+			<div class="form-check form-switch">
+				<input class="form-check-input" type="checkbox" role="switch" id="resultAlwNulSw" v-model="this.resultAlwNulSw">
+				<label class="form-check-label" for="resultAlwNulSw">Script invoke result allow null</label>
+			</div>
+    	</div>		
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-6 col-md-6 col-lg-6">
+		<label for="dialogH" class="form-label">LLM模組</label>
+		<select class="form-select" aria-label="請選取LLM模組" v-model="this.formParam.llmModel">
+			<option v-bind:value="llmItem" v-for="(llmItem, idx) in this.llmModelList">{{ llmItem }}</option>
+		</select>
+	</div>	
+	<div class="col-xs-6 col-md-6 col-lg-6">
 		<label for="dialogH" class="form-label">截取內容</label>
 		<select class="form-select" aria-label="請選取截取內容" v-model="this.formParam.resultType">
 			<option value="GROOVY">GROOVY</option>
@@ -269,14 +301,8 @@ function _btnUpdate() {
 			<option value="TEXT">TEXT</option>
 			<option value="JAVA">JAVA</option>
 			<option value="JSON">JSON</option>
-		</select>
-	</div>
-</div>
-<div class="row">
-	<div class="col-xs-12 col-md-12 col-lg-12">
-		<label for="dialogH" class="form-label">LLM模組</label>
-		<select class="form-select" aria-label="請選取LLM模組" v-model="this.formParam.llmModel">
-			<option v-bind:value="llmItem" v-for="(llmItem, idx) in this.llmModelList">{{ llmItem }}</option>
+			<option value="SQL">SQL</option>
+			<option value="XML">XML</option>
 		</select>
 	</div>	
 </div>	
