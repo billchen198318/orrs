@@ -84,7 +84,7 @@ export default {
 			this.resultAlwNulSw = false;
 		},
 		btnAddPrompt : function() {
-			if (this.formParam.prompts.length >= 5) {
+			if (this.formParam.prompts.length >= 10) {
 				toast.warning('最多' + this.formParam.prompts.length + '筆prompt');
 				return;
 			}
