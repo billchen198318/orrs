@@ -1,0 +1,7 @@
+ollama pull qwen2.5-coder
+ollama run qwen2.5-coder
+
+ollama pull gemma2
+ollama run gemma2
+
+ollama pull nomic-embed-text
