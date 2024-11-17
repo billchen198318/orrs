@@ -28,6 +28,7 @@ import java.util.TimerTask;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.orrs.entity.TbOrrsTask;
+import org.orrs.logic.IOrrsLogicService;
 import org.orrs.logic.IOrrsTaskSchedService;
 import org.orrs.runnable.OrrsTaskRunnable;
 import org.orrs.service.IOrrsTaskService;
@@ -43,6 +44,24 @@ public class InitOrrsConfigEvent {
 	
 	@EventListener(ApplicationStartedEvent.class)
 	public void afterStartup() {	
+		new Timer().schedule(
+				new TimerTask() {
+					@Override
+					public void run() {
+						logger.warn("init create orrs document to vector...");
+						UserUtils.setUserInfoForUserLocalUtilsBackgroundMode();
+						try {
+							IOrrsLogicService orrsLogicService = (IOrrsLogicService) AppContext.getBean(IOrrsLogicService.class);
+							orrsLogicService.loadAllDocuments2Vector();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						UserUtils.removeForUserLocalUtils();
+						logger.info("fine.");
+			        }
+				}, 10000
+		);		
+		
 		new Timer().schedule(
 				new TimerTask() {
 					@Override

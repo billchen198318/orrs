@@ -22,6 +22,7 @@
 package org.orrs.logic;
 
 import org.orrs.entity.TbOrrsCommand;
+import org.orrs.entity.TbOrrsDoc;
 import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.qifu.base.exception.ServiceException;
@@ -46,5 +47,13 @@ public interface IOrrsLogicService {
 	public DefaultResult<TbOrrsTask> updateTask(TbOrrsTask task) throws ServiceException, Exception;
 	
 	public DefaultResult<Boolean> deleteTaskResult(TbOrrsTaskResult taskResult) throws ServiceException, Exception;
+	
+	public DefaultResult<TbOrrsDoc> createDocument(TbOrrsDoc doc) throws ServiceException, Exception;
+	
+	public DefaultResult<TbOrrsDoc> updateDocument(TbOrrsDoc doc) throws ServiceException, Exception;
+	
+	public DefaultResult<Boolean> deleteDocument(TbOrrsDoc doc) throws ServiceException, Exception;
+	
+	public void loadAllDocuments2Vector() throws ServiceException, Exception;
 	
 }

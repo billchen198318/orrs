@@ -37,14 +37,17 @@ import org.orrs.OrrsConstants;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
+import org.orrs.entity.TbOrrsDoc;
 import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
+import org.orrs.model.LlmModels;
 import org.orrs.model.MarkdownCodeType;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
+import org.orrs.service.IOrrsDocService;
 import org.orrs.service.IOrrsTaskCmdService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
@@ -57,11 +60,15 @@ import org.qifu.base.model.YesNo;
 import org.qifu.base.scheduled.BaseScheduledTasksProvide;
 import org.qifu.util.ScriptExpressionUtils;
 import org.qifu.util.SimpleUtils;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
 import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.BeansException;
 import org.springframework.core.env.Environment;
@@ -87,11 +94,15 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	
 	private IOrrsTaskResultService<TbOrrsTaskResult, String> orrsTaskResultService;	
 	
+	private IOrrsDocService<TbOrrsDoc, String> orrsDocService;
+	
 	private IOrrsLogicService orrsLogicService;
 	
 	private OllamaChatModel ollamaChatModel;
 	
 	private OllamaApi ollamaApi;
+	
+	private VectorStore vectorStore;
 	
 	public OrrsTaskRunnable() {
 		super();
@@ -135,9 +146,11 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		this.orrsTaskCmdService = this.orrsTaskCmdService == null ? (IOrrsTaskCmdService<TbOrrsTaskCmd, String>) AppContext.getBean(IOrrsTaskCmdService.class) : this.orrsTaskCmdService;
 		this.orrsTaskService = this.orrsTaskService == null ? (IOrrsTaskService<TbOrrsTask, String>) AppContext.getBean(IOrrsTaskService.class) : this.orrsTaskService;
 		this.orrsTaskResultService = this.orrsTaskResultService == null ? (IOrrsTaskResultService<TbOrrsTaskResult, String>) AppContext.getBean(IOrrsTaskResultService.class) : this.orrsTaskResultService;
+		this.orrsDocService = this.orrsDocService == null ? (IOrrsDocService<TbOrrsDoc, String>) AppContext.getBean(IOrrsDocService.class) : this.orrsDocService;
 		this.orrsLogicService = this.orrsLogicService == null ? (IOrrsLogicService) AppContext.getBean(IOrrsLogicService.class) : this.orrsLogicService;
 		this.ollamaChatModel = this.ollamaChatModel == null ? (OllamaChatModel) AppContext.getBean(OllamaChatModel.class) : this.ollamaChatModel;
 		this.ollamaApi = this.ollamaApi == null ? (OllamaApi) AppContext.getBean(OllamaApi.class) : this.ollamaApi;
+		this.vectorStore = this.vectorStore == null ? (VectorStore) AppContext.getBean(VectorStore.class) : this.vectorStore;
 		this.env = this.env == null ? (Environment) AppContext.getBean(Environment.class) : this.env;
 	}
 	
@@ -229,6 +242,29 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		return options;
 	}
 	
+	private void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList) {
+		try {
+	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(LlmModels.similarityThreshold);
+	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
+	        if (CollectionUtils.isEmpty(similarDocuments)) {
+	        	return;
+	        }
+	        for (Document doc : similarDocuments) {
+	        	TbOrrsDoc orrsDoc = new TbOrrsDoc();
+	        	orrsDoc.setDocId(doc.getId());
+	        	orrsDoc = this.orrsDocService.selectByUniqueKey(orrsDoc).getValue();
+	        	if (null == orrsDoc || StringUtils.isBlank(orrsDoc.getSysPromptTpl()) || StringUtils.isBlank(orrsDoc.getTplVariable())) {
+	        		continue;
+	        	}
+            	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(orrsDoc.getSysPromptTpl());
+            	String sysPrompt = systemPromptTemplate.createMessage(Map.of(orrsDoc.getTplVariable(), doc.getContent())).getContent();
+            	messageList.add(Message.builder(Message.Role.SYSTEM).withContent(sysPrompt).build()); 
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsCommand commandPrev, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		if (!CollectionUtils.isEmpty(prompts)) {
@@ -266,6 +302,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT, prevInvokeContent);
 			}
 		}
+		this.fillPromptMessageFromDocuments(userMessage, messageList);
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
 		// env.getProperty("spring.ai.ollama.chat.options.model")

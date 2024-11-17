@@ -32,6 +32,7 @@ import org.orrs.OrrsConstants;
 import org.orrs.entity.TbOrrsCommand;
 import org.orrs.entity.TbOrrsCommandAdv;
 import org.orrs.entity.TbOrrsCommandPrompt;
+import org.orrs.entity.TbOrrsDoc;
 import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
@@ -41,6 +42,7 @@ import org.orrs.runnable.OrrsTaskRunnable;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
 import org.orrs.service.IOrrsCommandService;
+import org.orrs.service.IOrrsDocService;
 import org.orrs.service.IOrrsTaskCmdService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
@@ -55,6 +57,8 @@ import org.qifu.base.model.YesNo;
 import org.qifu.base.service.BaseLogicService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
@@ -88,7 +92,13 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	IOrrsTaskResultService<TbOrrsTaskResult, String> orrsTaskResultService;
 	
 	@Autowired
+	IOrrsDocService<TbOrrsDoc, String> orrsDocService;	
+	
+	@Autowired
 	IOrrsTaskSchedService orrsTaskSchedService;	
+	
+	@Autowired
+	VectorStore vectorStore;
 	
 	public OrrsLogicServiceImpl() {
 		super();
@@ -377,6 +387,82 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		result.setValue(Boolean.TRUE);
 		result.setMessage(BaseSystemMessage.deleteSuccess());
 		return result;
+	}
+	
+	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
+	@Override
+	public DefaultResult<TbOrrsDoc> createDocument(TbOrrsDoc doc) throws ServiceException, Exception {
+		if (null == doc || this.isBlank(doc.getDocId()) || this.isBlank(doc.getName())
+				|| this.isBlank(doc.getContent()) || this.isBlank(doc.getSysPromptTpl()) || this.isBlank(doc.getTplVariable())) {
+			throw new ServiceException( BaseSystemMessage.parameterBlank() );
+		}
+		this.setStringValueMaxLength(doc, "content", OrrsConstants.MAX_USER_MESSAGE_SIZE);
+		this.setStringValueMaxLength(doc, "sysPromptTpl", OrrsConstants.MAX_SYSTEM_PROMPT_TEMPLATE_SIZE);
+		this.checkSystemPromptTemplateWithVariable(doc);
+		DefaultResult<TbOrrsDoc> result = this.orrsDocService.insert(doc);
+		List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+		this.vectorStore.add(documents);
+		return result;
+	}
+	
+	@ServiceMethodAuthority(type = ServiceMethodType.UPDATE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
+	@Override
+	public DefaultResult<TbOrrsDoc> updateDocument(TbOrrsDoc doc) throws ServiceException, Exception {
+		if (null == doc || this.isBlank(doc.getOid()) || this.isBlank(doc.getDocId()) || this.isBlank(doc.getName())
+				|| this.isBlank(doc.getContent()) || this.isBlank(doc.getSysPromptTpl()) || this.isBlank(doc.getTplVariable())) {
+			throw new ServiceException( BaseSystemMessage.parameterBlank() );
+		}		
+		this.setStringValueMaxLength(doc, "content", OrrsConstants.MAX_USER_MESSAGE_SIZE);
+		this.setStringValueMaxLength(doc, "sysPromptTpl", OrrsConstants.MAX_SYSTEM_PROMPT_TEMPLATE_SIZE);
+		this.checkSystemPromptTemplateWithVariable(doc);
+		DefaultResult<TbOrrsDoc> result = this.orrsDocService.update(doc);
+		this.vectorStore.delete(List.of(doc.getDocId()));
+		List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+		this.vectorStore.add(documents);		
+		return result;
+	}
+	
+	@ServiceMethodAuthority(type = ServiceMethodType.DELETE)
+	@Transactional(
+			propagation=Propagation.REQUIRED, 
+			readOnly=false,
+			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
+	@Override
+	public DefaultResult<Boolean> deleteDocument(TbOrrsDoc doc) throws ServiceException, Exception {
+		if (null == doc || this.isBlank(doc.getOid())) {
+			throw new ServiceException( BaseSystemMessage.parameterBlank() );
+		}
+		TbOrrsDoc oldDoc = this.orrsDocService.selectByEntityPrimaryKey(doc).getValueEmptyThrowMessage();
+		this.vectorStore.delete(List.of(oldDoc.getDocId()));
+		return this.orrsDocService.delete(doc);
+	}
+	
+	private void checkSystemPromptTemplateWithVariable(TbOrrsDoc doc) throws ServiceException, Exception {
+		String promptTpl = this.defaultString(doc.getSysPromptTpl());
+		if (promptTpl.indexOf("{" + doc.getTplVariable() + "}") == -1) {
+			throw new ServiceException( "System prompt template cannot find {" + doc.getTplVariable() + "}" );
+		}
+	}
+
+	@ServiceMethodAuthority(type = ServiceMethodType.SELECT)
+	@Override
+	public void loadAllDocuments2Vector() throws ServiceException, Exception {
+		List<TbOrrsDoc> docList = this.orrsDocService.selectList().getValue();
+		if (CollectionUtils.isEmpty(docList)) {
+			return;
+		}
+		for (TbOrrsDoc doc : docList) {
+			List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+            this.vectorStore.add(documents);
+		}
 	}
 	
 }

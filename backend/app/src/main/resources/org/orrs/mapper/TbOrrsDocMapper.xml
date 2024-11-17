@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.orrs.mapper.TbOrrsDocMapper">
+
+  <resultMap id="BaseResultMap" type="org.orrs.entity.TbOrrsDoc">
+    <id column="OID" jdbcType="CHAR" property="oid" />
+    <result column="DOC_ID" jdbcType="VARCHAR" property="docId" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="CONTENT" jdbcType="VARCHAR" property="content" />
+    <result column="SYS_PROMPT_TPL" jdbcType="VARCHAR" property="sysPromptTpl" />
+    <result column="TPL_VARIABLE" jdbcType="VARCHAR" property="tplVariable" />
+    <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
+    <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
+    <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
+    <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />    
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    where OID = #{oid,jdbcType=CHAR}
+  </select>  
+  
+  <sql id="baseConditions">
+	<if test="docId != null and docId != ''.toString() ">
+		AND DOC_ID = #{docId,jdbcType=VARCHAR}
+	</if>	  
+	<if test="name != null and name != ''.toString() ">
+		AND NAME = #{name,jdbcType=VARCHAR}
+	</if>
+	<if test="nameLike != null and nameLike != ''.toString() ">
+		AND NAME like #{nameLike,jdbcType=VARCHAR}
+	</if>	
+  </sql>
+  
+  <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    WHERE 1=1
+    
+    <include refid="baseConditions" />
+    		
+	<if test="orderBy != null and orderBy != ''.toString() and sortType != null and sortType != ''.toString() ">
+		ORDER BY  ${orderBy} ${sortType}
+	</if>	
+  </select>    
+  
+  <select id="findPage" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	<include refid="org.orrs.mapper.DBOrrsConfig.sql1"/>
+  	
+    select *
+    from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    WHERE 1=1
+	
+	<include refid="baseConditions" />
+		
+	<include refid="org.orrs.mapper.DBOrrsConfig.sql2"/>
+  </select>  
+  
+  <select id="count" parameterType="java.util.HashMap" resultType="java.lang.Long">
+    select count(*) from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    WHERE 1=1
+	
+	<include refid="baseConditions" />
+			
+  </select>  
+  
+  <insert id="insert" parameterType="org.orrs.entity.TbOrrsDoc"> 
+    insert into <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        OID,
+      </if>
+      <if test="docId != null">
+        DOC_ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="content != null">
+        CONTENT,
+      </if>
+      <if test="sysPromptTpl != null">
+        SYS_PROMPT_TPL,
+      </if>
+      <if test="tplVariable != null">
+        TPL_VARIABLE,
+      </if>
+      <if test="cuserid != null">
+        CUSERID,
+      </if>
+      <if test="cdate != null">
+        CDATE,
+      </if>
+      <if test="uuserid != null">
+        UUSERID,
+      </if>
+      <if test="udate != null">
+        UDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        #{oid,jdbcType=CHAR},
+      </if>
+      <if test="docId != null">
+        #{docId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="sysPromptTpl != null">
+        #{sysPromptTpl,jdbcType=VARCHAR},
+      </if>
+      <if test="tplVariable != null">
+        #{tplVariable,jdbcType=VARCHAR},
+      </if>
+      <if test="cuserid != null">
+        #{cuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null">
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uuserid != null">
+        #{uuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="udate != null">
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>  
+  
+  <update id="update" parameterType="org.orrs.entity.TbOrrsDoc">
+    update <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    <set>
+      <if test="docId != null">
+        DOC_ID = #{docId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="sysPromptTpl != null">
+        SYS_PROMPT_TPL = #{sysPromptTpl,jdbcType=VARCHAR},
+      </if>
+      <if test="tplVariable != null">
+        TPL_VARIABLE = #{tplVariable,jdbcType=VARCHAR},
+      </if>
+      <if test="cuserid != null">
+        CUSERID = #{cuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null">
+        CDATE = #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uuserid != null">
+        UUSERID = #{uuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="udate != null">
+        UDATE = #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where OID = #{oid,jdbcType=CHAR}
+  </update>  
+  
+  <delete id="delete" parameterType="org.orrs.entity.TbOrrsDoc">
+    delete from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    where OID = #{oid,jdbcType=CHAR}
+  </delete>
+  
+</mapper>

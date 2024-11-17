@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.orrs.util.MarkdownCodeExtractor;
 import org.qifu.base.message.BaseSystemMessage;
@@ -51,6 +52,7 @@ import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,44 +85,24 @@ public class HelloApiController extends CoreApiSupport {
 	@Autowired
 	OllamaApi ollamaApi;
 	
-	OllamaEmbeddingModel embeddingModel = null;
-	SimpleVectorStore sVectorStore = null;
-	
-	private SimpleVectorStore getSimpleVectorStore() {
-		if (this.sVectorStore != null) {
-			return this.sVectorStore;
-		}
-		if (this.embeddingModel == null) {
-			this.getOllamaEmbeddingModel();
-		}
-		this.sVectorStore = new SimpleVectorStore(this.embeddingModel);
-		return this.sVectorStore;	
-	}
-	
-	private OllamaEmbeddingModel getOllamaEmbeddingModel() {
-		if (this.embeddingModel != null) {
-			return this.embeddingModel;
-		}
-		this.embeddingModel = OllamaEmbeddingModel.builder().withOllamaApi(this.ollamaApi).withDefaultOptions(OllamaOptions.create().withModel("nomic-embed-text")).build();
-		return this.embeddingModel;
-	}
+	@Autowired
+	VectorStore vectorStore;
 	
 	@Operation(summary = "測試讀取文庫至embedded1", description = "測試讀取文庫至embedded - 1")
 	@GetMapping(value = "/testEmbedded1/{msg}")	
 	public QueryResult<String> testEmbedded1(@PathVariable String msg) {
 		QueryResult<String> result = this.initResult();
 		
-		SimpleVectorStore sVectorStore = this.getSimpleVectorStore();
 		List<Document> documents = 
 				List.of(
-						new Document("印度司機喪彪，直線加油誰不會，彎道快才是真的快！ youtube影片位置: https://www.youtube.com/watch?v=9gN7WeN7u0g")
+						new Document("DOC001", "印度司機喪彪，直線加油誰不會，彎道快才是真的快！ youtube影片位置: https://www.youtube.com/watch?v=9gN7WeN7u0g", new HashMap<>())
 						,
-						new Document("喪彪是一位大巴司機")					
+						new Document("DOC002", "喪彪是一位大巴司機", new HashMap<>())					
 				);
-		sVectorStore.add(documents);
+		this.vectorStore.add(documents);
 		
-        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.5d);;
-        List<Document> similarDocuments = sVectorStore.similaritySearch(query);
+        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.6d);;
+        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
         String relevantData = similarDocuments.stream()
                             .map(Document::getContent)
                             .collect(Collectors.joining(System.lineSeparator()));
@@ -134,39 +116,44 @@ public class HelloApiController extends CoreApiSupport {
 	public QueryResult<String> testEmbedded2(@PathVariable String msg) {
 		QueryResult<String> result = this.initResult();
 		
-		SimpleVectorStore sVectorStore = this.getSimpleVectorStore();
-		
 		// Retrieve embeddings
-        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.5d);
-        List<Document> similarDocuments = sVectorStore.similaritySearch(query);
+        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.6d);
+        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
+        /*
         String information = similarDocuments.stream()
                             .map(Document::getContent)
                             .collect(Collectors.joining(System.lineSeparator()));
         result.setValue(information);
-        
         System.out.println("information>>>" + information);
+        */
         
-        if (!StringUtils.isBlank(information)) {
-        	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate("""
-                    You are a helpful assistant.
-                    
-                    Use the following information to answer the question:
-                    {information}
-                    """);
-        	org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("information", information));
-        	String sysPrompt = systemMessage.getContent();
-        	System.out.println("sysPrompt>>>" + sysPrompt);
-        	
-        	List<Message> messageList = new LinkedList<Message>();
-        	messageList.add(Message.builder(Message.Role.SYSTEM).withContent(sysPrompt).build());
-        	messageList.add(Message.builder(Message.Role.USER).withContent(msg).build());
-        	
-    		var req = ChatRequest.builder("qwen2.5-coder").withStream(false).withMessages(messageList).build();
-    		ChatResponse response = ollamaApi.chat(req);
-    		String content = StringUtils.defaultString(response.message().content());		
-    		
-    		System.out.println("content>>>" + content);
+        List<Message> messageList = new LinkedList<Message>();
+        
+        if (!CollectionUtils.isEmpty(similarDocuments)) {
+        	for (Document document : similarDocuments) {
+        		System.out.println("doc-id>>>" + document.getId());
+        		System.out.println("doc-content>>>" + document.getContent());
+        		
+            	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate("""
+                        You are a helpful assistant.
+                        
+                        Use the following information to answer the question:
+                        {information}
+                        """);
+            	org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("information", document.getContent()));
+            	String sysPrompt = systemMessage.getContent();
+            	System.out.println("sysPrompt>>>" + sysPrompt);
+            	messageList.add(Message.builder(Message.Role.SYSTEM).withContent(sysPrompt).build());        		
+        	}
         }        
+        
+        messageList.add(Message.builder(Message.Role.USER).withContent(msg).build());
+        
+		var req = ChatRequest.builder("qwen2.5-coder").withStream(false).withMessages(messageList).build();
+		ChatResponse response = ollamaApi.chat(req);
+		String content = StringUtils.defaultString(response.message().content());		
+		
+		System.out.println("content>>>" + content);        
         
 		return result;
 	}		

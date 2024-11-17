@@ -1,5 +1,5 @@
 /* 
- * Copyright 2021-2024 qifu of copyright Chen Xin Nien
+ * Copyright 2019-2024 qifu of copyright Chen Xin Nien
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,11 @@
  * contact: chen.xin.nien@gmail.com
  * 
  */
-package org.orrs;
+package org.orrs.service;
 
-public class OrrsConstants {
-	
-	public static final int MAX_PROMPT_RECORD = 10;
-	
-	public static final int MAX_USER_MESSAGE_SIZE = 8000;
-	
-	public static final int MAX_COMMAND_RECORD = 10;
-	
-	public static final String VARIABLE_PREVIOUS_MESSAGE = "$P{previousMessage}";
-	
-	public static final String VARIABLE_PREVIOUS_INVOKE_RESULT = "$P{previousInvokeResult}";
-	
-	public static final int MAX_SYSTEM_PROMPT_TEMPLATE_SIZE = 1000;
+import org.orrs.entity.TbOrrsDoc;
+import org.qifu.base.service.IBaseService;
+
+public interface IOrrsDocService<T, E> extends IBaseService<TbOrrsDoc, String> {
 	
 }
