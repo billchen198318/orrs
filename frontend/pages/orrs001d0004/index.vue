@@ -64,7 +64,11 @@ export default {
 			setConfigPage(this.queryPageStore.gridConfig, 1);
 			setConfigTotal(this.queryPageStore.gridConfig, 0);
 		},
-		delItem : _delItem
+		delItem : _delItem,
+		btnQueryTest : function() {
+			var url = getUrlPrefixFromProgItem( getProgItem(PageConstants.TestId) );
+			this.$router.push( url );
+		}
 	},
 	created() {
 		let newGridConfig = this.initQueryGridConfig();
@@ -255,6 +259,9 @@ function _delItem(oid) {
     	<button type="button" class="btn btn-primary" v-on:click="btnQuery"><i class="'bi bi-search"></i>&nbsp;查詢</button>
     	&nbsp;
     	<button type="button" class="btn btn-primary" v-on:click="btnClear"><i class="'bi bi-eraser"></i>&nbsp;清除</button>
+		&nbsp;
+		&nbsp;
+		<button type="button" class="btn btn-info" v-on:click="btnQueryTest"><i class="'bi bi-arrow-right-circle"></i>&nbsp;測試</button>
   	</div>
 </div>  
 <div class="row" v-show=" qFieldShow ">

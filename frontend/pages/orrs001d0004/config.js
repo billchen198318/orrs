@@ -3,5 +3,6 @@ export const PageConstants = {
     eventNamespace  :   '/ORRS001D0004',
     QueryId         :   'ORRS001D0004Q',
     CreateId        :   'ORRS001D0004A',
-    EditId          :   'ORRS001D0004E'
+    EditId          :   'ORRS001D0004E',
+    TestId          :   'ORRS001D0004T'
 }

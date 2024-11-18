@@ -21,13 +21,19 @@
  */
 package org.orrs.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.orrs.entity.TbOrrsDoc;
 import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsDocService;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
+import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.CheckControllerFieldHandler;
 import org.qifu.base.model.ControllerMethodAuthority;
 import org.qifu.base.model.DefaultControllerJsonResultObj;
@@ -35,6 +41,9 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
 import org.qifu.core.util.CoreApiSupport;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +70,9 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 	@Autowired
 	IOrrsLogicService orrsLogicService;
 	
+	@Autowired
+	VectorStore vectorStore;
+	
 	@ControllerMethodAuthority(programId = "ORRS001D0004Q", check = true)
 	@Operation(summary = "ORRS001D0004 - findPage", description = "查核tb_orrs_doc資料")
 	@ResponseBody
@@ -68,10 +80,18 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 	public ResponseEntity<QueryResult<List<TbOrrsDoc>>> findPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbOrrsDoc>> result = this.initResult();
 		try {
+			/*
 			QueryResult<List<TbOrrsDoc>> queryResult = this.orrsDocService.findPage(
 					this.queryParameter(searchBody).fullEquals("docId").fullLink("nameLike").value(), 
 					searchBody.getPageOf().orderBy("DOC_ID").sortTypeAsc());
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
+			*/
+			QueryResult<List<TbOrrsDoc>> queryResult = this.orrsDocService.findPage(
+					"count", 
+					"findSimpleFindPage", 
+					this.queryParameter(searchBody).fullEquals("docId").fullLink("nameLike").value(), 
+					searchBody.getPageOf().orderBy("DOC_ID").sortTypeDesc());
+			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());			
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
 		} catch (Exception e) {
@@ -79,6 +99,42 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 		}
 		return ResponseEntity.ok().body(result);
 	}
+	
+	@ControllerMethodAuthority(programId = "ORRS001D0004Q", check = true)
+	@Operation(summary = "ORRS001D0004 - findDocTest", description = "查核vectorstore test資料")
+	@ResponseBody
+	@PostMapping(value = "/queryDocTest", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<QueryResult<List<Map<String, Object>>>> queryDocTest(@RequestBody SearchBody searchBody) {
+		QueryResult<List<Map<String, Object>>> result = this.initResult();
+		try {
+			String userMessage = searchBody.getField().get("userMessage");
+			double similarityThreshold = NumberUtils.toDouble(searchBody.getField().get("similarityThreshold"), 1.0d);
+	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
+	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
+	        if (!CollectionUtils.isEmpty(similarDocuments)) {
+	        		List<Map<String, Object>> resultList = similarDocuments.stream()
+                        .map(document -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("docId", document.getId());
+                            map.put("content", document.getContent());
+                            return map;
+                        })
+                        .collect(Collectors.toList());
+                result.setValue(resultList);;
+	        }
+	        if (result.getValue() != null) {
+	        	result.setSuccess( YES );
+	        } else {
+	        	result.setMessage( BaseSystemMessage.searchNoData() );
+	        	result.setSuccess( NO );
+	        }
+		} catch (ServiceException | ControllerException e) {
+			this.noSuccessResult(result, e);
+		} catch (Exception e) {
+			this.noSuccessResult(result, e);
+		}
+		return ResponseEntity.ok().body(result);
+	}	
 	
 	private void handlerCheck(DefaultControllerJsonResultObj<TbOrrsDoc> result, TbOrrsDoc doc) throws ControllerException, ServiceException, Exception {
 		CheckControllerFieldHandler<TbOrrsDoc> chk = this.getCheckControllerFieldHandler(result);

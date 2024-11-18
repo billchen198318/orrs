@@ -21,11 +21,16 @@
  */
 package org.orrs.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.orrs.entity.TbOrrsDoc;
 import org.qifu.base.mapper.IBaseMapper;
 
 @Mapper
 public interface TbOrrsDocMapper extends IBaseMapper<TbOrrsDoc, String> {
-
+	
+	public List<TbOrrsDoc> findSimpleFindPage(Map<String, Object> paramMap);
+	
 }

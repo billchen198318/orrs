@@ -13,7 +13,10 @@ export const useOrrs001d0004Store = defineStore('orrs001d0004', {
             gridConfig : _gridConfigVar,
             queryParam : {
                 name : '',
-                docId : ''
+                docId : '',
+                
+                userMessage : '',
+                similarityThreshold : 0.0
             }
         }
     },
@@ -30,6 +33,9 @@ export const useOrrs001d0004Store = defineStore('orrs001d0004', {
             this.gridConfig.page = 1;
             this.gridConfig.row = 10;
             this.gridConfig.total = 0;
+
+            this.queryParam.userMessage = '';
+            this.queryParam.similarityThreshold = 0.0;
         }
     },
 })

@@ -15,6 +15,13 @@
     <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />    
   </resultMap>
   
+  <resultMap id="SimpleFindPageResultMap" type="org.orrs.entity.TbOrrsDoc">
+    <id column="OID" jdbcType="CHAR" property="oid" />
+    <result column="DOC_ID" jdbcType="VARCHAR" property="docId" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="CONTENT" jdbcType="VARCHAR" property="content" /> 
+  </resultMap>    
+  
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select *
     from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
@@ -172,4 +179,18 @@
     where OID = #{oid,jdbcType=CHAR}
   </delete>
   
+  
+  <select id="findSimpleFindPage" parameterType="java.util.HashMap" resultMap="SimpleFindPageResultMap">
+  	<include refid="org.orrs.mapper.DBOrrsConfig.sql1"/>
+  	
+    select 
+    	OID, DOC_ID, NAME
+    from <include refid="org.orrs.mapper.DBOrrsConfig.schema"/>tb_orrs_doc
+    WHERE 1=1
+	
+	<include refid="baseConditions" />
+		
+	<include refid="org.orrs.mapper.DBOrrsConfig.sql2"/>
+  </select>  
+    
 </mapper>
