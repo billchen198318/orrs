@@ -112,14 +112,14 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
 	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
 	        if (!CollectionUtils.isEmpty(similarDocuments)) {
-	        		List<Map<String, Object>> resultList = similarDocuments.stream()
-                        .map(document -> {
-                            Map<String, Object> map = new HashMap<>();
+	        	List<Map<String, Object>> resultList = similarDocuments.stream()
+	        			.map(document -> {
+	        				Map<String, Object> map = new HashMap<>();
                             map.put("docId", document.getId());
                             map.put("content", document.getContent());
                             return map;
                         })
-                        .collect(Collectors.toList());
+	        			.collect(Collectors.toList());
                 result.setValue(resultList);;
 	        }
 	        if (result.getValue() != null) {
