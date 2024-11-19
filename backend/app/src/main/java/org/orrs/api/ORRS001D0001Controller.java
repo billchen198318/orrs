@@ -121,7 +121,7 @@ public class ORRS001D0001Controller extends CoreApiSupport {
 	public ResponseEntity<DefaultControllerJsonResultObj<List<String>>> doLoadCommandList() {
 		DefaultControllerJsonResultObj<List<String>> result = this.initDefaultJsonResult();
 		try {
-			result.setValue( LlmModels.list );
+			result.setValue( LlmModels.getList() );
 			result.setSuccess( YES );
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);

@@ -244,7 +244,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	
 	private void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList) {
 		try {
-	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(LlmModels.similarityThreshold);
+	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(LlmModels.getSimilarityThreshold());
 	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
 	        if (CollectionUtils.isEmpty(similarDocuments)) {
 	        	return;

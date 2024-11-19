@@ -21,6 +21,7 @@
  */
 package org.orrs.config;
 
+import org.orrs.model.LlmModels;
 import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
@@ -36,7 +37,7 @@ public class OrrsOllamaConfig {
 	@Bean
 	@DependsOn("ollamaApi")
 	public OllamaEmbeddingModel ollamaEmbeddingModel(OllamaApi ollamaApi) {
-		return OllamaEmbeddingModel.builder().withOllamaApi(ollamaApi).withDefaultOptions(OllamaOptions.create().withModel("nomic-embed-text")).build();
+		return OllamaEmbeddingModel.builder().withOllamaApi(ollamaApi).withDefaultOptions(OllamaOptions.create().withModel(LlmModels.getEmbedding())).build();
 	}
 	
 	@Bean

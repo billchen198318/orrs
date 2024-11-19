@@ -8,15 +8,18 @@ import org.qifu.util.LoadResources;
 
 public class LlmModels {
 	
-	public static List<String> list = null;
+	private static List<String> list = null;
 	
-	public static Double similarityThreshold = 1.0d;
+	private static Double similarityThreshold = 1.0d;
+	
+	private static String embedding = "nomic-embed-text";
 	
 	static {
 		try {
 			Map<String, Object> llmModelMap = (Map<String, Object>) LoadResources.objectMapperReadValue("llmModel.json", Map.class, LlmModels.class);
 			list = (List<String>) llmModelMap.get("models");
 			similarityThreshold = (Double) llmModelMap.getOrDefault("similarityThreshold", 1.0d);
+			embedding = (String) llmModelMap.getOrDefault("embedding", embedding);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -29,6 +32,18 @@ public class LlmModels {
 	
 	public static boolean has(String modelName) {
 		return list.contains(modelName);
+	}
+
+	public static List<String> getList() {
+		return list;
+	}
+
+	public static Double getSimilarityThreshold() {
+		return similarityThreshold;
+	}
+
+	public static String getEmbedding() {
+		return embedding;
 	}
 	
 }

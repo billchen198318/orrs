@@ -1,4 +1,5 @@
 {
 	"models" : [ "gemma2", "qwen2.5-coder", "llama3.2-vision" ],
-	"similarityThreshold" : 0.2
+	"similarityThreshold" : 0.7,
+	"embedding" : "nextfire/paraphrase-multilingual-minilm"
 }
