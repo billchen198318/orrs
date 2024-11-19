@@ -63,7 +63,8 @@ export default {
 			variablePreviousMessage : import.meta.env.VITE_VARIABLE_PREVIOUS_MESSAGE,
 			variablePreviousInvokeResult : import.meta.env.VITE_VARIABLE_PREVIOUS_INVOKE_RESULT,
 			llmModelList : [],
-			resultAlwNulSw : false
+			resultAlwNulSw : false,
+			docRetrievalSw : false
 		}
 	},
 	methods: { 
@@ -85,6 +86,9 @@ export default {
 			this.formParam.llmModel = 'gemma2';
 			this.formParam.resultAlwNul = 'N';
 			this.resultAlwNulSw = false;			
+			this.formParam.docRetrieval = 'N';
+			this.docRetrievalSw = false;
+			this.formParam.simThreshold = 1.00;			
 		},
 		loadData : _loadData,
 		btnAddPrompt : function() {
@@ -145,7 +149,14 @@ export default {
 			} else {
 				this.formParam.resultAlwNul = 'N';
 			}
-		});		
+		});	
+		watch(() => this.docRetrievalSw, (newVal, oldVal) => {
+			if (newVal) {
+				this.formParam.docRetrieval = 'Y';
+			} else {
+				this.formParam.docRetrieval = 'N';
+			}
+		});				
 	},
 	mounted() { 
 		//this.loadData();
@@ -168,11 +179,8 @@ function _loadData() {
                 return;
             }
             this.formParam = response.data.value;
-			if ('Y' == this.formParam.resultAlwNul) {
-				this.resultAlwNulSw = true;
-			} else {
-				this.resultAlwNulSw = false;
-			}
+			this.resultAlwNulSw = ( 'Y' == this.formParam.resultAlwNul ? true : false );
+			this.docRetrievalSw = ( 'Y' == this.formParam.docRetrieval ? true : false );
         } else {
             toast.error('error, null');
             this.$router.push( getUrlPrefixFromProgItem( getProgItem(PageConstants.QueryId) ) );
@@ -286,6 +294,7 @@ function _btnUpdate() {
     	</div>		
 	</div>
 </div>
+<p style="margin-bottom: 5px"></p>
 <div class="row">
 	<div class="col-xs-6 col-md-6 col-lg-6">
 		<label for="dialogH" class="form-label">LLM模組</label>
@@ -306,6 +315,22 @@ function _btnUpdate() {
 		</select>
 	</div>	
 </div>	
+<p style="margin-bottom: 5px"></p>
+<div class="row">
+	<div class="col-xs-6 col-md-6 col-lg-6">
+    	<div class="form-group form-floating">
+			<div class="form-check form-switch">
+				<input class="form-check-input" type="checkbox" role="switch" id="docRetrievalSw" v-model="this.docRetrievalSw">
+				<label class="form-check-label" for="docRetrievalSw">Documents Retrieval&nbsp;/&nbsp;文件檢索</label>
+			</div>
+    	</div>	
+	</div>	
+	<div class="col-xs-6 col-md-6 col-lg-6">
+        <label for="simThreshold" class="form-label">Similarity Threshold&nbsp;/&nbsp;相似度閾值&nbsp;({{ this.formParam.simThreshold }})</label>
+        <input type="range" class="form-range" min="0.00" max="1.00" step="0.05" id="simThreshold" v-model="this.formParam.simThreshold">        
+	</div>	
+</div>	
+<p style="margin-bottom: 5px"></p>
 <div class="row">
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<label for="description" class="form-label">備註</label>

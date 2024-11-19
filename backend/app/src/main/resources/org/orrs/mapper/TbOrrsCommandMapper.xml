@@ -13,6 +13,8 @@
     <result column="LLM_MODEL" jdbcType="VARCHAR" property="llmModel" />
     <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
     <result column="RESULT_ALW_NUL" jdbcType="VARCHAR" property="resultAlwNul" />
+    <result column="DOC_RETRIEVAL" jdbcType="VARCHAR" property="docRetrieval" />
+    <result column="SIM_THRESHOLD" jdbcType="DECIMAL" property="simThreshold" />    
     <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
     <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
     <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />
@@ -101,6 +103,12 @@
       <if test="resultAlwNul != null">
         RESULT_ALW_NUL,
       </if>      
+      <if test="docRetrieval != null">
+        DOC_RETRIEVAL,
+      </if>
+      <if test="simThreshold != null">
+        SIM_THRESHOLD,
+      </if>      
       <if test="cuserid != null">
         CUSERID,
       </if>
@@ -141,6 +149,12 @@
       </if>           
       <if test="resultAlwNul != null">
         #{resultAlwNul,jdbcType=VARCHAR},
+      </if>      
+      <if test="docRetrieval != null">
+        #{docRetrieval,jdbcType=VARCHAR},
+      </if>
+      <if test="simThreshold != null">
+        #{simThreshold,jdbcType=DECIMAL},
       </if>      
       <if test="cuserid != null">
         #{cuserid,jdbcType=VARCHAR},
@@ -183,6 +197,12 @@
       </if>            
       <if test="resultAlwNul != null">
         RESULT_ALW_NUL = #{resultAlwNul,jdbcType=VARCHAR},
+      </if>      
+      <if test="docRetrieval != null">
+        DOC_RETRIEVAL = #{docRetrieval,jdbcType=VARCHAR},
+      </if>
+      <if test="simThreshold != null">
+        SIM_THRESHOLD = #{simThreshold,jdbcType=DECIMAL},
       </if>      
       <if test="cuserid != null">
         CUSERID = #{cuserid,jdbcType=VARCHAR},

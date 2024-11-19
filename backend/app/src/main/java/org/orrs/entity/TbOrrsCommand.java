@@ -1,5 +1,6 @@
 package org.orrs.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class TbOrrsCommand implements java.io.Serializable {
     private String resultType;
     private String llmModel;
     private String resultAlwNul;
+    private String docRetrieval;
+    private BigDecimal simThreshold;
     private String cuserid;
     private Date cdate;
     private String uuserid;
@@ -101,6 +104,22 @@ public class TbOrrsCommand implements java.io.Serializable {
 
 	public void setResultAlwNul(String resultAlwNul) {
 		this.resultAlwNul = resultAlwNul;
+	}
+
+	public String getDocRetrieval() {
+		return docRetrieval;
+	}
+
+	public void setDocRetrieval(String docRetrieval) {
+		this.docRetrieval = docRetrieval;
+	}
+
+	public BigDecimal getSimThreshold() {
+		return simThreshold;
+	}
+
+	public void setSimThreshold(BigDecimal simThreshold) {
+		this.simThreshold = simThreshold;
 	}
 
 	@CreateUserField(name = "cuserid")

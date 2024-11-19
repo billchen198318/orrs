@@ -21,6 +21,7 @@
  */
 package org.orrs.runnable;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -242,9 +243,16 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		return options;
 	}
 	
-	private void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList) {
+	private void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList, BigDecimal simThreshold) {
 		try {
-	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(LlmModels.getSimilarityThreshold());
+			double similarityThreshold = -1.0d;
+			if (simThreshold != null) {
+                similarityThreshold = simThreshold.doubleValue();
+            }
+			if (similarityThreshold < 0.0d || similarityThreshold > 1.0d) {
+				similarityThreshold = LlmModels.getSimilarityThreshold();
+			}
+	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
 	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
 	        if (CollectionUtils.isEmpty(similarDocuments)) {
 	        	return;
@@ -302,7 +310,9 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 				userMessage = StringUtils.replaceOnce(userMessage, OrrsConstants.VARIABLE_PREVIOUS_INVOKE_RESULT, prevInvokeContent);
 			}
 		}
-		this.fillPromptMessageFromDocuments(userMessage, messageList);
+		if (YesNo.YES.equals(command.getDocRetrieval())) {
+			this.fillPromptMessageFromDocuments(userMessage, messageList, command.getSimThreshold());
+		}
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
 		// env.getProperty("spring.ai.ollama.chat.options.model")

@@ -140,7 +140,7 @@ export default {
 <p style="margin-bottom: 5px" v-show=" qFieldShow "></p>
 <div class="row" v-show=" qFieldShow ">
     <div class="col-xs-12 col-md-12 col-lg-12">
-        <label for="similarityThreshold" class="form-label">Similarity Threshold&nbsp;({{ this.queryPageStore.queryParam.similarityThreshold }})</label>
+        <label for="similarityThreshold" class="form-label">Similarity Threshold&nbsp;/&nbsp;相似度閾值&nbsp;({{ this.queryPageStore.queryParam.similarityThreshold }})</label>
         <input type="range" class="form-range" min="0.0" max="1.0" step="0.05" id="similarityThreshold" v-model="this.queryPageStore.queryParam.similarityThreshold">        
     </div>
 </div>
