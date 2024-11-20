@@ -1652,7 +1652,7 @@ be a descendant of the grid when it is being dragged.
           flex-direction: row;
   background-color: #FFF;
   margin: 0px 0px 0px;
-  padding: 5px 3px;
+  /* padding: 20px 30px; */
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
