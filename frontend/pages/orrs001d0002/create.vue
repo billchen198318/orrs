@@ -220,4 +220,8 @@ function _btnSave() {
     	<button type="button" class="btn btn-primary" v-on:click="btnClear"><i class="'bi bi-eraser"></i>&nbsp;清除</button>		
 	</div>
 </div>
+
+<br>
+<br>
+
 </template>
