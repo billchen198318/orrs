@@ -243,31 +243,31 @@ function _delItem(oid) {
 						</thead>
 						<tbody>
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">Process Id</td>
+								<td width="40%" class="table-secondary fw-bold">Process Id</td>
 								<td width="60%">{{ item.processId }}</td>
 							</tr>
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">Task</td>
+								<td width="40%" class="table-secondary fw-bold">Task</td>
 								<td width="60%">{{ item.taskId }}&nbsp;/&nbsp;{{ item.taskName }}</td>
 							</tr>		
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">Command</td>
+								<td width="40%" class="table-secondary fw-bold">Command</td>
 								<td width="60%">{{ item.cmdId }}&nbsp;/&nbsp;{{ item.cmdName }}</td>
 							</tr>			
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">Seq</td>
+								<td width="40%" class="table-secondary fw-bold">Seq</td>
 								<td width="60%"><span class="badge text-bg-warning">{{ item.itemSeq }}</span></td>
 							</tr>	
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">使用時間/秒</td>
+								<td width="40%" class="table-secondary fw-bold">使用時間/秒</td>
 								<td width="60%">{{ (Number(item.processMsT2) - Number(item.processMsT1))/1000 }}</td>
 							</tr>			
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">最後命令的任務</td>
+								<td width="40%" class="table-secondary fw-bold">最後命令的任務</td>
 								<td width="60%">{{ item.lastCmd }}</td>
 							</tr>	
 							<tr>
-								<td width="40%" class="table-secondary fw-bold text-secondary">完成執行</td>
+								<td width="40%" class="table-secondary fw-bold">完成執行</td>
 								<td width="60%">
 									<span class="badge rounded-pill text-bg-success" v-if=" 'Y' == item.processFlag ">{{ item.processFlag }}</span>
 									<span class="badge rounded-pill text-bg-danger" v-if=" 'Y' != item.processFlag ">{{ item.processFlag }}</span>
