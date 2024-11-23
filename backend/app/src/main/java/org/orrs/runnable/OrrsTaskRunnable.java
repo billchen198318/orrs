@@ -266,7 +266,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	        	}
             	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(orrsDoc.getSysPromptTpl());
             	String sysPrompt = systemPromptTemplate.createMessage(Map.of(orrsDoc.getTplVariable(), doc.getContent())).getContent();
-            	messageList.add(Message.builder(Message.Role.SYSTEM).withContent(sysPrompt).build()); 
+            	messageList.add(Message.builder(Message.Role.ASSISTANT).withContent(sysPrompt).build()); 
 	        }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -278,7 +278,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		if (!CollectionUtils.isEmpty(prompts)) {
 			for (TbOrrsCommandPrompt prompt : prompts) {
 				logger.info("prompt: {}", prompt.getPromptContent());
-				messageList.add(Message.builder(Message.Role.ASSISTANT).withContent(prompt.getPromptContent()).build());
+				messageList.add(Message.builder(Message.Role.SYSTEM).withContent(prompt.getPromptContent()).build());
 			}			
 		}
 		String userMessage = command.getUserMessage();
