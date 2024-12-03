@@ -39,6 +39,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -81,6 +82,12 @@ public class MyBatisConfig implements EnvironmentAware {
 	public NamedParameterJdbcTemplate db1JdbcTemplate() {
 		return new NamedParameterJdbcTemplate(this.dataSource);
 	}
+	
+	@Bean(name = "db1OriginalJdbcTemplate")
+	@DependsOn("dataSource")
+	public JdbcTemplate db1OriginalJdbcTemplate() {
+		return new JdbcTemplate(this.dataSource);
+	}	
 	
 	@Bean(name = "sqlSessionFactory")
 	@Primary

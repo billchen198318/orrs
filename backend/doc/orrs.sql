@@ -1,8 +1,9 @@
--- MariaDB dump 10.19  Distrib 10.6.5-MariaDB, for Win64 (AMD64)
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19-11.7.1-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: orrs
 -- ------------------------------------------------------
--- Server version	10.6.5-MariaDB
+-- Server version	11.7.1-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -13,7 +14,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `tb_account`
@@ -33,7 +34,7 @@ CREATE TABLE `tb_account` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ACCOUNT`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +43,11 @@ CREATE TABLE `tb_account` (
 
 LOCK TABLES `tb_account` WRITE;
 /*!40000 ALTER TABLE `tb_account` DISABLE KEYS */;
-INSERT INTO `tb_account` VALUES ('0','admin','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2012-11-11 10:56:23','admin','2014-04-19 11:32:04'),('15822da5-25dc-490c-bdfb-be75f5ff4843','tester','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-04-23 11:26:53','admin','2015-08-29 17:54:08'),('52cb274e-388d-419f-a81e-67ca599bfb63','steven','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-09-11 10:33:53',NULL,NULL),('9c239d19-3646-41db-b394-d34c5bf34671','tiffany','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-09-11 10:15:29',NULL,NULL);
+INSERT INTO `tb_account` VALUES
+('0','admin','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2012-11-11 10:56:23','admin','2014-04-19 11:32:04'),
+('15822da5-25dc-490c-bdfb-be75f5ff4843','tester','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-04-23 11:26:53','admin','2015-08-29 17:54:08'),
+('52cb274e-388d-419f-a81e-67ca599bfb63','steven','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-09-11 10:33:53',NULL,NULL),
+('9c239d19-3646-41db-b394-d34c5bf34671','tiffany','$2y$12$Q4x02Q0WKHWXAQ.NoGCs8ObX4sac890xeRnaNUxNnz/VEiHWazIp.','Y','admin','2015-09-11 10:15:29',NULL,NULL);
 /*!40000 ALTER TABLE `tb_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -71,7 +76,7 @@ CREATE TABLE `tb_orrs_command` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`CMD_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +85,10 @@ CREATE TABLE `tb_orrs_command` (
 
 LOCK TABLES `tb_orrs_command` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command` VALUES ('974b7fff-9aaa-11ef-b609-a1eae7d5353c','PP01','取得水量拆分檔內容','','### 資料庫資訊\n1. sql server 帳戶 sa 密碼 P@ssw0rd@@@@\n2. sql server IP位置 127.0.0.1 , 服務 port 號是 1433\n3. database file is: NSC_B21\n\n### 資料表資訊\n1. 資料表 WATER_QUANTITY_SPLIT\n2. 資料表 WATER_QUANTITY_SPLIT欄位 [W_ID, QUANTITY, TOTAL_AMOUNT]\n3. 資料表 WATER_QUANTITY_SPLIT欄位型態 [W_ID(int), QUANTITY(decimal), TOTAL_AMOUNT(decimal)]\n4. 資料表 COMPANY 欄位[F_NAMEC] , COMPANY資料表欄位型態 [ F_NAMEC(varchar2)]\n5. 資料表 WATER_SOURCES_HISTORY 欄位[ WATER_SOURCES_ID ] , WATER_SOURCES_HISTORY 資料表欄位型態 [ WATER_SOURCES_ID(varchar2) ]\n\n### 資料表關聯關係\n1. 資料表關聯關係 \n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n\n### 最後步驟產生groovy規範\n1. 用 groovy 產出連線資料庫, 資料表要串聯關係, \n	並取出資料 WATER_QUANTITY_SPLIT,COMPANY,WATER_SOURCES_HISTORY 這3個資料表定義的欄位 前10筆(如: select top 10 * from ....) \n	條件: \n		a. WATER_QUANTITY_SPLIT.CHARGE_SDATE 大於等於2023年2月1日 , 且 WATER_QUANTITY_SPLIT.CHARGE_EDATE 小於等於2023年4月30日\n		b. FACTORY_HISTORY.BASE_ID 為字串 \'01\'\n		c. 以QUANTITY desc排序\n2. 建議需要 import java.sql.*\n3. jdbc driver class 為 com.microsoft.sqlserver.jdbc.SQLServerDriver 所以JDBC url 開頭因該為 jdbc:sqlserver://\n4. 請一定要在 jdbc url 加上 encrypt=false; 參數\n5. 程式碼不要產在自訂義method中, 請用平舖直敘式方式產生程式碼\n6. 需要 import 的 package 或 class 請寫在程式最上方\n7. 將資料放入List<Map> 中\n8. 用 com.fasterxml.jackson 將 List<Map> 內容轉成字串 json資料, 配置到jsonResult變數\n9. 程式不需要增加 try catch 處理\n10. 最後用 return  jsonResult, 給我 groovy code','result','GROOVY','qwen2.5-coder','N','Y',0.75,'admin','2024-11-04 20:44:54','admin','2024-11-19 21:13:58'),('a34e225a-9d17-11ef-a316-d9ccce9e80b5','PP02','產生echarts 圖表','','### json資料內容\n```json\n $P{previousInvokeResult}\n```\n### 產生html code條件\n1. 請將json資料, 使用 echarts 產生 pie, bar, line圖 (這3個圖表id必須不相同)\n2. 各項目標題為 json資料的 F_NAMEC 加上 \'(\' 符號 再加上 json資料 WATER_SOURCES_ID 在加上 \')\'符號\n3. 各項目的實際值為 json資料的 QUANTITY\n5. 給我 html code','','HTML','qwen2.5-coder','N','Y',0.70,'admin','2024-11-07 22:50:32','admin','2024-11-19 21:17:39'),('e834c237-a679-11ef-b507-fb1cb0fe9c41','test001','測試文件檢索','','幫我介紹丧彪的職業, 丧彪是哪國人?','','TEXT','llama3.2-vision','N','Y',0.40,'admin','2024-11-19 21:26:38','admin','2024-11-19 21:36:19');
+INSERT INTO `tb_orrs_command` VALUES
+('974b7fff-9aaa-11ef-b609-a1eae7d5353c','PP01','取得水量拆分檔內容','','### 資料庫資訊\n1. sql server 帳戶 sa 密碼 P@ssw0rd@@@@\n2. sql server IP位置 127.0.0.1 , 服務 port 號是 1433\n3. database file is: NSC_B21\n\n### 資料表資訊\n1. 資料表 WATER_QUANTITY_SPLIT\n2. 資料表 WATER_QUANTITY_SPLIT欄位 [W_ID, QUANTITY, TOTAL_AMOUNT]\n3. 資料表 WATER_QUANTITY_SPLIT欄位型態 [W_ID(int), QUANTITY(decimal), TOTAL_AMOUNT(decimal)]\n4. 資料表 COMPANY 欄位[F_NAMEC] , COMPANY資料表欄位型態 [ F_NAMEC(varchar2)]\n5. 資料表 WATER_SOURCES_HISTORY 欄位[ WATER_SOURCES_ID ] , WATER_SOURCES_HISTORY 資料表欄位型態 [ WATER_SOURCES_ID(varchar2) ]\n\n### 資料表關聯關係\n1. 資料表關聯關係 \n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n\n### 最後步驟產生groovy規範\n1. 用 groovy 產出連線資料庫, 資料表要串聯關係, \n	並取出資料 WATER_QUANTITY_SPLIT,COMPANY,WATER_SOURCES_HISTORY 這3個資料表定義的欄位 前10筆(如: select top 10 * from ....) \n	條件: \n		a. WATER_QUANTITY_SPLIT.CHARGE_SDATE 大於等於2023年2月1日 , 且 WATER_QUANTITY_SPLIT.CHARGE_EDATE 小於等於2023年4月30日\n		b. FACTORY_HISTORY.BASE_ID 為字串 \'01\'\n		c. 以QUANTITY desc排序\n2. 建議需要 import java.sql.*\n3. jdbc driver class 為 com.microsoft.sqlserver.jdbc.SQLServerDriver 所以JDBC url 開頭因該為 jdbc:sqlserver://\n4. 請一定要在 jdbc url 加上 encrypt=false; 參數\n5. 程式碼不要產在自訂義method中, 請用平舖直敘式方式產生程式碼\n6. 需要 import 的 package 或 class 請寫在程式最上方\n7. 將資料放入List<Map> 中\n8. 用 com.fasterxml.jackson 將 List<Map> 內容轉成字串 json資料, 配置到jsonResult變數\n9. 程式不需要增加 try catch 處理\n10. 最後用 return  jsonResult, 給我 groovy code','result','GROOVY','qwen2.5-coder','N','Y',0.75,'admin','2024-11-04 20:44:54','admin','2024-11-19 21:13:58'),
+('a34e225a-9d17-11ef-a316-d9ccce9e80b5','PP02','產生echarts 圖表','','### json資料內容\n```json\n $P{previousInvokeResult}\n```\n### 產生html code條件\n1. 請將json資料, 使用 echarts 產生 pie, bar, line圖 (這3個圖表id必須不相同)\n2. 各項目標題為 json資料的 F_NAMEC 加上 \'(\' 符號 再加上 json資料 WATER_SOURCES_ID 在加上 \')\'符號\n3. 各項目的實際值為 json資料的 QUANTITY\n5. 給我 html code','','HTML','qwen2.5-coder','N','Y',0.70,'admin','2024-11-07 22:50:32','admin','2024-11-19 21:17:39'),
+('e834c237-a679-11ef-b507-fb1cb0fe9c41','test001','測試文件檢索','','幫我介紹丧彪的職業, 丧彪是哪國人?','','TEXT','llama3.2-vision','N','Y',0.40,'admin','2024-11-19 21:26:38','admin','2024-11-19 21:36:19');
 /*!40000 ALTER TABLE `tb_orrs_command` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,7 +110,7 @@ CREATE TABLE `tb_orrs_command_adv` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`CMD_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +140,7 @@ CREATE TABLE `tb_orrs_command_prompt` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`CMD_ID`,`ITEM_SEQ`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +149,13 @@ CREATE TABLE `tb_orrs_command_prompt` (
 
 LOCK TABLES `tb_orrs_command_prompt` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` DISABLE KEYS */;
-INSERT INTO `tb_orrs_command_prompt` VALUES ('22c49788-a678-11ef-b507-9f86c2f12ada','PP01',0,'json library 使用的是 com.fasterxml.jackson','admin','2024-11-19 21:13:58',NULL,NULL),('22c581e9-a678-11ef-b507-212d9c33a895','PP01',1,'回應訊息不需要給 implementation , maven, gradle 資訊','admin','2024-11-19 21:13:58',NULL,NULL),('22c61e2a-a678-11ef-b507-15ae91167362','PP01',2,'你必須遵守: 不要把結果用 print 或 println 方式輸出, 請用 return 方式輸出值','admin','2024-11-19 21:13:58',NULL,NULL),('a69ba815-a678-11ef-b507-836b5603e9d6','PP02',0,'echarts 版本請用 5.3.3 , CDN 位置 https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js','admin','2024-11-19 21:17:39',NULL,NULL),('a69bf636-a678-11ef-b507-ad45992901f9','PP02',1,'echarts 圖表寬度740px , 高度600px , echarts 圖表請配置 tooltip','admin','2024-11-19 21:17:39',NULL,NULL),('a69c4457-a678-11ef-b507-8f8ccf12a11b','PP02',2,'這很重要必須遵守: json資料筆數不要刪減','admin','2024-11-19 21:17:39',NULL,NULL);
+INSERT INTO `tb_orrs_command_prompt` VALUES
+('22c49788-a678-11ef-b507-9f86c2f12ada','PP01',0,'json library 使用的是 com.fasterxml.jackson','admin','2024-11-19 21:13:58',NULL,NULL),
+('22c581e9-a678-11ef-b507-212d9c33a895','PP01',1,'回應訊息不需要給 implementation , maven, gradle 資訊','admin','2024-11-19 21:13:58',NULL,NULL),
+('22c61e2a-a678-11ef-b507-15ae91167362','PP01',2,'你必須遵守: 不要把結果用 print 或 println 方式輸出, 請用 return 方式輸出值','admin','2024-11-19 21:13:58',NULL,NULL),
+('a69ba815-a678-11ef-b507-836b5603e9d6','PP02',0,'echarts 版本請用 5.3.3 , CDN 位置 https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js','admin','2024-11-19 21:17:39',NULL,NULL),
+('a69bf636-a678-11ef-b507-ad45992901f9','PP02',1,'echarts 圖表寬度740px , 高度600px , echarts 圖表請配置 tooltip','admin','2024-11-19 21:17:39',NULL,NULL),
+('a69c4457-a678-11ef-b507-8f8ccf12a11b','PP02',2,'這很重要必須遵守: json資料筆數不要刪減','admin','2024-11-19 21:17:39',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_command_prompt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -165,7 +179,7 @@ CREATE TABLE `tb_orrs_doc` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `DOC_ID` (`DOC_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -174,7 +188,11 @@ CREATE TABLE `tb_orrs_doc` (
 
 LOCK TABLES `tb_orrs_doc` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_doc` DISABLE KEYS */;
-INSERT INTO `tb_orrs_doc` VALUES ('04031e07-a495-11ef-90f4-91f56f58a2c7','DOC0001','資料表參考內容','### 資料表欄位\n1. 資料表 WATER_QUANTITY_SPLIT \n2. 資料表 FACTORY_WATER_SOURCES \n3. 資料表 COMPANY \n4. 資料表 FACTORY_HISTORY \n\n### 資料表關係\n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n	\n### SQL範例\n1. 範例1\n```sql\nselect * \nfrom \nWATER_QUANTITY_SPLIT wqs, FACTORY_WATER_SOURCES fws, COMPANY c, FACTORY_HISTORY fh, WATER_SOURCES_HISTORY wsh\nwhere\nwqs.FACTORY_WATER_SOURCES_ID1 = fws.OID \nand fws.FACTORY_ID = fh.OID\nand c.OID = fh.COMPANY_OID\nand wsh.OID = fws.WATER_SOURCES_ID\n```\n\n2. 範例2\n```sql\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2022-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n```   \n','如果與資料表有關係的話,請參考以下說明文件:\n{information}','information','admin','2024-11-17 11:35:39','admin','2024-11-17 15:42:04'),('0911e2cf-a67b-11ef-b507-018449ec6e8e','DOC9999','印度司机丧彪','印度司机丧彪 , 印度大巴司机丧彪：\n直线加油谁不会？弯道快才是真的快！\n过得去就是坎，过不去就是命！\n只要不出啥意外，油门必须往死了踹！\n印度大巴司机有多疯狂，半路甩飞乘客实属正常！\n刹车片拆下来扔掉，胆小的乘客当场被吓尿！\n心不慌、手不抖，一车乘客全送走！\n到终点站，乘客少一半！\n大巴当成赛车开，这条路上我最跩！\n加速过弯真的帅，乘客飞出去也很快！\n乘客走得没有一点痛苦，嗖的一下就直达地府！\n一路不要命，全靠八字硬！\n油一踩，车一超，阎王面前走一遭！','如果與丧彪有關係, 請參考以下資料:\n${msg}','msg','admin','2024-11-19 21:34:43',NULL,NULL),('66325dc5-a4b4-11ef-9d44-cb7452674910','DOC0002','參考的groovy程式','### groovy參考資料\n1. groovy參考程式碼1:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\ndef jsonResult = new ObjectMapper().writeValueAsString(resultSetToMapList(resultSet))\n\nconnection.close()\n\nreturn jsonResult\n\ndef resultSetToMapList(ResultSet resultSet) {\n    List<Map> result = []\n    while (resultSet.next()) {\n        Map<String, Object> row = [:]\n        ResultSetMetaData metaData = resultSet.getMetaData()\n        int columnCount = metaData.getColumnCount()\n        for (int i = 1; i <= columnCount; i++) {\n            row[metaData.getColumnName(i)] = resultSet.getObject(i)\n        }\n        result.add(row)\n    }\n    return result\n}\n```\n\n2. groovy參考程式碼2:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\nList<Map> result = []\nwhile (resultSet.next()) {\n	Map<String, Object> row = [:]\n	ResultSetMetaData metaData = resultSet.getMetaData()\n	int columnCount = metaData.getColumnCount()\n	for (int i = 1; i <= columnCount; i++) {\n		row[metaData.getColumnName(i)] = resultSet.getObject(i)\n	}\n    result.add(row)\n}\n\ndef jsonResult = new ObjectMapper().writeValueAsString(result)\n\nconnection.close()\n\nreturn jsonResult\n```\n','如果與 groovy 程式有關係的話,請參考以下說明文件:\n{information}','information','admin','2024-11-17 15:20:18',NULL,NULL),('ad68a6ea-a4b4-11ef-9d44-ffb88b49d6ab','DOC0003','參考的echarts資料','### echarts在html使用參考資料\n```html\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>ECharts Example</title>\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js\"></script>\n    <style>\n        .chart {\n            width: 740px;\n            height: 600px;\n        }\n    </style>\n</head>\n<body>\n    <h1>Pie Chart</h1>\n    <div id=\"pieChart\" class=\"chart\"></div>\n\n    <h1>Bar Chart</h1>\n    <div id=\"barChart\" class=\"chart\"></div>\n\n    <h1>Line Chart</h1>\n    <div id=\"lineChart\" class=\"chart\"></div>\n\n    <script type=\"text/javascript\">\n        var jsonData = [\n            {\"W_ID\":235733,\"QUANTITY\":932165.000000,\"TOTAL_AMOUNT\":6435667.00,\"F_NAMEC\":\"測試公司\",\"WATER_SOURCES_ID\":\"A1098F-3112-3492-04-K\"},\n            {\"W_ID\":235836,\"QUANTITY\":447715.000000,\"TOTAL_AMOUNT\":3091024.00,\"F_NAMEC\":\"好好公司\",\"WATER_SOURCES_ID\":\"A12672-3112-0010-27-6\"},\n            {\"W_ID\":235771,\"QUANTITY\":388852.000000,\"TOTAL_AMOUNT\":2684634.00,\"F_NAMEC\":\"宏一電子股份有限公司\",\"WATER_SOURCES_ID\":\"A11525-3112-0010-30-2\"}\n        ];\n\n        var pieData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var barData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var lineData = jsonData.map(item => ({\n            x: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            y: item.QUANTITY\n        }));\n\n        var pieChart = echarts.init(document.getElementById(\'pieChart\'));\n        var barChart = echarts.init(document.getElementById(\'barChart\'));\n        var lineChart = echarts.init(document.getElementById(\'lineChart\'));\n\n        optionPie = {\n            title: {\n                text: \'Pie Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            series: [{\n                name: \'Quantity\',\n                type: \'pie\',\n                radius: \'50%\',\n                data: pieData\n            }]\n        };\n\n        optionBar = {\n            title: {\n                text: \'Bar Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: barData.map(item => item.name)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'bar\',\n                data: barData.map(item => item.value)\n            }]\n        };\n\n        optionLine = {\n            title: {\n                text: \'Line Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: lineData.map(item => item.x)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'line\',\n                data: lineData.map(item => item.y)\n            }]\n        };\n\n        pieChart.setOption(optionPie);\n        barChart.setOption(optionBar);\n        lineChart.setOption(optionLine);\n    </script>\n</body>\n</html>\n```','如果與 echarts 相關的話, 參考下面相關資料:\n{information}','information','admin','2024-11-17 15:22:18','admin','2024-11-17 15:22:44');
+INSERT INTO `tb_orrs_doc` VALUES
+('04031e07-a495-11ef-90f4-91f56f58a2c7','DOC0001','資料表參考內容','### 資料表欄位\n1. 資料表 WATER_QUANTITY_SPLIT \n2. 資料表 FACTORY_WATER_SOURCES \n3. 資料表 COMPANY \n4. 資料表 FACTORY_HISTORY \n\n### 資料表關係\n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n	\n### SQL範例\n1. 範例1\n```sql\nselect * \nfrom \nWATER_QUANTITY_SPLIT wqs, FACTORY_WATER_SOURCES fws, COMPANY c, FACTORY_HISTORY fh, WATER_SOURCES_HISTORY wsh\nwhere\nwqs.FACTORY_WATER_SOURCES_ID1 = fws.OID \nand fws.FACTORY_ID = fh.OID\nand c.OID = fh.COMPANY_OID\nand wsh.OID = fws.WATER_SOURCES_ID\n```\n\n2. 範例2\n```sql\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2022-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n```   \n','如果與資料表有關係的話,請參考以下說明文件:\n{information}','information','admin','2024-11-17 11:35:39','admin','2024-11-17 15:42:04'),
+('0911e2cf-a67b-11ef-b507-018449ec6e8e','DOC9999','印度司机丧彪','印度司机丧彪 , 印度大巴司机丧彪：\n直线加油谁不会？弯道快才是真的快！\n过得去就是坎，过不去就是命！\n只要不出啥意外，油门必须往死了踹！\n印度大巴司机有多疯狂，半路甩飞乘客实属正常！\n刹车片拆下来扔掉，胆小的乘客当场被吓尿！\n心不慌、手不抖，一车乘客全送走！\n到终点站，乘客少一半！\n大巴当成赛车开，这条路上我最跩！\n加速过弯真的帅，乘客飞出去也很快！\n乘客走得没有一点痛苦，嗖的一下就直达地府！\n一路不要命，全靠八字硬！\n油一踩，车一超，阎王面前走一遭！','如果與丧彪有關係, 請參考以下資料:\n${msg}','msg','admin','2024-11-19 21:34:43',NULL,NULL),
+('66325dc5-a4b4-11ef-9d44-cb7452674910','DOC0002','參考的groovy程式','### groovy參考資料\n1. groovy參考程式碼1:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\ndef jsonResult = new ObjectMapper().writeValueAsString(resultSetToMapList(resultSet))\n\nconnection.close()\n\nreturn jsonResult\n\ndef resultSetToMapList(ResultSet resultSet) {\n    List<Map> result = []\n    while (resultSet.next()) {\n        Map<String, Object> row = [:]\n        ResultSetMetaData metaData = resultSet.getMetaData()\n        int columnCount = metaData.getColumnCount()\n        for (int i = 1; i <= columnCount; i++) {\n            row[metaData.getColumnName(i)] = resultSet.getObject(i)\n        }\n        result.add(row)\n    }\n    return result\n}\n```\n\n2. groovy參考程式碼2:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\nList<Map> result = []\nwhile (resultSet.next()) {\n	Map<String, Object> row = [:]\n	ResultSetMetaData metaData = resultSet.getMetaData()\n	int columnCount = metaData.getColumnCount()\n	for (int i = 1; i <= columnCount; i++) {\n		row[metaData.getColumnName(i)] = resultSet.getObject(i)\n	}\n    result.add(row)\n}\n\ndef jsonResult = new ObjectMapper().writeValueAsString(result)\n\nconnection.close()\n\nreturn jsonResult\n```\n','如果與 groovy 程式有關係的話,請參考以下說明文件:\n{information}','information','admin','2024-11-17 15:20:18',NULL,NULL),
+('ad68a6ea-a4b4-11ef-9d44-ffb88b49d6ab','DOC0003','參考的echarts資料','### echarts在html使用參考資料\n```html\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>ECharts Example</title>\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js\"></script>\n    <style>\n        .chart {\n            width: 740px;\n            height: 600px;\n        }\n    </style>\n</head>\n<body>\n    <h1>Pie Chart</h1>\n    <div id=\"pieChart\" class=\"chart\"></div>\n\n    <h1>Bar Chart</h1>\n    <div id=\"barChart\" class=\"chart\"></div>\n\n    <h1>Line Chart</h1>\n    <div id=\"lineChart\" class=\"chart\"></div>\n\n    <script type=\"text/javascript\">\n        var jsonData = [\n            {\"W_ID\":235733,\"QUANTITY\":932165.000000,\"TOTAL_AMOUNT\":6435667.00,\"F_NAMEC\":\"測試公司\",\"WATER_SOURCES_ID\":\"A1098F-3112-3492-04-K\"},\n            {\"W_ID\":235836,\"QUANTITY\":447715.000000,\"TOTAL_AMOUNT\":3091024.00,\"F_NAMEC\":\"好好公司\",\"WATER_SOURCES_ID\":\"A12672-3112-0010-27-6\"},\n            {\"W_ID\":235771,\"QUANTITY\":388852.000000,\"TOTAL_AMOUNT\":2684634.00,\"F_NAMEC\":\"宏一電子股份有限公司\",\"WATER_SOURCES_ID\":\"A11525-3112-0010-30-2\"}\n        ];\n\n        var pieData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var barData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var lineData = jsonData.map(item => ({\n            x: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            y: item.QUANTITY\n        }));\n\n        var pieChart = echarts.init(document.getElementById(\'pieChart\'));\n        var barChart = echarts.init(document.getElementById(\'barChart\'));\n        var lineChart = echarts.init(document.getElementById(\'lineChart\'));\n\n        optionPie = {\n            title: {\n                text: \'Pie Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            series: [{\n                name: \'Quantity\',\n                type: \'pie\',\n                radius: \'50%\',\n                data: pieData\n            }]\n        };\n\n        optionBar = {\n            title: {\n                text: \'Bar Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: barData.map(item => item.name)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'bar\',\n                data: barData.map(item => item.value)\n            }]\n        };\n\n        optionLine = {\n            title: {\n                text: \'Line Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: lineData.map(item => item.x)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'line\',\n                data: lineData.map(item => item.y)\n            }]\n        };\n\n        pieChart.setOption(optionPie);\n        barChart.setOption(optionBar);\n        lineChart.setOption(optionLine);\n    </script>\n</body>\n</html>\n```','如果與 echarts 相關的話, 參考下面相關資料:\n{information}','information','admin','2024-11-17 15:22:18','admin','2024-11-17 15:22:44');
 /*!40000 ALTER TABLE `tb_orrs_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,7 +216,7 @@ CREATE TABLE `tb_orrs_task` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`TASK_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -207,7 +225,9 @@ CREATE TABLE `tb_orrs_task` (
 
 LOCK TABLES `tb_orrs_task` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task` VALUES ('63ae092c-a67c-11ef-aaa9-b1c6c1e492a5','task01','test文件檢索任務','','0 45 21 * * ?','Y','admin','2024-11-19 21:44:25',NULL,NULL),('7590bed3-9aab-11ef-b609-854d67a445fb','task02','我的水量拆分檔任務','水量資料','0 24 15 * * ?','Y','admin','2024-11-04 20:51:07','admin','2024-11-17 15:23:13');
+INSERT INTO `tb_orrs_task` VALUES
+('63ae092c-a67c-11ef-aaa9-b1c6c1e492a5','task01','test文件檢索任務','','0 45 21 * * ?','Y','admin','2024-11-19 21:44:25',NULL,NULL),
+('7590bed3-9aab-11ef-b609-854d67a445fb','task02','我的水量拆分檔任務','水量資料','0 24 15 * * ?','Y','admin','2024-11-04 20:51:07','admin','2024-11-17 15:23:13');
 /*!40000 ALTER TABLE `tb_orrs_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +250,7 @@ CREATE TABLE `tb_orrs_task_cmd` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `TASK_ID` (`TASK_ID`,`CMD_ID`,`ITEM_SEQ`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,7 +259,10 @@ CREATE TABLE `tb_orrs_task_cmd` (
 
 LOCK TABLES `tb_orrs_task_cmd` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task_cmd` VALUES ('63afb6dd-a67c-11ef-aaa9-0d340787dab9','task01','test001',0,'Y','admin','2024-11-19 21:44:25',NULL,NULL),('cea1989c-a4b4-11ef-9d44-1df2f82ce80b','task02','PP01',0,'Y','admin','2024-11-17 15:23:13',NULL,NULL),('cea1989d-a4b4-11ef-9d44-fb067ca029c6','task02','PP02',1,'Y','admin','2024-11-17 15:23:13',NULL,NULL);
+INSERT INTO `tb_orrs_task_cmd` VALUES
+('63afb6dd-a67c-11ef-aaa9-0d340787dab9','task01','test001',0,'Y','admin','2024-11-19 21:44:25',NULL,NULL),
+('cea1989c-a4b4-11ef-9d44-1df2f82ce80b','task02','PP01',0,'Y','admin','2024-11-17 15:23:13',NULL,NULL),
+('cea1989d-a4b4-11ef-9d44-fb067ca029c6','task02','PP02',1,'Y','admin','2024-11-17 15:23:13',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_cmd` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,7 +294,7 @@ CREATE TABLE `tb_orrs_task_result` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`TASK_ID`),
   KEY `IDX_2` (`CMD_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -280,7 +303,6 @@ CREATE TABLE `tb_orrs_task_result` (
 
 LOCK TABLES `tb_orrs_task_result` WRITE;
 /*!40000 ALTER TABLE `tb_orrs_task_result` DISABLE KEYS */;
-INSERT INTO `tb_orrs_task_result` VALUES ('8f2a8b15-a67c-11ef-aaa9-b7a62cf58525','task01','test001',0,'1732023900021','1732023937982',0xE4B8A7E5BDAAE698AFE4B880E4BD8DE58DB0E5BAA6E58FB8E69CBAEFBC8CE4BB96E4BBA5E585B6E9A9BEE9A9B6E68A80E69CAFE5928CE694BEE88DA1E4B88DE7BE81E79A84E4B8AAE680A7E8808CE89197E5908DE38082E4BB96E79A84E8A18CE4B8BAE59CA8E7BD91E4B88AE5B9BFE4B8BAE6B581E4BCA0EFBC8CE4BABAE4BBACE5AFB9E4BB96E6849FE588B0E5A5BDE5A587E5928CE8B59EE58FB9E38082,NULL,'Y','task01-20241119-00001','Y',0xE5B9ABE68891E4BB8BE7B4B9E4B8A7E5BDAAE79A84E881B7E6A5AD2C20E4B8A7E5BDAAE698AFE593AAE59C8BE4BABA3F,NULL,'system','2024-11-19 21:45:37',NULL,NULL);
 /*!40000 ALTER TABLE `tb_orrs_task_result` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,7 +323,7 @@ CREATE TABLE `tb_role` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ROLE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -310,7 +332,10 @@ CREATE TABLE `tb_role` (
 
 LOCK TABLES `tb_role` WRITE;
 /*!40000 ALTER TABLE `tb_role` DISABLE KEYS */;
-INSERT INTO `tb_role` VALUES ('4b1796ad-0bb7-4a65-b45e-439540ba5dbd','admin','administrator role!','admin','2014-10-09 15:02:24',NULL,NULL),('58914623-46ea-4797-bbec-2dadc5d0800e','COMMON01','Common role!','admin','2017-05-09 13:31:42','admin','2024-10-09 21:56:13'),('c7c69396-e5e6-48ca-b09c-9445b69e2ad5','*','all role','admin','2014-10-09 15:02:54',NULL,NULL);
+INSERT INTO `tb_role` VALUES
+('4b1796ad-0bb7-4a65-b45e-439540ba5dbd','admin','administrator role!','admin','2014-10-09 15:02:24',NULL,NULL),
+('58914623-46ea-4797-bbec-2dadc5d0800e','COMMON01','Common role!','admin','2017-05-09 13:31:42','admin','2024-10-09 21:56:13'),
+('c7c69396-e5e6-48ca-b09c-9445b69e2ad5','*','all role','admin','2014-10-09 15:02:54',NULL,NULL);
 /*!40000 ALTER TABLE `tb_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -333,7 +358,7 @@ CREATE TABLE `tb_role_permission` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ROLE`,`PERMISSION`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,7 +367,10 @@ CREATE TABLE `tb_role_permission` (
 
 LOCK TABLES `tb_role_permission` WRITE;
 /*!40000 ALTER TABLE `tb_role_permission` DISABLE KEYS */;
-INSERT INTO `tb_role_permission` VALUES ('7c732a40-4664-11ee-9888-c1ca1a9bff29','COMMON01','/prog001d0004','VIEW','','admin','2023-08-29 20:06:29',NULL,NULL),('7f0260a3-4664-11ee-9888-6f9b2693d639','COMMON01','/prog001d0004/create','VIEW','','admin','2023-08-29 20:06:33',NULL,NULL),('815ccb66-4664-11ee-9888-b170f20e302b','COMMON01','/prog001d0004/edit','VIEW','','admin','2023-08-29 20:06:37',NULL,NULL);
+INSERT INTO `tb_role_permission` VALUES
+('7c732a40-4664-11ee-9888-c1ca1a9bff29','COMMON01','/prog001d0004','VIEW','','admin','2023-08-29 20:06:29',NULL,NULL),
+('7f0260a3-4664-11ee-9888-6f9b2693d639','COMMON01','/prog001d0004/create','VIEW','','admin','2023-08-29 20:06:33',NULL,NULL),
+('815ccb66-4664-11ee-9888-b170f20e302b','COMMON01','/prog001d0004/edit','VIEW','','admin','2023-08-29 20:06:37',NULL,NULL);
 /*!40000 ALTER TABLE `tb_role_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,7 +395,7 @@ CREATE TABLE `tb_sys` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`SYS_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -376,7 +404,8 @@ CREATE TABLE `tb_sys` (
 
 LOCK TABLES `tb_sys` WRITE;
 /*!40000 ALTER TABLE `tb_sys` DISABLE KEYS */;
-INSERT INTO `tb_sys` VALUES ('c6643182-85a5-4f91-9e73-10567ebd0dd5','CORE','Core-system','127.0.0.1:8080','core-web','Y','SYSTEM','admin','2017-04-10 20:42:00','admin','2024-02-27 21:31:36');
+INSERT INTO `tb_sys` VALUES
+('c6643182-85a5-4f91-9e73-10567ebd0dd5','CORE','Core-system','127.0.0.1:8080','core-web','Y','SYSTEM','admin','2017-04-10 20:42:00','admin','2024-02-27 21:31:36');
 /*!40000 ALTER TABLE `tb_sys` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -400,7 +429,7 @@ CREATE TABLE `tb_sys_bean_help` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`BEAN_ID`,`METHOD`,`SYSTEM`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -432,7 +461,7 @@ CREATE TABLE `tb_sys_bean_help_expr` (
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`EXPR_ID`,`HELP_OID`,`RUN_TYPE`),
   KEY `IDX_1` (`HELP_OID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -465,7 +494,7 @@ CREATE TABLE `tb_sys_bean_help_expr_map` (
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`VAR_NAME`,`HELP_EXPR_OID`),
   KEY `IDX_1` (`HELP_EXPR_OID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +529,7 @@ CREATE TABLE `tb_sys_code` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`CODE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -509,7 +538,12 @@ CREATE TABLE `tb_sys_code` (
 
 LOCK TABLES `tb_sys_code` WRITE;
 /*!40000 ALTER TABLE `tb_sys_code` DISABLE KEYS */;
-INSERT INTO `tb_sys_code` VALUES ('2d9c84e4-a956-42ac-96cb-1f6292d182a9','CNF_CONF002','CNF','enable mail sender!','Y',NULL,NULL,NULL,NULL,'admin','2014-12-25 09:09:57','admin','2020-09-14 04:36:34'),('4df770a6-6a9c-4d25-bdcd-1dee819d2ba6','CNF_CONF001','CNF','default mail from account!','root@localhost',NULL,NULL,NULL,NULL,'admin','2014-12-24 21:51:16','admin','2020-09-14 04:36:34'),('57877c4d-4f3e-4679-880a-a262eeba0c3d','TOKEN','AUTH','QiFu3 Client token','9TYM7TRuILqFk9XoR0v6Yx672','COMMON01',NULL,NULL,NULL,'admin','2021-10-30 17:12:04',NULL,NULL),('a5f7ee37-f33f-48a6-b448-92ccb8cdf96a','CNF_CONF003','CNF','first load javascript','addTab(\'CORE_PROG999D9999Q\', null);',NULL,NULL,NULL,NULL,'admin','2014-12-25 09:09:57',NULL,NULL),('caf00ba5-fe63-4dc4-a1a3-32527f6629b2','CMM_CONF001','CMM','Common role for default user!','COMMON01',NULL,NULL,NULL,NULL,'admin','2017-05-09 12:29:00',NULL,NULL);
+INSERT INTO `tb_sys_code` VALUES
+('2d9c84e4-a956-42ac-96cb-1f6292d182a9','CNF_CONF002','CNF','enable mail sender!','Y',NULL,NULL,NULL,NULL,'admin','2014-12-25 09:09:57','admin','2020-09-14 04:36:34'),
+('4df770a6-6a9c-4d25-bdcd-1dee819d2ba6','CNF_CONF001','CNF','default mail from account!','root@localhost',NULL,NULL,NULL,NULL,'admin','2014-12-24 21:51:16','admin','2020-09-14 04:36:34'),
+('57877c4d-4f3e-4679-880a-a262eeba0c3d','TOKEN','AUTH','QiFu3 Client token','9TYM7TRuILqFk9XoR0v6Yx672','COMMON01',NULL,NULL,NULL,'admin','2021-10-30 17:12:04',NULL,NULL),
+('a5f7ee37-f33f-48a6-b448-92ccb8cdf96a','CNF_CONF003','CNF','first load javascript','addTab(\'CORE_PROG999D9999Q\', null);',NULL,NULL,NULL,NULL,'admin','2014-12-25 09:09:57',NULL,NULL),
+('caf00ba5-fe63-4dc4-a1a3-32527f6629b2','CMM_CONF001','CMM','Common role for default user!','COMMON01',NULL,NULL,NULL,NULL,'admin','2017-05-09 12:29:00',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_code` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -533,7 +567,7 @@ CREATE TABLE `tb_sys_event_log` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`USER`),
   KEY `IDX_2` (`CDATE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -574,7 +608,7 @@ CREATE TABLE `tb_sys_expr_job` (
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ID`),
   KEY `IDX_1` (`SYSTEM`,`ACTIVE`,`EXPR_ID`,`NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -607,7 +641,7 @@ CREATE TABLE `tb_sys_expr_job_log` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`ID`,`LOG_STATUS`,`BEGIN_DATETIME`),
   KEY `IDX_2` (`CDATE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -639,7 +673,7 @@ CREATE TABLE `tb_sys_expression` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`EXPR_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -668,7 +702,7 @@ CREATE TABLE `tb_sys_icon` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ICON_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -700,7 +734,7 @@ CREATE TABLE `tb_sys_jreport` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`REPORT_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -709,7 +743,8 @@ CREATE TABLE `tb_sys_jreport` (
 
 LOCK TABLES `tb_sys_jreport` WRITE;
 /*!40000 ALTER TABLE `tb_sys_jreport` DISABLE KEYS */;
-INSERT INTO `tb_sys_jreport` VALUES ('f55a9ae4-b997-11ee-a0c4-97126ca2fa90','TEST01','TEST01.jrxml','Y',0x504B03041400000000004DAB1A57000000000000000000000000070000005445535430312F504B030414000000080020AB1A578FDF3D9426130000B5450000140000005445535430312F5445535430312E6A6173706572D51C6788335570932BEAE9777EDED97BEF5EB19CBDA49D46F792733767B903E35EF27259DDECAEBB1B2F67171B585050C18ABD8082888A200A961FA2600545EC88584045C4022AE2CC7B6F5B92CB6EF097E1FBEEB2EFCDCC9B99376FDECCBCB7F7E48FC2906D09FBEBC499B06B13E729B6492C8B9886E5D813445F517532712A6D9468A3403FFB7D9414064461F38AD130558D64154771846DC5F3940B9549D5989489A52A9A7A91B2AC916345612B0E56501A446ED66A6ACB11C618B0A6E82B93B263A9FA0A006EE0805646536CFB02E13221D9B284437AF1B6ACD8C0A094865FED0C1E9417769897730BD96259CE49F994583E2327C9F962A1BC90CFE6852D960DC7311A738A0584F2288BD66CE819A3A93B7961037B924DA502AC79BD67AA55A7BE286C545774C322F30A602A8E6AE88BC2B86ACF6A86E26428DCAC6138C442405B6E361A8AB55620AB004E1685DDBDA63355A78E6DA710A54AAC945E75B14655BBA43A1AE138796144233587319A1636372C95E80E1D17BA4C4A415DA903D79BE103E5310D1DA054A768016960DF420057D4CD1CC374A98DAED6895E3070064B6B2611859165A572FE8A056AA83AC2DE22E87ED2AE4D86743FC9743F896AD7AB306F5B32ED64558B54902D4738AC27A203234D4A4D1F21A7371B40678B4A407B38FD835E1B2A89B72D099B56815D9B38B623ECBF14C162968122F52AA9294DCD919D358D38C23E1188140CD086ABC451548DB3B3813DC9AEA0FB4550E1804067AC66580DC599552A8E61ADF9160E2A571B144B268E236CC91646D351B54999F2BD292E9226CC2C071F0554070D23A4A7CD1B8AAA7361A3D9F2B532A82B0D97F2B04E0D8153DC1830B43314AD093A3B347A5A8B1CC99FD51133CC2B6F09CC2858906FAD7CA8E9E8A1E63D1C3ED2E636D33658723C66651F9E925812866D9C7630AC7D97C478F6B189CD9633B7CDCD1CD23035C5411A93513498CB2A310C2436E4E0C2E74A190FAF4DAE9823A2C53AD3C3F3246B9982F0D393E019B786FF09817E9207D15FBC71E0546891E913FD0FBBC241313D2FBA01DFEF6EDADBEF0ED7A9B7A26E4E3635D549699AB14AAA202F3502643ED7322D62DB74851D18A1431F167710D33200C851893DA7988E704804F27C101C7D84459CA645CD1D27706360318AAA8DEB65331B796616B631B089A5D7E8048EB26E7FBAA6A2A78B6AC19F294B382CA6DE731A69C0623B19BCB5E9E91F17F2A695BAAA552DA2A3256D0362111F12B47270944A03D060396009E328E804EA61226559CA1A2AA375E5FBBBDCF9BA72EF8090C80B83B67A1169512E5607F1A7677042C284CF659630D14B2A54C4444811AE6D8E012D4B18A50CA0A627DA3B41A04DE492942B654E8151A62347096E3CEDB4505FBB3A10DB9424EA9DC7E8CF9DBA887508150B7B778B803CDE8784DF362822E6F472EF1498D925616819D61A58E63E4B71B666803715CB89033F0F7030D74D0B417B31C849DFFED9653FDCF8E635472499A442A24D0B09AA8504883B1553DC126939B32AD102AE64BBDEAE64C3B2619C0FBEF77C915C48340866C885B0E814EAD2D506490B5BD6D760484DD5CF2F41BC439CB4B0C16F812F8BC236E0841C58F4953A8663C50B8955036F240A5B2B7AA56E5818B2FA0E06651B1785ED42C376746FE97341575074A8C1161A38C010FF7D38FC5C08CFDD77493B673B78C2A7A8749D927900185FB4752F09E3816E0B34033B3A98D66151A6754A071670B7B3474B223502AEAAD2A9E81DFDC9320CCD51CD1E0CE3B6D13915AA9DD614D659686A9A038D01970D4489A2A3AA7C13E1A1D0A6AE89F0E74D4CC501C675FEB8157BEC1C71C4012B4E55CF6BDA4EAC18A6E481BBCEFFD03E960B77D4FE82D9A1D78201A96AB0A316DC808F3FCBE0B9C38AC9EB0E598159E2003605D82A0040531D34583022F5220051B4940649113283A4B71585EDBB7471839E8956CB296164D44D7838941EBB40F863FA21C7F07C92C36021865645A60F0771553B0F406A853F6F50EDF96A2DD75826D52A7181B6A42E433D9F94EAB06E57EABC790B68C690B08A43F0B6CD557B41AF520325BC6913FC9E365AD131BAC80031AE451C9E8B72F56E0C34C50FCE451FC9951FFD58D3E4F6B099092B74C552CCBA231C10BD61305064D0042DE915A3CA194CB2A6D9366BB30C9618701936B8CF5C80C968012423945A6C7521066F954EEBDBB6A3838F7178F418670450DB060AD9DD51F14985ADAE153F04E858E03BC50CAEB7536D9A1EE5F559159CF4997543A3613AEC78BC07720F02494795C5BA8BC28EBC1D7D659626B9EE6E68532489348C0B095A104250B79A16B6300D5B7553A83424606C2FC5A7BC30B48AA588BC9068C1FF35B02E2C2D403A6F585EE8ACAC3A93196C011D6F1DCCCF2130BF50859503331695CA76C13A3614F232F3DE011880149C5006B0212D0A03E793356E9C830DA34AB8F56C86DFB9C11C143DCB7300ED66A0B0806050648612DB041C61A0091783B7DD795B89AF423668ACF2C9BC8FC507F7F3A7CE6D691BAF8BEA2353072F4E68AC36DD9E3461E3D6B0D7F3C6359F569CBD7EBE030B18DB18308BF8CE8AC7650101079B4DB51ACECA16C0ECFDE456F752DB29817D46A83C5BE18F09937E62E50841EDAE93238CCFE6CF2A4B393155CA9F912B978AF06FDE34A3B2E6B69433544E1DC4854FD50F79A43F27986BD13CAE7DA6C2C52268004598ED01B8234C40559533631B3560CD69565563C2860952AA769D100720749D251BF96C0B44D8CA4FF74E51EC3A901EDAE4E3575EDBF6DCF70684E4AC3002DB7F9515B2B09A588799AEC326DA324F3C89CA33B0BA29FCA4C32337A74321716699CC1C5E3DB276C851B5230F3DE4F0A30EADC0B799E94366C8D461D529E5C8995A4569E1DC4C45CE0DB78B1E5333522896794608C28CFAC2A0B5BC78E7C01F7734AE998474EA54610B08006D888056D2AA639F0A4534C37B6A99373FFDDA76BBFF73FF9E0FDD7BC9592F6D7BEA2D68647486B7F493511A097DFCE31B0F7E72DCCF3F2485C4AC3074215A38F8F88D3E54A109218475ED93B7EFB2F96D5FDE4053A6D4BB82408DF1A84881BB442FEB083E9CC9154A390967D01F9C87B96FED6E5DF1C13D7FFE044C2EBA4C9A909AF69793F2A0C4B7DBCDC12A59257D5EA9BAFBFF91E0437923D1A37C285047CF015401183DF7B2D1CAA0B8D06945172BD20168F4C0582B0FB3B2096D62C5900A86F2A1DE01D3EBD902CBE46DC89BD2361F7B048AE76188616871FB7101C6AFDF00EB69574BBE46853ECE3C80420837E10798C80F861A07C62415A233DC3B8FD80CC7C8781B296FF076BD6DC17FB90D7DD4C1448EC2DC3D23CA8E3390E851303F30557D58C67C009AEF116E2586783FF23861D33175046A15C196DAA60BC9AC745237ED753BE2677930A20406187BC8F8E516A05C32CC9874CD7E287B99814F7904D2A61A06A238C779BDCA23F5234576B61568E9CC768E03DC4013A6ABDC1EC6BC74256015878A31F39690D7C0551E66630B9B8D97AA41A2CFDB36F0B634C148D205749465197C00B554D76BB0366602DBB44CFC306BF33F2C68E11F16981C16B917842B3DEB952F0BC533FBB06A3F56F3276C282F24D52A9C8754EA4DFD7C1BD6EF9218B70E9F41140CD780E398F52B861B0E6747E91E450FCA0249E498DF2A1145F37A681172A40956DABB7CD9C968E3EC773E574F7B68C1AF645AC24CDFAAA3B402A5DA34131FB5009B366771C011060BA9B99CE97FD8C44F464EBC5F285A67D237CD2C94CAA5DC59252F1ABE34547886A13126E867B3E7A784BE5463BDB685452CA6CC2978AABC1D9E5C49C4369A5685CCA9A0207D056716ECA98615DE38E76BB4148CC9434DD5600576142387573093894389A63CA1A3CE25C80B0215CC039762F80C56B8EC2B5B3AAA375DAEDEAE29D3D0054D62AD45978E4F47305C2C16D7761A0EEE35EFA8D8AE58AAE9C071375D30AEEC5E6B1CD96517F858C4843E3A31B1305D603775C3F14F8123D20B15B81FB24C8F590F8822720687C5927137ABF253CA13A2FDCC999D04DA4E481302B8907DA35C08932A79DC17AF170EFCC5741DC7E6B0B40E8EB9B4DA0E3A86610BAA12362FDCC4934183EDC3ECB06BB67FEF09AB1C368E623E4B09CCF979E400CD23C173EDDE3D8FA40B7A023975843D7A8168CA32D1C0A27BC1406A4726A0B65E6FD1F1A58E8472009BEF649CE2D7BB1D88BF97CBF61A85BF8B758034C1EC8BDD2F6212DD4AE51C96CF96CBFF0B511FF598C5A7C743D23EC6FB62084C779DFF81B8CF7056F1FB7321619FE53DD1A29E52944BFF03515FE6ACE2F75743A2BEC27B2245DD22532CE08E5F9E4F954EF91F88FC561BCBD8F64E48F4B7DB202255B0695E2E8BC54C4AFC1F88FF71805D7CFE3424FA2781DE48B107F3A0A5FF81C8DF7256F1FBF72171BFE33D91A26E92598058F37FE1AC7FF5B9C5C7DF4302FFE676C670D743996CAAF43FF0D78984CB2B3E0C04E54D24DD2E94768C4A6B5FA04D60DA6A3B4AC30CCDF1C2FF658E13A33EB7F8B83124F396D819778E17FE2773BC93CB2B3EEC12927767ECEA31C7F001F8524E2E4D4D435C7D60545CEDE7597B0A5BDC74E06BE7EEE1C6D6E37DD69F289540FD895E379C352C48B61AA60353B148CFF1D76CB8AE09278840A10AA7C6FC049226146D0967B700BDEDC251BC1CC4E3AEB394D3761D775427C05E15339442CF44A0FF683F91A053332AE5E68B52A9CCB75C935923ED3AA097B225FA080534AC6D50ACC4BE9CE4369CE47C4A8268AD04E581F25C6A3E4879837F1E030284B1B73D3525CFE7A432232277636C2AEEAB0A7657FE36044708128EFF0E4498E056BE0E0BB94C098A2141A2E3DEA2C878676C61FC8D1C7F2E7516D0582804790A1EE3F04B3961E4318E0C6B3055968B0B5226175F247A0B5CA6C9707796E48C949F2F89B9104B93BD69A696E1B0178E06DDB241BBFA196916E68478DDE89B8568C09D89369EB6E588528E89594E2F14B2610ADBFB14A46035641DE94AF9B95C79B15808D118F369E0AA5C3474D2DDBE678BD25C0A7EA532A5A274768044CFEA1AA33C1B7C13204C7EDCB5263125633098CAE6A420F16D7C83A0EB5A34F016FD3A02E6E6E6C51478DF2081AD7D01E10047EB66919BCB54C07C4ECC06518307A978261D461A9ECD8BB0DA63BB105EFC9A85E2DE7A467D465E2A2DA4C4FC621F64A160A45A4E13DF3E6A27BB751E52E5930B452907CEE9E47C21D5BE563BCF4C5D0202855A13E0D3C46F977A175E2F870828B9E79E267E58F1C1A3D8350068DFEF93AB83F873DD8D1ADE7461EEC3E105B3437AC0F1ED0BBF2B55C504C5AEB7B12751AE8B6139CE61792D9B3E44C325878D1739825839536B544BA737AB279F5AAB1CA65D94CFACB60A32FE6F358A27CF1DBE985D992ECAD3E717B25A1D6E4AAB8B8DB39DB31BB9E9823AB556B828DD289C7CEA79C5ECCAA18543178E6C997D54C568353350440F9C3F1CB414A7124AABF01DEFCCD06BCD07F50E3E42044EBA4F78E0BB170E7FD88D3E927D9CA6F8647C4106C3A701EEFEEE18E7135D26588A064F008B3B70C5325387D60A8642A0040A084A185FEA7C6DAE6582091E2DE744D87C763F7064562ACEED7E815A6B1E3EC1E2B491334FC949B9DD47360BB54E9C0BA67AEEEEC7EFCE37E0AB93CC7AA915CBA78BA6C903F4B35EFAF0C867AE7CF4CEEC23777C7544C638F97450E50111AAF48BB6CBDF5C75C91D073F9F7515B909287232A6225D22318F1FE0F6199870A5A9D1902A0D7737F58A45AF806100D519EEA585CD20BE23B4174E19186E9F2F3B657C2416BF750689DDEE618FBAACF9B7D3A6215A0B311CFFBE623E88C6D9D8C9A3452CBECFB40787BB758274468A1013ABBAEAC0DB9CDD62E270B83A82EA0C49348A2D7DBE0C2321CA7F3A055CFD09DF708A7595283C7F9DA76AACC00AFB283BA53B349260682ED6213958C098C3F4B69444972D657B9DACEEDE11FBED3F7D00DBA061FFCA950B0B73E99C14EFCD1A4FABEB89C9B65CF40427328770B3AB487CB81D86C5DF77B018652E053A91CA99054982FB4665E48676DF1F0F7F8CE3978AA59448B1E5D8E89ED6927D6B6D43A6282ECC153CBD21C5FB603A90816E235380DB20C3A551B93FF2409F2377B03E189FC014637D0B1E11514E7AEBEA297F9CA1F8E3746774383E01CEE8082A33C0E69331D8DC24FE28DDD9DC343E01579FCC1418A39E250CB356CA322EABE322975597F3C49E0B7F411491FA5EF12E3A065EA55DEFCC1FAD424AE54B11AFA0CDC47E596D2F1F32D6B504FF1DDCF558842DBA9487642F96C8FC95B75E4A4CA70A5933428A0303371FBABF97469FA73878D1BB36BCAF3BA2776D38F195E9DDDE39CDFD72060B8DAEBFEE8ECDFFF955FCF5DA639F38EFB1D9FC57480EFC05FEF9831A1B77915DF3C4AFE75032AC7999FDAA056E5A25BEF37E7CCD7AB5CE5ED6B1B25E87B15EC7059D1D2E2BB6DBFC758FAB4908B8EAADB7CDDAD7DB8077101920C1D1AEF226A5189894A82B361045C12DD709F70DE98CFF77264237A6C72B9661DB901A05007080024408FC6F0474F66CEBBE29DFD99B6899A18449A009D3466A5BEB76802CC77795C5FD6B1636AF97F9D1935FFA0B8944DF9BA9B4B1046F0854E9EBAA3E1265054E4EC2CC6EC178E217113A2B47635FDDFFF01F575E775412DED7752F0023FE122203C6B1BD85C00216A85AEF2646E8062AA71DFE1B1FC5E5F3408463E93D03BA1BFCE99A4FE26FF891F41B93F898F01E07C28F831E4AE22FAF71280C338C8F43DEE326E1DE4DC3BD9BE17DA808C9E9658D7584F523E0165D46BF789447F05B7273ECBBB205C95D797AE6E8C3A68E9839F4E8A3A78E3EBC7CE4A147CC1C7134A419B1D6C1A9A0C94A8673F42F504B0304140000000800F9AA1A572E26EF8DF704000051170000130000005445535430312F5445535430312E6A72786D6CBD985973DA3010C79FCBA7503D7DEA8C8D2F7C64209D04C83504DAD8699A7632A96CCBA0D4576C39403AFDEE956CCE346903141EE2B1E4DDDF6AFF5AC768EB1F4661001E509AE1386A7092207200456EECE1A8DFE02EED23DEE03EEC57EA6F791E34530409F2C010930138835942BD629F008BE41E8EA710A009922E88828F2318803CA3A089F1054AE29464A0839D14A6E3270EBCE6998A642AB22A799EE1BAAAACC926920CC33155DF44A2E3D6745946BE0700CFD315DD2D30014D22CA1ADC809064AF5A2D1FA56538218BF3D4457E9CF6911021B2FC942B5DF746199EB90F874361A808D4A12A8BA254FD72DEB1DC010A218FA38CC0C8451CA0F67B5931D9895D48681AEB4407AF721965DE928540273810C1103538BB6DD9A2C48104F6D115F6C8A0C1D5CC5A393E41B83F200DCE50650EB8719087D1D4A4464D02E4937398F6315DBA4CB73DA5D64B13244E16874E4C481C2ECEE439F61A1CAC990692951AAF2A9ACFAB7A4DE21DCFD37845771443829A69AA2AB75F79534FD298E640C693A5BB7128DCCDAA48C88A2A123C48A090DD0702814E80E8FE3CC02067D65741E8D99F72EFF8CC7795E0F1B4391C752DF6370A7BC7E7EAD7565FEA59D28F6E2B1874EC0BFC35BC26D7615BEA6271DC7D3C0CBBC76777BD565FEECA973A575D6D391EF2611E10760F3D981094CE9645E5C0B075C807B40A820917A614488D26E0DE698BCA1FC08C16E81D7C804200A3BE609194BE194C9737F509FF3343B647498A32F65EECD7DF7E6BB60EEC836F1C7773B35FAF3E6FC642566731D9E83E47E9B8E403162B877DBA0CEB53A78836A35AED4EBB6983F795A38BDE39B8C77EAE0AC4B9CDC659E5EAA47DD10695374BB3C2779AC977D000EF3EFEA477BF6E6E8AD00BD1D8D8C728F05E9DF9ABF6A0400ACCA2947D42AEAE4A08A08382CD10244548482019CC30A536135261D442999BE2842C6D61B1814F1F539FC9E453E5AC6BEB766BE231F83AC917FA6D4CD99584DD83F3F6960464E8D5132FE4DB90B12BF14E7A96BD25F1187AF5C40BF13664EC4ABC66AF6BB7BFD8B71F0FEC932D89B8186275210A31FF136B57A29E5AB79D5EF3A0B32541A7F8D50528C4FC0F9C9D0949F77B5B2252F4EA8917026EC8D89578CD4BAB7DB1B50F73415FE79B5A48B83966672A52A7A56F73F98BDFC621A2E7AB30D950454A5FE3D35A68B82964570A5E6EB50E2FD72DA042C3CD313B5371AB7578B95E09151A6E0AD9A6820E747FF4D3388FD8880D230F644980893D4ED8B980C626EEA03C0B57978CEB049300CDBD069306856E72CF119821F54123723489CDC6650FA41DA01045B4F1D3E06823625C5C87D3E606BD9FA3A76D0A43531CE8689087BAAAF1AA8964DE8086CE9B86E8F8C85755D7578B454F82CE42B0FB8300F72336A2FF19E815A5E5E29894313561976E79704329F66936F8910E646D06AC2E10CBA97962CF1DF9DF1DFD2C0F58BF8A1D79CEB632E1CEE529F42E95AE4EA5AE979D20E8A1F44FE1951AF7F2D62D39D6CBFED14B204DFA0B68D995B53B08C4C19F1049AE6D5E07D2422168F47E0697E60D2BC5F474B766D03695442B019A226FF88EC4BB8AA4CBA28FA028CB65D0D7BE745992D2ECB201424470E328422E7B6D4E5BB3B74F7390A67ABA4F03E932AF1AB24BEF3489D790A87822D435DF85F35A594A6DBD8A9C1520C0D9611CD0AC499AA34DCA911D58D72DC672C7E7657414C7E4B932526BFF2CA3D2755AD82F816AEA3F0A7B8EC9F230A4DDE8671623FF8531F3AA57171BD1FB95DF504B01023F001400000000004DAB1A570000000000000000000000000700240000000000000010000000000000005445535430312F0A00200000000000010018001C56D1E920D8D9011C56D1E920D8D901659BDCE720D8D901504B01023F0014000000080020AB1A578FDF3D9426130000B54500001400240000000000000020000000250000005445535430312F5445535430312E6A61737065720A0020000000000001001800CEA52AB620D8D9011C56D1E920D8D9011C56D1E920D8D901504B01023F00140000000800F9AA1A572E26EF8DF70400005117000013002400000000000000200000007D1300005445535430312F5445535430312E6A72786D6C0A00200000000000010018005AF0698C20D8D9011C56D1E920D8D9011C56D1E920D8D901504B0506000000000300030024010000A51800000000,'aaa2222333','admin','2024-01-23 10:34:40','admin','2024-01-23 10:50:22');
+INSERT INTO `tb_sys_jreport` VALUES
+('f55a9ae4-b997-11ee-a0c4-97126ca2fa90','TEST01','TEST01.jrxml','Y',0x504B03041400000000004DAB1A57000000000000000000000000070000005445535430312F504B030414000000080020AB1A578FDF3D9426130000B5450000140000005445535430312F5445535430312E6A6173706572D51C6788335570932BEAE9777EDED97BEF5EB19CBDA49D46F792733767B903E35EF27259DDECAEBB1B2F67171B585050C18ABD8082888A200A961FA2600545EC88584045C4022AE2CC7B6F5B92CB6EF097E1FBEEB2EFCDCC9B99376FDECCBCB7F7E48FC2906D09FBEBC499B06B13E729B6492C8B9886E5D813445F517532712A6D9468A3403FFB7D9414064461F38AD130558D64154771846DC5F3940B9549D5989489A52A9A7A91B2AC916345612B0E56501A446ED66A6ACB11C618B0A6E82B93B263A9FA0A006EE0805646536CFB02E13221D9B284437AF1B6ACD8C0A094865FED0C1E9417769897730BD96259CE49F994583E2327C9F962A1BC90CFE6852D960DC7311A738A0584F2288BD66CE819A3A93B7961037B924DA502AC79BD67AA55A7BE286C545774C322F30A602A8E6AE88BC2B86ACF6A86E26428DCAC6138C442405B6E361A8AB55620AB004E1685DDBDA63355A78E6DA710A54AAC945E75B14655BBA43A1AE138796144233587319A1636372C95E80E1D17BA4C4A415DA903D79BE103E5310D1DA054A768016960DF420057D4CD1CC374A98DAED6895E3070064B6B2611859165A572FE8A056AA83AC2DE22E87ED2AE4D86743FC9743F896AD7AB306F5B32ED64558B54902D4738AC27A203234D4A4D1F21A7371B40678B4A407B38FD835E1B2A89B72D099B56815D9B38B623ECBF14C162968122F52AA9294DCD919D358D38C23E1188140CD086ABC451548DB3B3813DC9AEA0FB4550E1804067AC66580DC599552A8E61ADF9160E2A571B144B268E236CC91646D351B54999F2BD292E9226CC2C071F0554070D23A4A7CD1B8AAA7361A3D9F2B532A82B0D97F2B04E0D8153DC1830B43314AD093A3B347A5A8B1CC99FD51133CC2B6F09CC2858906FAD7CA8E9E8A1E63D1C3ED2E636D33658723C66651F9E925812866D9C7630AC7D97C478F6B189CD9633B7CDCD1CD23035C5411A93513498CB2A310C2436E4E0C2E74A190FAF4DAE9823A2C53AD3C3F3246B9982F0D393E019B786FF09817E9207D15FBC71E0546891E913FD0FBBC241313D2FBA01DFEF6EDADBEF0ED7A9B7A26E4E3635D549699AB14AAA202F3502643ED7322D62DB74851D18A1431F167710D33200C851893DA7988E704804F27C101C7D84459CA645CD1D27706360318AAA8DEB65331B796616B631B089A5D7E8048EB26E7FBAA6A2A78B6AC19F294B382CA6DE731A69C0623B19BCB5E9E91F17F2A695BAAA552DA2A3256D0362111F12B47270944A03D060396009E328E804EA61226559CA1A2AA375E5FBBBDCF9BA72EF8090C80B83B67A1169512E5607F1A7677042C284CF659630D14B2A54C4444811AE6D8E012D4B18A50CA0A627DA3B41A04DE492942B654E8151A62347096E3CEDB4505FBB3A10DB9424EA9DC7E8CF9DBA887508150B7B778B803CDE8784DF362822E6F472EF1498D925616819D61A58E63E4B71B666803715CB89033F0F7030D74D0B417B31C849DFFED9653FDCF8E635472499A442A24D0B09AA8504883B1553DC126939B32AD102AE64BBDEAE64C3B2619C0FBEF77C915C48340866C885B0E814EAD2D506490B5BD6D760484DD5CF2F41BC439CB4B0C16F812F8BC236E0841C58F4953A8663C50B8955036F240A5B2B7AA56E5818B2FA0E06651B1785ED42C376746FE97341575074A8C1161A38C010FF7D38FC5C08CFDD77493B673B78C2A7A8749D927900185FB4752F09E3816E0B34033B3A98D66151A6754A071670B7B3474B223502AEAAD2A9E81DFDC9320CCD51CD1E0CE3B6D13915AA9DD614D659686A9A038D01970D4489A2A3AA7C13E1A1D0A6AE89F0E74D4CC501C675FEB8157BEC1C71C4012B4E55CF6BDA4EAC18A6E481BBCEFFD03E960B77D4FE82D9A1D78201A96AB0A316DC808F3FCBE0B9C38AC9EB0E598159E2003605D82A0040531D34583022F5220051B4940649113283A4B71585EDBB7471839E8956CB296164D44D7838941EBB40F863FA21C7F07C92C36021865645A60F0771553B0F406A853F6F50EDF96A2DD75826D52A7181B6A42E433D9F94EAB06E57EABC790B68C690B08A43F0B6CD557B41AF520325BC6913FC9E365AD131BAC80031AE451C9E8B72F56E0C34C50FCE451FC9951FFD58D3E4F6B099092B74C552CCBA231C10BD61305064D0042DE915A3CA194CB2A6D9366BB30C9618701936B8CF5C80C968012423945A6C7521066F954EEBDBB6A3838F7178F418670450DB060AD9DD51F14985ADAE153F04E858E03BC50CAEB7536D9A1EE5F559159CF4997543A3613AEC78BC07720F02494795C5BA8BC28EBC1D7D659626B9EE6E68532489348C0B095A104250B79A16B6300D5B7553A83424606C2FC5A7BC30B48AA588BC9068C1FF35B02E2C2D403A6F585EE8ACAC3A93196C011D6F1DCCCF2130BF50859503331695CA76C13A3614F232F3DE011880149C5006B0212D0A03E793356E9C830DA34AB8F56C86DFB9C11C143DCB7300ED66A0B0806050648612DB041C61A0091783B7DD795B89AF423668ACF2C9BC8FC507F7F3A7CE6D691BAF8BEA2353072F4E68AC36DD9E3461E3D6B0D7F3C6359F569CBD7EBE030B18DB18308BF8CE8AC7650101079B4DB51ACECA16C0ECFDE456F752DB29817D46A83C5BE18F09937E62E50841EDAE93238CCFE6CF2A4B393155CA9F912B978AF06FDE34A3B2E6B69433544E1DC4854FD50F79A43F27986BD13CAE7DA6C2C52268004598ED01B8234C40559533631B3560CD69565563C2860952AA769D100720749D251BF96C0B44D8CA4FF74E51EC3A901EDAE4E3575EDBF6DCF70684E4AC3002DB7F9515B2B09A588799AEC326DA324F3C89CA33B0BA29FCA4C32337A74321716699CC1C5E3DB276C851B5230F3DE4F0A30EADC0B799E94366C8D461D529E5C8995A4569E1DC4C45CE0DB78B1E5333522896794608C28CFAC2A0B5BC78E7C01F7734AE998474EA54610B08006D888056D2AA639F0A4534C37B6A99373FFDDA76BBFF73FF9E0FDD7BC9592F6D7BEA2D68647486B7F493511A097DFCE31B0F7E72DCCF3F2485C4AC3074215A38F8F88D3E54A109218475ED93B7EFB2F96D5FDE4053A6D4BB82408DF1A84881BB442FEB083E9CC9154A390967D01F9C87B96FED6E5DF1C13D7FFE044C2EBA4C9A909AF69793F2A0C4B7DBCDC12A59257D5EA9BAFBFF91E0437923D1A37C285047CF015401183DF7B2D1CAA0B8D06945172BD20168F4C0582B0FB3B2096D62C5900A86F2A1DE01D3EBD902CBE46DC89BD2361F7B048AE76188616871FB7101C6AFDF00EB69574BBE46853ECE3C80420837E10798C80F861A07C62415A233DC3B8FD80CC7C8781B296FF076BD6DC17FB90D7DD4C1448EC2DC3D23CA8E3390E851303F30557D58C67C009AEF116E2586783FF23861D33175046A15C196DAA60BC9AC745237ED753BE2677930A20406187BC8F8E516A05C32CC9874CD7E287B99814F7904D2A61A06A238C779BDCA23F5234576B61568E9CC768E03DC4013A6ABDC1EC6BC74256015878A31F39690D7C0551E66630B9B8D97AA41A2CFDB36F0B634C148D205749465197C00B554D76BB0366602DBB44CFC306BF33F2C68E11F16981C16B917842B3DEB952F0BC533FBB06A3F56F3276C282F24D52A9C8754EA4DFD7C1BD6EF9218B70E9F41140CD780E398F52B861B0E6747E91E450FCA0249E498DF2A1145F37A681172A40956DABB7CD9C968E3EC773E574F7B68C1AF645AC24CDFAAA3B402A5DA34131FB5009B366771C011060BA9B99CE97FD8C44F464EBC5F285A67D237CD2C94CAA5DC59252F1ABE34547886A13126E867B3E7A784BE5463BDB685452CA6CC2978AABC1D9E5C49C4369A5685CCA9A0207D056716ECA98615DE38E76BB4148CC9434DD5600576142387573093894389A63CA1A3CE25C80B0215CC039762F80C56B8EC2B5B3AAA375DAEDEAE29D3D0054D62AD45978E4F47305C2C16D7761A0EEE35EFA8D8AE58AAE9C071375D30AEEC5E6B1CD96517F858C4843E3A31B1305D603775C3F14F8123D20B15B81FB24C8F590F8822720687C5927137ABF253CA13A2FDCC999D04DA4E481302B8907DA35C08932A79DC17AF170EFCC5741DC7E6B0B40E8EB9B4DA0E3A86610BAA12362FDCC4934183EDC3ECB06BB67FEF09AB1C368E623E4B09CCF979E400CD23C173EDDE3D8FA40B7A023975843D7A8168CA32D1C0A27BC1406A4726A0B65E6FD1F1A58E8472009BEF649CE2D7BB1D88BF97CBF61A85BF8B758034C1EC8BDD2F6212DD4AE51C96CF96CBFF0B511FF598C5A7C743D23EC6FB62084C779DFF81B8CF7056F1FB7321619FE53DD1A29E52944BFF03515FE6ACE2F75743A2BEC27B2245DD22532CE08E5F9E4F954EF91F88FC561BCBD8F64E48F4B7DB202255B0695E2E8BC54C4AFC1F88FF71805D7CFE3424FA2781DE48B107F3A0A5FF81C8DF7256F1FBF72171BFE33D91A26E92598058F37FE1AC7FF5B9C5C7DF4302FFE676C670D743996CAAF43FF0D78984CB2B3E0C04E54D24DD2E94768C4A6B5FA04D60DA6A3B4AC30CCDF1C2FF658E13A33EB7F8B83124F396D819778E17FE2773BC93CB2B3EEC12927767ECEA31C7F001F8524E2E4D4D435C7D60545CEDE7597B0A5BDC74E06BE7EEE1C6D6E37DD69F289540FD895E379C352C48B61AA60353B148CFF1D76CB8AE09278840A10AA7C6FC049226146D0967B700BDEDC251BC1CC4E3AEB394D3761D775427C05E15339442CF44A0FF683F91A053332AE5E68B52A9CCB75C935923ED3AA097B225FA080534AC6D50ACC4BE9CE4369CE47C4A8268AD04E581F25C6A3E4879837F1E030284B1B73D3525CFE7A432232277636C2AEEAB0A7657FE36044708128EFF0E4498E056BE0E0BB94C098A2141A2E3DEA2C878676C61FC8D1C7F2E7516D0582804790A1EE3F04B3961E4318E0C6B3055968B0B5226175F247A0B5CA6C9707796E48C949F2F89B9104B93BD69A696E1B0178E06DDB241BBFA196916E68478DDE89B8568C09D89369EB6E588528E89594E2F14B2610ADBFB14A46035641DE94AF9B95C79B15808D118F369E0AA5C3474D2DDBE678BD25C0A7EA532A5A274768044CFEA1AA33C1B7C13204C7EDCB5263125633098CAE6A420F16D7C83A0EB5A34F016FD3A02E6E6E6C51478DF2081AD7D01E10047EB66919BCB54C07C4ECC06518307A978261D461A9ECD8BB0DA63BB105EFC9A85E2DE7A467D465E2A2DA4C4FC621F64A160A45A4E13DF3E6A27BB751E52E5930B452907CEE9E47C21D5BE563BCF4C5D0202855A13E0D3C46F977A175E2F870828B9E79E267E58F1C1A3D8350068DFEF93AB83F873DD8D1ADE7461EEC3E105B3437AC0F1ED0BBF2B55C504C5AEB7B12751AE8B6139CE61792D9B3E44C325878D1739825839536B544BA737AB279F5AAB1CA65D94CFACB60A32FE6F358A27CF1DBE985D992ECAD3E717B25A1D6E4AAB8B8DB39DB31BB9E9823AB556B828DD289C7CEA79C5ECCAA18543178E6C997D54C568353350440F9C3F1CB414A7124AABF01DEFCCD06BCD07F50E3E42044EBA4F78E0BB170E7FD88D3E927D9CA6F8647C4106C3A701EEFEEE18E7135D26588A064F008B3B70C5325387D60A8642A0040A084A185FEA7C6DAE6582091E2DE744D87C763F7064562ACEED7E815A6B1E3EC1E2B491334FC949B9DD47360BB54E9C0BA67AEEEEC7EFCE37E0AB93CC7AA915CBA78BA6C903F4B35EFAF0C867AE7CF4CEEC23777C7544C638F97450E50111AAF48BB6CBDF5C75C91D073F9F7515B909287232A6225D22318F1FE0F6199870A5A9D1902A0D7737F58A45AF806100D519EEA585CD20BE23B4174E19186E9F2F3B657C2416BF750689DDEE618FBAACF9B7D3A6215A0B311CFFBE623E88C6D9D8C9A3452CBECFB40787BB758274468A1013ABBAEAC0DB9CDD62E270B83A82EA0C49348A2D7DBE0C2321CA7F3A055CFD09DF708A7595283C7F9DA76AACC00AFB283BA53B349260682ED6213958C098C3F4B69444972D657B9DACEEDE11FBED3F7D00DBA061FFCA950B0B73E99C14EFCD1A4FABEB89C9B65CF40427328770B3AB487CB81D86C5DF77B018652E053A91CA99054982FB4665E48676DF1F0F7F8CE3978AA59448B1E5D8E89ED6927D6B6D43A6282ECC153CBD21C5FB603A90816E235380DB20C3A551B93FF2409F2377B03E189FC014637D0B1E11514E7AEBEA297F9CA1F8E3746774383E01CEE8082A33C0E69331D8DC24FE28DDD9DC343E01579FCC1418A39E250CB356CA322EABE322975597F3C49E0B7F411491FA5EF12E3A065EA55DEFCC1FAD424AE54B11AFA0CDC47E596D2F1F32D6B504FF1DDCF558842DBA9487642F96C8FC95B75E4A4CA70A5933428A0303371FBABF97469FA73878D1BB36BCAF3BA2776D38F195E9DDDE39CDFD72060B8DAEBFEE8ECDFFF955FCF5DA639F38EFB1D9FC57480EFC05FEF9831A1B77915DF3C4AFE75032AC7999FDAA056E5A25BEF37E7CCD7AB5CE5ED6B1B25E87B15EC7059D1D2E2BB6DBFC758FAB4908B8EAADB7CDDAD7DB8077101920C1D1AEF226A5189894A82B361045C12DD709F70DE98CFF77264237A6C72B9661DB901A05007080024408FC6F0474F66CEBBE29DFD99B6899A18449A009D3466A5BEB76802CC77795C5FD6B1636AF97F9D1935FFA0B8944DF9BA9B4B1046F0854E9EBAA3E1265054E4EC2CC6EC178E217113A2B47635FDDFFF01F575E775412DED7752F0023FE122203C6B1BD85C00216A85AEF2646E8062AA71DFE1B1FC5E5F3408463E93D03BA1BFCE99A4FE26FF891F41B93F898F01E07C28F831E4AE22FAF71280C338C8F43DEE326E1DE4DC3BD9BE17DA808C9E9658D7584F523E0165D46BF789447F05B7273ECBBB205C95D797AE6E8C3A68E9839F4E8A3A78E3EBC7CE4A147CC1C7134A419B1D6C1A9A0C94A8673F42F504B0304140000000800F9AA1A572E26EF8DF704000051170000130000005445535430312F5445535430312E6A72786D6CBD985973DA3010C79FCBA7503D7DEA8C8D2F7C64209D04C83504DAD8699A7632A96CCBA0D4576C39403AFDEE956CCE346903141EE2B1E4DDDF6AFF5AC768EB1F4661001E509AE1386A7092207200456EECE1A8DFE02EED23DEE03EEC57EA6F791E34530409F2C010930138835942BD629F008BE41E8EA710A009922E88828F2318803CA3A089F1054AE29464A0839D14A6E3270EBCE6998A642AB22A799EE1BAAAACC926920CC33155DF44A2E3D6745946BE0700CFD315DD2D30014D22CA1ADC809064AF5A2D1FA56538218BF3D4457E9CF6911021B2FC942B5DF746199EB90F874361A808D4A12A8BA254FD72DEB1DC010A218FA38CC0C8451CA0F67B5931D9895D48681AEB4407AF721965DE928540273810C1103538BB6DD9A2C48104F6D115F6C8A0C1D5CC5A393E41B83F200DCE50650EB8719087D1D4A4464D02E4937398F6315DBA4CB73DA5D64B13244E16874E4C481C2ECEE439F61A1CAC990692951AAF2A9ACFAB7A4DE21DCFD37845771443829A69AA2AB75F79534FD298E640C693A5BB7128DCCDAA48C88A2A123C48A090DD0702814E80E8FE3CC02067D65741E8D99F72EFF8CC7795E0F1B4391C752DF6370A7BC7E7EAD7565FEA59D28F6E2B1874EC0BFC35BC26D7615BEA6271DC7D3C0CBBC76777BD565FEECA973A575D6D391EF2611E10760F3D981094CE9645E5C0B075C807B40A820917A614488D26E0DE698BCA1FC08C16E81D7C804200A3BE609194BE194C9737F509FF3343B647498A32F65EECD7DF7E6BB60EEC836F1C7773B35FAF3E6FC642566731D9E83E47E9B8E403162B877DBA0CEB53A78836A35AED4EBB6983F795A38BDE39B8C77EAE0AC4B9CDC659E5EAA47DD10695374BB3C2779AC977D000EF3EFEA477BF6E6E8AD00BD1D8D8C728F05E9DF9ABF6A0400ACCA2947D42AEAE4A08A08382CD10244548482019CC30A536135261D442999BE2842C6D61B1814F1F539FC9E453E5AC6BEB766BE231F83AC917FA6D4CD99584DD83F3F6960464E8D5132FE4DB90B12BF14E7A96BD25F1187AF5C40BF13664EC4ABC66AF6BB7BFD8B71F0FEC932D89B8186275210A31FF136B57A29E5AB79D5EF3A0B32541A7F8D50528C4FC0F9C9D0949F77B5B2252F4EA8917026EC8D89578CD4BAB7DB1B50F73415FE79B5A48B83966672A52A7A56F73F98BDFC621A2E7AB30D950454A5FE3D35A68B82964570A5E6EB50E2FD72DA042C3CD313B5371AB7578B95E09151A6E0AD9A6820E747FF4D3388FD8880D230F644980893D4ED8B980C626EEA03C0B57978CEB049300CDBD069306856E72CF119821F54123723489CDC6650FA41DA01045B4F1D3E06823625C5C87D3E606BD9FA3A76D0A43531CE8689087BAAAF1AA8964DE8086CE9B86E8F8C85755D7578B454F82CE42B0FB8300F72336A2FF19E815A5E5E29894313561976E79704329F66936F8910E646D06AC2E10CBA97962CF1DF9DF1DFD2C0F58BF8A1D79CEB632E1CEE529F42E95AE4EA5AE979D20E8A1F44FE1951AF7F2D62D39D6CBFED14B204DFA0B68D995B53B08C4C19F1049AE6D5E07D2422168F47E0697E60D2BC5F474B766D03695442B019A226FF88EC4BB8AA4CBA28FA028CB65D0D7BE745992D2ECB201424470E328422E7B6D4E5BB3B74F7390A67ABA4F03E932AF1AB24BEF3489D790A87822D435DF85F35A594A6DBD8A9C1520C0D9611CD0AC499AA34DCA911D58D72DC672C7E7657414C7E4B932526BFF2CA3D2755AD82F816AEA3F0A7B8EC9F230A4DDE8671623FF8531F3AA57171BD1FB95DF504B01023F001400000000004DAB1A570000000000000000000000000700240000000000000010000000000000005445535430312F0A00200000000000010018001C56D1E920D8D9011C56D1E920D8D901659BDCE720D8D901504B01023F0014000000080020AB1A578FDF3D9426130000B54500001400240000000000000020000000250000005445535430312F5445535430312E6A61737065720A0020000000000001001800CEA52AB620D8D9011C56D1E920D8D9011C56D1E920D8D901504B01023F00140000000800F9AA1A572E26EF8DF70400005117000013002400000000000000200000007D1300005445535430312F5445535430312E6A72786D6C0A00200000000000010018005AF0698C20D8D9011C56D1E920D8D9011C56D1E920D8D901504B0506000000000300030024010000A51800000000,'aaa2222333','admin','2024-01-23 10:34:40','admin','2024-01-23 10:50:22');
 /*!40000 ALTER TABLE `tb_sys_jreport` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -731,7 +766,7 @@ CREATE TABLE `tb_sys_jreport_param` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`REPORT_ID`,`RPT_PARAM`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -740,7 +775,8 @@ CREATE TABLE `tb_sys_jreport_param` (
 
 LOCK TABLES `tb_sys_jreport_param` WRITE;
 /*!40000 ALTER TABLE `tb_sys_jreport_param` DISABLE KEYS */;
-INSERT INTO `tb_sys_jreport_param` VALUES ('f4840904-b9a5-11ee-a0c4-3b25c1760c68','TEST01','oid','OID','admin','2024-01-23 12:14:51',NULL,NULL);
+INSERT INTO `tb_sys_jreport_param` VALUES
+('f4840904-b9a5-11ee-a0c4-3b25c1760c68','TEST01','oid','OID','admin','2024-01-23 12:14:51',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_jreport_param` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -761,7 +797,7 @@ CREATE TABLE `tb_sys_login_log` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`USER`),
   KEY `IDX_2` (`CDATE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -800,7 +836,7 @@ CREATE TABLE `tb_sys_mail_helper` (
   UNIQUE KEY `UK_1` (`MAIL_ID`),
   KEY `IDX_1` (`MAIL_ID`),
   KEY `IDX_2` (`SUCCESS_FLAG`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -830,7 +866,7 @@ CREATE TABLE `tb_sys_menu` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`PROG_ID`,`PARENT_OID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -839,7 +875,25 @@ CREATE TABLE `tb_sys_menu` (
 
 LOCK TABLES `tb_sys_menu` WRITE;
 /*!40000 ALTER TABLE `tb_sys_menu` DISABLE KEYS */;
-INSERT INTO `tb_sys_menu` VALUES ('122721b3-b876-11ee-ad91-67276b113f6d','CORE_PROG004D0001Q','5e055f61-bfc5-402c-93b4-f241dc17b00b','Y','admin','2024-01-21 23:59:34',NULL,NULL),('12276fd4-b876-11ee-ad91-e77b0e0410dd','CORE_PROG004D0002Q','5e055f61-bfc5-402c-93b4-f241dc17b00b','Y','admin','2024-01-21 23:59:34',NULL,NULL),('4bd4d202-5feb-495b-8c8c-ec6b7f5b8041','CORE_PROG002D0002Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),('5e055f61-bfc5-402c-93b4-f241dc17b00b','CORE_PROG004D','00000000-0000-0000-0000-000000000000','Y','admin','2017-06-03 14:23:17',NULL,NULL),('79e1cf24-2522-4cdf-abcc-6455b47d545b','CORE_PROG002D','00000000-0000-0000-0000-000000000000','Y','admin','2017-05-08 21:32:59',NULL,NULL),('7ea68636-c93a-4669-ac42-dafc3770d20d','CORE_PROG001D','00000000-0000-0000-0000-000000000000','Y','admin','2017-04-20 11:24:53',NULL,NULL),('9972c249-2985-49ac-9b8b-f6c25c65fd4e','CORE_PROG002D0003Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),('b192c6b1-a480-11ef-b0a1-a14f8ea486f4','ORRS001D0001Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),('b194e992-a480-11ef-b0a1-d5e10cd3b008','ORRS001D0002Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),('b195ace3-a480-11ef-b0a1-d561b221528d','ORRS001D0003Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),('b1967034-a480-11ef-b0a1-733752260429','ORRS001D0004Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),('c5349a26-6d6e-4d94-b817-82be6d14d5ed','CORE_PROG002D0001Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),('f0242c17-4487-11ee-b50d-a593cf4a05bf','CORE_PROG001D0001Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),('f0253d88-4487-11ee-b50d-7f3d9b9812d0','CORE_PROG001D0002Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),('f0264ef9-4487-11ee-b50d-a55549dc8acf','CORE_PROG001D0003Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),('f027877a-4487-11ee-b50d-8fe1228e511a','CORE_PROG001D0004Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),('f02898eb-4487-11ee-b50d-45ee94442a45','CORE_PROG001D0005Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),('f9b02a8d-8af4-11ef-92ef-b305036c7452','ORRS001D','00000000-0000-0000-0000-000000000000','Y','admin','2024-10-15 20:57:03',NULL,NULL);
+INSERT INTO `tb_sys_menu` VALUES
+('122721b3-b876-11ee-ad91-67276b113f6d','CORE_PROG004D0001Q','5e055f61-bfc5-402c-93b4-f241dc17b00b','Y','admin','2024-01-21 23:59:34',NULL,NULL),
+('12276fd4-b876-11ee-ad91-e77b0e0410dd','CORE_PROG004D0002Q','5e055f61-bfc5-402c-93b4-f241dc17b00b','Y','admin','2024-01-21 23:59:34',NULL,NULL),
+('4bd4d202-5feb-495b-8c8c-ec6b7f5b8041','CORE_PROG002D0002Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),
+('5e055f61-bfc5-402c-93b4-f241dc17b00b','CORE_PROG004D','00000000-0000-0000-0000-000000000000','Y','admin','2017-06-03 14:23:17',NULL,NULL),
+('79e1cf24-2522-4cdf-abcc-6455b47d545b','CORE_PROG002D','00000000-0000-0000-0000-000000000000','Y','admin','2017-05-08 21:32:59',NULL,NULL),
+('7ea68636-c93a-4669-ac42-dafc3770d20d','CORE_PROG001D','00000000-0000-0000-0000-000000000000','Y','admin','2017-04-20 11:24:53',NULL,NULL),
+('9972c249-2985-49ac-9b8b-f6c25c65fd4e','CORE_PROG002D0003Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),
+('b192c6b1-a480-11ef-b0a1-a14f8ea486f4','ORRS001D0001Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),
+('b194e992-a480-11ef-b0a1-d5e10cd3b008','ORRS001D0002Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),
+('b195ace3-a480-11ef-b0a1-d561b221528d','ORRS001D0003Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),
+('b1967034-a480-11ef-b0a1-733752260429','ORRS001D0004Q','f9b02a8d-8af4-11ef-92ef-b305036c7452','Y','admin','2024-11-17 09:10:11',NULL,NULL),
+('c5349a26-6d6e-4d94-b817-82be6d14d5ed','CORE_PROG002D0001Q','79e1cf24-2522-4cdf-abcc-6455b47d545b','Y','admin','2017-05-10 14:20:12',NULL,NULL),
+('f0242c17-4487-11ee-b50d-a593cf4a05bf','CORE_PROG001D0001Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),
+('f0253d88-4487-11ee-b50d-7f3d9b9812d0','CORE_PROG001D0002Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),
+('f0264ef9-4487-11ee-b50d-a55549dc8acf','CORE_PROG001D0003Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),
+('f027877a-4487-11ee-b50d-8fe1228e511a','CORE_PROG001D0004Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),
+('f02898eb-4487-11ee-b50d-45ee94442a45','CORE_PROG001D0005Q','7ea68636-c93a-4669-ac42-dafc3770d20d','Y','admin','2023-08-27 11:15:13',NULL,NULL),
+('f9b02a8d-8af4-11ef-92ef-b305036c7452','ORRS001D','00000000-0000-0000-0000-000000000000','Y','admin','2024-10-15 20:57:03',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -860,7 +914,7 @@ CREATE TABLE `tb_sys_menu_role` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`PROG_ID`,`ROLE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -869,7 +923,12 @@ CREATE TABLE `tb_sys_menu_role` (
 
 LOCK TABLES `tb_sys_menu_role` WRITE;
 /*!40000 ALTER TABLE `tb_sys_menu_role` DISABLE KEYS */;
-INSERT INTO `tb_sys_menu_role` VALUES ('7147502a-4abc-11ee-9380-f7f86272e6b6','CORE_PROG001D0004Q','COMMON01','admin','2023-09-04 08:46:10',NULL,NULL),('72a61cdd-4abc-11ee-9380-19ab31a4dc18','CORE_PROG001D','COMMON01','admin','2023-09-04 08:46:13',NULL,NULL),('81f84f17-b9e4-11ee-ae49-63eb5d9c550a','CORE_PROG004D','COMMON01','admin','2024-01-23 19:42:37',NULL,NULL),('924e2206-b9e4-11ee-ae49-efea48f6c66a','CORE_PROG004D0001Q','COMMON01','admin','2024-01-23 19:43:05',NULL,NULL),('924e2207-b9e4-11ee-ae49-d35121d1905d','CORE_PROG004D0001Q','admin','admin','2024-01-23 19:43:05',NULL,NULL);
+INSERT INTO `tb_sys_menu_role` VALUES
+('7147502a-4abc-11ee-9380-f7f86272e6b6','CORE_PROG001D0004Q','COMMON01','admin','2023-09-04 08:46:10',NULL,NULL),
+('72a61cdd-4abc-11ee-9380-19ab31a4dc18','CORE_PROG001D','COMMON01','admin','2023-09-04 08:46:13',NULL,NULL),
+('81f84f17-b9e4-11ee-ae49-63eb5d9c550a','CORE_PROG004D','COMMON01','admin','2024-01-23 19:42:37',NULL,NULL),
+('924e2206-b9e4-11ee-ae49-efea48f6c66a','CORE_PROG004D0001Q','COMMON01','admin','2024-01-23 19:43:05',NULL,NULL),
+('924e2207-b9e4-11ee-ae49-d35121d1905d','CORE_PROG004D0001Q','admin','admin','2024-01-23 19:43:05',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_menu_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -900,7 +959,7 @@ CREATE TABLE `tb_sys_prog` (
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`PROG_ID`),
   KEY `IDX_1` (`PROG_SYSTEM`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -909,7 +968,46 @@ CREATE TABLE `tb_sys_prog` (
 
 LOCK TABLES `tb_sys_prog` WRITE;
 /*!40000 ALTER TABLE `tb_sys_prog` DISABLE KEYS */;
-INSERT INTO `tb_sys_prog` VALUES ('045c79fd-9728-11ef-af3f-65d7c66b9839','ORRS001D0003Q','AA03 - 任務結果','#/orrs001d0003','N','N',0,0,'CORE','ITEM','SYSTEM','clipboard2-check-fill','admin','2024-10-31 09:32:39',NULL,NULL),('0aa817d1-8afa-11ef-92ef-5bfccd6233c0','ORRS001D0001Q','AA01 - 命令','#/orrs001d0001','N','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-15 21:33:19','admin','2024-10-19 22:31:36'),('186b1fb1-749f-4b6f-97d1-6b7fb8115345','CORE_PROG001D0004E','ZA04 - Freemarker樣板 (Edit)','#/prog001d0004/edit','Y','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:40:10','admin','2023-08-16 21:48:56'),('1b11c7eb-6133-48fb-87f0-dfbd098ce914','CORE_PROG001D0001E','ZA01 - System site (Edit)','#/prog001d0001/edit','Y','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:58'),('1e393fe3-8bbc-482c-aa23-bbb22a1dbafb','CORE_PROG001D0005A','ZA05 - JasperReport (Create)','#/prog001d0005/create','N','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:55:46','admin','2023-08-24 20:20:27'),('22560527-90fb-4e5a-a89b-353d2aa1d433','CORE_PROG001D0005E','ZA05 - JasperReport (Edit)','#/prog001d0005/edit','Y','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:56:27','admin','2023-08-24 20:20:40'),('2dbbe7d9-a5a9-11ef-beae-5b496a6e5c29','ORRS001D0004T','AA04 - 檢索文件 (檢索測試)','#/orrs001d0004/test','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-18 20:32:30','admin','2024-11-18 20:39:25'),('3630ee1b-6169-452f-821f-5c015dfb84d5','CORE_PROG001D','ZA. Config','/','N','N',0,0,'CORE','FOLDER','PROPERTIES','gear-fill','admin','2014-10-02 00:00:00','admin','2023-08-15 19:16:31'),('3862b6d0-0551-45d8-8dd1-cd988a5e8e50','CORE_PROG004D0002Q','ZD02 - Token log','#/prog004d0002','N','N',0,0,'CORE','ITEM','PROPERTIES','clipboard-check','admin','2017-06-03 14:22:29','admin','2024-01-25 07:47:53'),('41fa29d8-3a53-4fbd-b2b1-cdbfd0729767','CORE_PROG001D0004Q','ZA04 - Freemarker樣板','#/prog001d0004','N','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:36:41','admin','2023-08-16 21:48:29'),('5e082c7c-1730-4176-89c6-93e235707deb','CORE_PROG002D0001A','ZB01 - Role (Create)','#/prog002d0001/create','N','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-09 11:15:50','admin','2023-08-27 16:46:40'),('61aea7ff-7a42-4a92-9a0b-4a0dfe60858b','CORE_PROG004D0001Q','ZD01 - Event log','#/prog004d0001','N','N',0,0,'CORE','ITEM','PROPERTIES','clipboard-pulse','admin','2017-06-03 14:22:07','admin','2023-08-29 10:17:34'),('6a442973-0e0c-4a7a-d546-464f4ff5f7a9','CORE_PROG001D0003Q','ZA03 - Menu settings','#/prog001d0003','N','N',0,0,'CORE','ITEM','FOLDER','menu-down','admin','2014-10-02 00:00:00','admin','2023-08-15 19:21:23'),('6b1a27ac-a480-11ef-980f-8be3b04dd41b','ORRS001D0004Q','AA04 - 檢索文件','#/orrs001d0004','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:08:13',NULL,NULL),('6b210525-8975-4fb5-954c-fe349f66d3fe','CORE_PROG002D0001S01Q','ZB01 - Role (permission)','#/prog002d0001/setparam','Y','N',0,0,'CORE','ITEM','IMPORTANT','globe2','admin','2017-05-09 14:32:47','admin','2024-02-10 20:17:33'),('72e6e0d1-1818-47d3-99f9-5134fb211b79','CORE_PROG002D','ZB. Role authority','/','N','N',0,0,'CORE','FOLDER','SHARED','person-square','admin','2017-05-08 21:27:52','admin','2023-08-27 16:47:03'),('7746f746-961f-44c2-9b66-fa43c0f49838','CORE_PROG001D0004S01Q','ZA04 - Freemarker樣板 (Parameter)','#/prog001d0004/setparam','Y','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:42:04','admin','2023-08-16 21:49:12'),('7d9ddc45-3eab-4f61-8c0a-d5505c0cc748','CORE_PROG001D0004A','ZA04 - Freemarker樣板 (Create)','#/prog001d0004/create','N','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:39:20','admin','2023-08-16 21:48:49'),('8499957e-6da9-4160-c2ec-dfb7dbc202fe','CORE_PROG001D0002E','ZA02 - Program (Edit)','#/prog001d0002/edit','Y','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:17'),('8643db14-8e26-11ef-9028-771f90e53e59','ORRS001D0002Q','AA02 - 任務','#/orrs001d0002','N','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:29:18',NULL,NULL),('95d789da-8c8e-11ef-b80d-6f8dd1830e29','ORRS001D0001A','AA01 - 命令 (Create)','#/orrs001d0001/create','N','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-17 21:49:09',NULL,NULL),('97012256-8e26-11ef-9028-bb15b679bda0','ORRS001D0002A','AA02 - 任務 (Create)','#/orrs001d0002/create','N','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:29:46',NULL,NULL),('9f60e0c8-a480-11ef-b0a1-c93187b52991','ORRS001D0004A','AA04 - 檢索文件 (Create)','#/orrs001d0004/create','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:09:40',NULL,NULL),('a7bfc928-8e26-11ef-9028-995dacc25c2c','ORRS001D0002E','AA02 - 任務 (Edit)','#/orrs001d0002/edit','Y','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:30:14',NULL,NULL),('aba3755a-a480-11ef-b0a1-a3a65648f212','ORRS001D0004E','AA04 - 檢索文件 (Edit)','#/orrs001d0004/edit','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:10:01',NULL,NULL),('ac5bcfd0-4abd-11e4-916c-0800200c9a66','CORE_PROG001D0001A','ZA01 - System site (Create)','#/prog001d0001/create','N','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:45'),('b39159ad-0707-4515-b78d-e3fc72c53974','CORE_PROG002D0001E','ZB01 - Role (Edit)','#/prog002d0001/edit','Y','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-09 12:11:53','admin','2023-08-27 16:46:35'),('b6b89559-6864-46ab-9ca9-0992dcf238f1','CORE_PROG001D0001Q','ZA01 - System site','#/prog001d0001','N','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:29'),('b978f706-4c5f-40f8-83b1-395492f141d4','CORE_PROG002D0001Q','ZB01 - Role','#/prog002d0001','N','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-08 21:32:50','admin','2023-08-27 16:46:27'),('c1467c36-8af4-11ef-92ef-ffd759a8a480','ORRS001D','AA. 本地llm工作','/','N','N',0,0,'CORE','FOLDER','SYSTEM','send','admin','2024-10-15 20:55:29','admin','2024-10-15 21:35:05'),('c96ebde8-7044-4b05-a155-68a0c2605619','CORE_PROG002D0003Q','ZB03 - Role for menu','#/prog002d0003','N','N',0,0,'CORE','ITEM','FOLDER','menu-app-fill','admin','2017-05-08 21:37:01','admin','2024-07-05 23:12:41'),('cd5629af-8e18-11ef-ad17-6b820d47cc0f','ORRS001D0001E','AA01 - 命令 (Edit)','#/orrs001d0001/edit','Y','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-19 20:51:04',NULL,NULL),('da7d969a-5efb-4e84-9eab-4fdae236f28c','CORE_PROG002D0002Q','ZB02 - User role','#/prog002d0002','N','N',0,0,'CORE','ITEM','PERSON','person-check','admin','2017-05-08 21:34:39','admin','2023-08-28 19:54:25'),('dda67b1d-e3a2-4534-835a-c62d9e8421f3','CORE_PROG001D0005S01Q','ZA05 - JasperReport (Parameter)','#/prog001d0005/setparam','Y','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:57:26','admin','2023-08-24 20:21:02'),('df447a07-974c-11ef-840a-9fcc1b9ef968','ORRS001D0003E','AA03 - 任務結果(執行紀錄檢視)','#/orrs001d0003/edit','N','N',0,0,'CORE','ITEM','SYSTEM','clipboard2-check-fill','admin','2024-10-31 13:56:29',NULL,NULL),('e32b9329-bb38-46d7-8552-2307bac77724','CORE_PROG001D0002A','ZA02 - Program (Create)','#/prog001d0002/create','N','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:42'),('e86dbb1b-6870-4827-8039-72f5e15fa4f2','CORE_PROG004D','ZD. Log','/','N','N',0,0,'CORE','FOLDER','PROPERTIES','clipboard-check-fill','admin','2017-06-03 14:21:03','admin','2024-03-02 15:10:42'),('eb6e199f-c853-4fbf-acf3-0c9c77ba9953','CORE_PROG001D0002Q','ZA02 - Program','#/prog001d0002','N','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:05'),('eb786ffd-c7d1-4631-aed2-4d9d7368eb13','CORE_PROG001D0005Q','ZA05 - JasperReport','#/prog001d0005','N','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:54:35','admin','2023-08-24 20:20:16');
+INSERT INTO `tb_sys_prog` VALUES
+('045c79fd-9728-11ef-af3f-65d7c66b9839','ORRS001D0003Q','AA03 - 任務結果','#/orrs001d0003','N','N',0,0,'CORE','ITEM','SYSTEM','clipboard2-check-fill','admin','2024-10-31 09:32:39',NULL,NULL),
+('0aa817d1-8afa-11ef-92ef-5bfccd6233c0','ORRS001D0001Q','AA01 - 命令','#/orrs001d0001','N','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-15 21:33:19','admin','2024-10-19 22:31:36'),
+('186b1fb1-749f-4b6f-97d1-6b7fb8115345','CORE_PROG001D0004E','ZA04 - Freemarker樣板 (Edit)','#/prog001d0004/edit','Y','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:40:10','admin','2023-08-16 21:48:56'),
+('1b11c7eb-6133-48fb-87f0-dfbd098ce914','CORE_PROG001D0001E','ZA01 - System site (Edit)','#/prog001d0001/edit','Y','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:58'),
+('1e393fe3-8bbc-482c-aa23-bbb22a1dbafb','CORE_PROG001D0005A','ZA05 - JasperReport (Create)','#/prog001d0005/create','N','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:55:46','admin','2023-08-24 20:20:27'),
+('22560527-90fb-4e5a-a89b-353d2aa1d433','CORE_PROG001D0005E','ZA05 - JasperReport (Edit)','#/prog001d0005/edit','Y','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:56:27','admin','2023-08-24 20:20:40'),
+('2dbbe7d9-a5a9-11ef-beae-5b496a6e5c29','ORRS001D0004T','AA04 - 檢索文件 (檢索測試)','#/orrs001d0004/test','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-18 20:32:30','admin','2024-11-18 20:39:25'),
+('3630ee1b-6169-452f-821f-5c015dfb84d5','CORE_PROG001D','ZA. Config','/','N','N',0,0,'CORE','FOLDER','PROPERTIES','gear-fill','admin','2014-10-02 00:00:00','admin','2023-08-15 19:16:31'),
+('3862b6d0-0551-45d8-8dd1-cd988a5e8e50','CORE_PROG004D0002Q','ZD02 - Token log','#/prog004d0002','N','N',0,0,'CORE','ITEM','PROPERTIES','clipboard-check','admin','2017-06-03 14:22:29','admin','2024-01-25 07:47:53'),
+('41fa29d8-3a53-4fbd-b2b1-cdbfd0729767','CORE_PROG001D0004Q','ZA04 - Freemarker樣板','#/prog001d0004','N','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:36:41','admin','2023-08-16 21:48:29'),
+('5e082c7c-1730-4176-89c6-93e235707deb','CORE_PROG002D0001A','ZB01 - Role (Create)','#/prog002d0001/create','N','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-09 11:15:50','admin','2023-08-27 16:46:40'),
+('61aea7ff-7a42-4a92-9a0b-4a0dfe60858b','CORE_PROG004D0001Q','ZD01 - Event log','#/prog004d0001','N','N',0,0,'CORE','ITEM','PROPERTIES','clipboard-pulse','admin','2017-06-03 14:22:07','admin','2023-08-29 10:17:34'),
+('6a442973-0e0c-4a7a-d546-464f4ff5f7a9','CORE_PROG001D0003Q','ZA03 - Menu settings','#/prog001d0003','N','N',0,0,'CORE','ITEM','FOLDER','menu-down','admin','2014-10-02 00:00:00','admin','2023-08-15 19:21:23'),
+('6b1a27ac-a480-11ef-980f-8be3b04dd41b','ORRS001D0004Q','AA04 - 檢索文件','#/orrs001d0004','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:08:13',NULL,NULL),
+('6b210525-8975-4fb5-954c-fe349f66d3fe','CORE_PROG002D0001S01Q','ZB01 - Role (permission)','#/prog002d0001/setparam','Y','N',0,0,'CORE','ITEM','IMPORTANT','globe2','admin','2017-05-09 14:32:47','admin','2024-02-10 20:17:33'),
+('72e6e0d1-1818-47d3-99f9-5134fb211b79','CORE_PROG002D','ZB. Role authority','/','N','N',0,0,'CORE','FOLDER','SHARED','person-square','admin','2017-05-08 21:27:52','admin','2023-08-27 16:47:03'),
+('7746f746-961f-44c2-9b66-fa43c0f49838','CORE_PROG001D0004S01Q','ZA04 - Freemarker樣板 (Parameter)','#/prog001d0004/setparam','Y','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:42:04','admin','2023-08-16 21:49:12'),
+('7d9ddc45-3eab-4f61-8c0a-d5505c0cc748','CORE_PROG001D0004A','ZA04 - Freemarker樣板 (Create)','#/prog001d0004/create','N','N',0,0,'CORE','ITEM','TEMPLATE','file-text','admin','2017-05-12 10:39:20','admin','2023-08-16 21:48:49'),
+('8499957e-6da9-4160-c2ec-dfb7dbc202fe','CORE_PROG001D0002E','ZA02 - Program (Edit)','#/prog001d0002/edit','Y','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:17'),
+('8643db14-8e26-11ef-9028-771f90e53e59','ORRS001D0002Q','AA02 - 任務','#/orrs001d0002','N','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:29:18',NULL,NULL),
+('95d789da-8c8e-11ef-b80d-6f8dd1830e29','ORRS001D0001A','AA01 - 命令 (Create)','#/orrs001d0001/create','N','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-17 21:49:09',NULL,NULL),
+('97012256-8e26-11ef-9028-bb15b679bda0','ORRS001D0002A','AA02 - 任務 (Create)','#/orrs001d0002/create','N','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:29:46',NULL,NULL),
+('9f60e0c8-a480-11ef-b0a1-c93187b52991','ORRS001D0004A','AA04 - 檢索文件 (Create)','#/orrs001d0004/create','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:09:40',NULL,NULL),
+('a7bfc928-8e26-11ef-9028-995dacc25c2c','ORRS001D0002E','AA02 - 任務 (Edit)','#/orrs001d0002/edit','Y','N',0,0,'CORE','ITEM','SYSTEM','x-diamond-fill','admin','2024-10-19 22:30:14',NULL,NULL),
+('aba3755a-a480-11ef-b0a1-a3a65648f212','ORRS001D0004E','AA04 - 檢索文件 (Edit)','#/orrs001d0004/edit','N','N',0,0,'CORE','ITEM','SYSTEM','filetype-txt','admin','2024-11-17 09:10:01',NULL,NULL),
+('ac5bcfd0-4abd-11e4-916c-0800200c9a66','CORE_PROG001D0001A','ZA01 - System site (Create)','#/prog001d0001/create','N','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:45'),
+('b39159ad-0707-4515-b78d-e3fc72c53974','CORE_PROG002D0001E','ZB01 - Role (Edit)','#/prog002d0001/edit','Y','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-09 12:11:53','admin','2023-08-27 16:46:35'),
+('b6b89559-6864-46ab-9ca9-0992dcf238f1','CORE_PROG001D0001Q','ZA01 - System site','#/prog001d0001','N','N',0,0,'CORE','ITEM','COMPUTER','globe2','admin','2014-10-02 00:00:00','admin','2021-01-20 08:20:29'),
+('b978f706-4c5f-40f8-83b1-395492f141d4','CORE_PROG002D0001Q','ZB01 - Role','#/prog002d0001','N','N',0,0,'CORE','ITEM','PEOPLE','person-square','admin','2017-05-08 21:32:50','admin','2023-08-27 16:46:27'),
+('c1467c36-8af4-11ef-92ef-ffd759a8a480','ORRS001D','AA. 本地llm工作','/','N','N',0,0,'CORE','FOLDER','SYSTEM','send','admin','2024-10-15 20:55:29','admin','2024-10-15 21:35:05'),
+('c96ebde8-7044-4b05-a155-68a0c2605619','CORE_PROG002D0003Q','ZB03 - Role for menu','#/prog002d0003','N','N',0,0,'CORE','ITEM','FOLDER','menu-app-fill','admin','2017-05-08 21:37:01','admin','2024-07-05 23:12:41'),
+('cd5629af-8e18-11ef-ad17-6b820d47cc0f','ORRS001D0001E','AA01 - 命令 (Edit)','#/orrs001d0001/edit','Y','N',0,0,'CORE','ITEM','SYSTEM','cpu','admin','2024-10-19 20:51:04',NULL,NULL),
+('da7d969a-5efb-4e84-9eab-4fdae236f28c','CORE_PROG002D0002Q','ZB02 - User role','#/prog002d0002','N','N',0,0,'CORE','ITEM','PERSON','person-check','admin','2017-05-08 21:34:39','admin','2023-08-28 19:54:25'),
+('dda67b1d-e3a2-4534-835a-c62d9e8421f3','CORE_PROG001D0005S01Q','ZA05 - JasperReport (Parameter)','#/prog001d0005/setparam','Y','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:57:26','admin','2023-08-24 20:21:02'),
+('df447a07-974c-11ef-840a-9fcc1b9ef968','ORRS001D0003E','AA03 - 任務結果(執行紀錄檢視)','#/orrs001d0003/edit','N','N',0,0,'CORE','ITEM','SYSTEM','clipboard2-check-fill','admin','2024-10-31 13:56:29',NULL,NULL),
+('e32b9329-bb38-46d7-8552-2307bac77724','CORE_PROG001D0002A','ZA02 - Program (Create)','#/prog001d0002/create','N','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:42'),
+('e86dbb1b-6870-4827-8039-72f5e15fa4f2','CORE_PROG004D','ZD. Log','/','N','N',0,0,'CORE','FOLDER','PROPERTIES','clipboard-check-fill','admin','2017-06-03 14:21:03','admin','2024-03-02 15:10:42'),
+('eb6e199f-c853-4fbf-acf3-0c9c77ba9953','CORE_PROG001D0002Q','ZA02 - Program','#/prog001d0002','N','N',0,0,'CORE','ITEM','G_APP_INSTALL','filetype-html','admin','2014-10-02 00:00:00','admin','2023-08-15 19:19:05'),
+('eb786ffd-c7d1-4631-aed2-4d9d7368eb13','CORE_PROG001D0005Q','ZA05 - JasperReport','#/prog001d0005','N','N',0,0,'CORE','ITEM','APPLICATION_PDF','file-pdf','admin','2017-05-18 09:54:35','admin','2023-08-24 20:20:16');
 /*!40000 ALTER TABLE `tb_sys_prog` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -935,7 +1033,7 @@ CREATE TABLE `tb_sys_qfield_log` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`SYSTEM`,`PROG_ID`),
   KEY `IDX_2` (`QUERY_USER_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -966,7 +1064,7 @@ CREATE TABLE `tb_sys_template` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`TEMPLATE_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -975,7 +1073,8 @@ CREATE TABLE `tb_sys_template` (
 
 LOCK TABLES `tb_sys_template` WRITE;
 /*!40000 ALTER TABLE `tb_sys_template` DISABLE KEYS */;
-INSERT INTO `tb_sys_template` VALUES ('467f92b0-d5fa-11ee-9ec4-c75e54f9ca1d','TPL01','${title}','<h1>Product:${name}</h1>','','admin','2024-02-28 13:28:59',NULL,NULL);
+INSERT INTO `tb_sys_template` VALUES
+('467f92b0-d5fa-11ee-9ec4-c75e54f9ca1d','TPL01','${title}','<h1>Product:${name}</h1>','','admin','2024-02-28 13:28:59',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_template` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -998,7 +1097,7 @@ CREATE TABLE `tb_sys_template_param` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`TEMPLATE_ID`,`TEMPLATE_VAR`,`IS_TITLE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1007,7 +1106,8 @@ CREATE TABLE `tb_sys_template_param` (
 
 LOCK TABLES `tb_sys_template_param` WRITE;
 /*!40000 ALTER TABLE `tb_sys_template_param` DISABLE KEYS */;
-INSERT INTO `tb_sys_template_param` VALUES ('6ff19e9d-d5fa-11ee-9ec4-c330a97e3ff9','TPL01','Y','title','title','admin','2024-02-28 13:30:09',NULL,NULL);
+INSERT INTO `tb_sys_template_param` VALUES
+('6ff19e9d-d5fa-11ee-9ec4-c330a97e3ff9','TPL01','Y','title','title','admin','2024-02-28 13:30:09',NULL,NULL);
 /*!40000 ALTER TABLE `tb_sys_template_param` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1028,7 +1128,7 @@ CREATE TABLE `tb_sys_token` (
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`USER_ID`),
   KEY `IDX_2` (`TOKEN`(1024))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1062,7 +1162,7 @@ CREATE TABLE `tb_sys_upload` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   KEY `IDX_1` (`SYSTEM`,`TYPE`,`SUB_DIR`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1093,7 +1193,7 @@ CREATE TABLE `tb_sys_usess` (
   PRIMARY KEY (`OID`,`SESSION_ID`),
   UNIQUE KEY `UK_1` (`ACCOUNT`,`SESSION_ID`),
   KEY `IDX_1` (`CURRENT_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1123,7 +1223,7 @@ CREATE TABLE `tb_user_role` (
   `UDATE` datetime DEFAULT NULL,
   PRIMARY KEY (`OID`),
   UNIQUE KEY `UK_1` (`ROLE`,`ACCOUNT`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1132,8 +1232,43 @@ CREATE TABLE `tb_user_role` (
 
 LOCK TABLES `tb_user_role` WRITE;
 /*!40000 ALTER TABLE `tb_user_role` DISABLE KEYS */;
-INSERT INTO `tb_user_role` VALUES ('1f37136f-b9e0-11ee-ae49-8d2df8636cc7','COMMON01','tiffany','','admin','2024-01-23 19:11:14',NULL,NULL),('31102b06-b9e0-11ee-ae49-9b67c6a3ca84','COMMON01','tester','','admin','2024-01-23 19:11:44',NULL,NULL),('9243c7de-43b1-46ef-ac4b-2620697f319e','admin','admin','Administrator','admin','2014-09-23 00:00:00',NULL,NULL),('a02e1b62-4988-11ee-8b9a-098c887743fd','COMMON01','steven','','admin','2023-09-02 20:02:44',NULL,NULL);
+INSERT INTO `tb_user_role` VALUES
+('1f37136f-b9e0-11ee-ae49-8d2df8636cc7','COMMON01','tiffany','','admin','2024-01-23 19:11:14',NULL,NULL),
+('31102b06-b9e0-11ee-ae49-9b67c6a3ca84','COMMON01','tester','','admin','2024-01-23 19:11:44',NULL,NULL),
+('9243c7de-43b1-46ef-ac4b-2620697f319e','admin','admin','Administrator','admin','2014-09-23 00:00:00',NULL,NULL),
+('a02e1b62-4988-11ee-8b9a-098c887743fd','COMMON01','steven','','admin','2023-09-02 20:02:44',NULL,NULL);
 /*!40000 ALTER TABLE `tb_user_role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `vector_store`
+--
+
+DROP TABLE IF EXISTS `vector_store`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `vector_store` (
+  `id` varchar(50) NOT NULL,
+  `content` text NOT NULL,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `embedding` longblob NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  CONSTRAINT `metadata` CHECK (json_valid(`metadata`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vector_store`
+--
+
+LOCK TABLES `vector_store` WRITE;
+/*!40000 ALTER TABLE `vector_store` DISABLE KEYS */;
+INSERT INTO `vector_store` VALUES
+('DOC0001','### 資料表欄位\n1. 資料表 WATER_QUANTITY_SPLIT \n2. 資料表 FACTORY_WATER_SOURCES \n3. 資料表 COMPANY \n4. 資料表 FACTORY_HISTORY \n\n### 資料表關係\n	WATER_QUANTITY_SPLIT.FACTORY_WATER_SOURCES_ID1 = FACTORY_WATER_SOURCES.OID \n	FACTORY_WATER_SOURCES.FACTORY_ID = FACTORY_HISTORY.OID\n	COMPANY.OID = FACTORY_HISTORY.COMPANY_OID\n	WATER_SOURCES_HISTORY.OID = FACTORY_WATER_SOURCES.WATER_SOURCES_ID\n	\n### SQL範例\n1. 範例1\n```sql\nselect * \nfrom \nWATER_QUANTITY_SPLIT wqs, FACTORY_WATER_SOURCES fws, COMPANY c, FACTORY_HISTORY fh, WATER_SOURCES_HISTORY wsh\nwhere\nwqs.FACTORY_WATER_SOURCES_ID1 = fws.OID \nand fws.FACTORY_ID = fh.OID\nand c.OID = fh.COMPANY_OID\nand wsh.OID = fws.WATER_SOURCES_ID\n```\n\n2. 範例2\n```sql\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2022-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n```   \n','{}',0x0C6C2EBD75ABB8BCF5D9D23D929AC8B9309977BC95E1DCBD6FB2BE3D3296F53CD2C0E2BB9E74DDBBB2044A3DB079CDBDB7AEDD3CD3C6113CD15DE13BC027C13C611152BDD30E33BB16A12FBD8E0B2A3CED16A13D8591193D1BE5C0BD45657C3C84C85C3B9FC73F3D49294CBD086F2B3D4661953CC2349EBC6F44F93C2E19173DC2FF90BC739BBC3C07E1B43CA06A523C3A2036BCE0E2903A8CEDDABBA254013D9EE809BD9C07B3BD94E7AF3D0F24903D81F8113D9685753DC84A71BDAB16BFBB621E51397DF29F3BB778493D313087BD0E92E2BD40313FBDD757B4BD03699B3C0E593CBB5B04B5BD013BC3BDC79175BDD2E0D63A98EF453D51ACEBBC83D2963D04859DBCB1FCF13DEC60E13C1E879B3D03F3333D9DFFBE3CF2F3943BA6F2253D8081633D83BC81BC58F38ABD2CB79FBD7E29153D1E853B3D35495CBD9B2F8E3DB9D1BE3CD52830BD46E6813DE2D04E3D9292C5BB00BA183D49545E3D5DC024BB14A3C63C3EF49F3C2152C6BC7F1E4CBC670D55BB09EC8EBCED71303DA7A4D43C4E0697BC4F21BFBD48CEC23CC756E63DC580ADBC93503F3D20981DBD7619BA3C83B2B03DC500A53C1436E23BBAD384BD2923983D26B73DBD1ED4C93CF23FA6BDA73920BD032A54BCD7756EBDEC6655BCD33036BD950514BD43C3B0BCB68CB03C66CB4A3DC5129FBC929045BD982B3C3DBA3CF13DA5E170BD7A05403C007DB4BDB7DD933AECEF06BBFE24803C2B11B6BDC75194BDB5164A3C3514EC3C8CA717BD7E92B3BB1EC3403BBF63D4BD1D77603DCFDBCDBCC7D69F3DB33C48BD6ECFC2BDC1004A3B0273D73D90B22FBDE0B78EBCF9F471BCD100DF3C67C50D3CB35260BD148C92BCB8BE3A3D5AD8B63C284675BCC108973D8A13AA3C11DDA8BCA512C03C76CBFFBC7632FFBACFEF3A3CEF8591BDEEFF2A3D13BF2F3DA85ED7BC2A2A38BB92BA0FBDBB81BC3CA6F925BD8E898C3C64DFB13D8EFC4E3C898230BD0DCF5DBDBB4D843CCB2A92BDA5D00ABD4F18A3BDA31D16BD3683D23D307028BD5FC1FBBCFE9D1CBA48EEAE3CF2D9A6BD946A60BCAAB76FBD1AC2B43C518958BDC7356ABD98610D3EF547AD3BFF292BBB0052D6BCAA3C9C3D70F8EBBCE8C646BDC3CB1ABDF7A3B4BD326F603DA2DA8DBD7BD3C8BC6373243D79A481BC3516993D13709CBB3F290FBE2C29233DA27B5ABD7554B5BCC873B8BD2328EA3C138A4FBC9DCA48BB1CEDC23C658FA93C4A0041BCEFB518BBB320953D699105BDB0C4953DFE8666BD03A557BC5333553D72141ABE2DCAABBD9BC17CBD63B756BD5B97ECBB51B3673D4C3BA23D015EB8BA7F4661BD4EE60B3DE052A03C1280D33CA141CA3CA55978BAF7F18A3D541D7FBB8E418ABC74DF9F3C43CC843C3AF8FCBBE289E939343ADC3CDB2DBABC38AC8F3DA9E035BCF760D2BDE0C9523C5C7C70BDC7DAACBC549D4C3DEF74523D3FD856BD2996F3BCD753E3BCB6A7C13D9CFA5EBC6CACADBC9F86803C90DA18BCCD92C4BCC226A93DD79B18BD48CF24BD02DFD0BBBBFA823CFB5F85BDF75BC93C4B031F3CC98F2ABDD58198BDE237673D809EFABC037C913DC2A4A53C2BF2BF3DE68CDDBD732DD3BD09AC5A3C025F7F3D77BAB83C6E369C3BC4D4AC3CCBE0A0BDBD7267BBEBEE6DBD4931353D7A89D3BB22CC95BC486A9FBCB7A39A3C99BF9E3DF2B7C2BBEA7349BB38AE093B7CFBBCBD24C079BB6EDCD4399D0CA9BDAD13C1BDED81CB3D0513583DF578BBBBA08923BC1087F2BD7EBB983C13F9B6BDCAEBE8BCA4127B3CA75E51BCA48F03BDF753023A5581E13D0F8935BD2334D4BDA6D4C93B732B5E3C1778D93CBC24153C56AC853D521732BBF26545BD630281BBE970A83DF593B3BD6FA2BA3B194B363D9CAF143BB7C2C9BC03964EB8EE5B633D18BEA2BDBAE6E23CEA87A8BCF774823BDB5D673D008EEFBCC1E739BD62B14BBD7AB6FB3B72FA8B3D76EA883D00282A3D4D3847BC8918053D9296D83D78C9533DC669F2BC015F8A3C3C19703B3C435B3D61F9E3BC42D598BB806C12BDE71F873C9303C13B94CB4CB9CFEC6A3B8C748F3D17F6A93DE63AD23DF8ACAC3C3EF4EF3C1845633D7ECD4D3C5C6560BDF78A883DF651E13CAE8C993D09C11B3DEA35953D27DD91BDEE6882BC0F878D3CBF92023C08D7893C1D1A243CE1E8E53D22A9623C),
+('DOC0002','### groovy參考資料\n1. groovy參考程式碼1:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\ndef jsonResult = new ObjectMapper().writeValueAsString(resultSetToMapList(resultSet))\n\nconnection.close()\n\nreturn jsonResult\n\ndef resultSetToMapList(ResultSet resultSet) {\n    List<Map> result = []\n    while (resultSet.next()) {\n        Map<String, Object> row = [:]\n        ResultSetMetaData metaData = resultSet.getMetaData()\n        int columnCount = metaData.getColumnCount()\n        for (int i = 1; i <= columnCount; i++) {\n            row[metaData.getColumnName(i)] = resultSet.getObject(i)\n        }\n        result.add(row)\n    }\n    return result\n}\n```\n\n2. groovy參考程式碼2:\n```groovy\nimport java.sql.*\nimport com.fasterxml.jackson.databind.ObjectMapper\n\ndef connectionUrl = \'jdbc:sqlserver://127.0.0.1:1433;databaseName=DB_FILE_NAME;encrypt=false;\'\ndef username = \'我的database帳號\'\ndef password = \'我的database密碼\'\n\ndef connection = DriverManager.getConnection(connectionUrl, username, password)\n\ndef sqlQuery = \'\'\'\nselect top 10 wqs.W_ID, wqs.QUANTITY, wqs.TOTAL_AMOUNT, c.F_NAMEC, wsh.WATER_SOURCES_ID \nfrom WATER_QUANTITY_SPLIT wqs\njoin FACTORY_WATER_SOURCES fws on wqs.FACTORY_WATER_SOURCES_ID1 = fws.OID\njoin COMPANY c on c.OID = wqs.COMPANY_OID\njoin FACTORY_HISTORY fh on fws.FACTORY_ID = fh.OID\njoin WATER_SOURCES_HISTORY wsh on fws.WATER_SOURCES_ID = wsh.OID\nwhere wqs.CHARGE_SDATE >= \'2023-01-01\' and wqs.CHARGE_EDATE <= \'2023-12-30\'\nand fh.BASE_ID = \'01\'\norder by wqs.QUANTITY desc\n\'\'\'\n\ndef statement = connection.createStatement()\ndef resultSet = statement.executeQuery(sqlQuery)\n\nList<Map> result = []\nwhile (resultSet.next()) {\n	Map<String, Object> row = [:]\n	ResultSetMetaData metaData = resultSet.getMetaData()\n	int columnCount = metaData.getColumnCount()\n	for (int i = 1; i <= columnCount; i++) {\n		row[metaData.getColumnName(i)] = resultSet.getObject(i)\n	}\n    result.add(row)\n}\n\ndef jsonResult = new ObjectMapper().writeValueAsString(result)\n\nconnection.close()\n\nreturn jsonResult\n```\n','{}',0x2AE0BCBD7763A03C219B4CBC14802CBC37A3BABC54DC1CBD70EE533D368E8BBCBB4AE13C741AC53C0491A03D291200BE1E9BB53DE6310EBDE855173D70777EBC53432EBDB9BF89BCFD8D37BC464C90BD1F7A09BD25AD2FBDD98EB2BCE02807BC2535403D2D8909BDB4C344BCA5C6393D14A53D3AFFC55EBDF9B28A3D8D3E073E8943A23C0F8C853D3C11AABC24553F3D532970BD85363FBD96107E3C79A116BCBCA469BDA62FE63C75ECFA3CDB44DA3D7196823BA1F3A33C2E96B93C8E0244BD25B49FBC0AD0DE3C4485DBBCF90C423D4D7FC6BD71262E3D158BEFBC227287BD75A5B13D0501E1BB54DCB8BCE11B8F3CA2D22F3DEEA75FBD84936DBD1FFC503D6E930ABECA8EC73DC02504BC8C2AC1BB0337333DCBCAC2BC0CFD7DBD25676BBD3B69E0BB32EBB33D0E33D13AE3A603BD836E0B3D07D2533DEF5F16BD454E8D3D18B91E3DC48161BB1850B43CB998973D48E6043C388F723C6D1CC83B5AE2863C291D943D7BEFD7BB5586173DC45E22BDC2CB44BD81F93C3CF22004BBF047F83C0A778C3CE7BA963B4C01003CCF86453EA8E8383C2FA171BB935B53BD55C6F23C6CDFD6BC38F1A73B4E47913D6179863CBE0BF93C079D8BBC7E1D1EBC9DEE8DBD08FFC0BD7CD354BD855B6DBD6EA52E3D203CEABD101EE4BDBD1CFDBB36FF903D1E279CBC79AB9A3B4E24B1BD24B4E73CA948C63CB5C9A2BD385AA937097AF5BD4FD4C43C68F6543D7845033D08EB0C3CDE23363D0FE5413D278B4F3CCF8F91BC7D88A2BC40703B3DDEE9A3BD5FF55EBBD71516BD0C60053D348BB0BD8CF491BDECE689BCB075C43D2B8F003D3DE986BC415CA53DDBBD593C439C7D3D1DA05BBDD55FCC3CC28B013E659377BB9F7A823D6416A33D13C7ACBBDCC8143D38901BBDF2DF18BD0CDB883CB2E0E5BCAF5ACABDD95DE63B20688F3CD66CCF3BC9707E3944679ABDF31D6C3D0ADA0BBE440C6D3C5C797D3D33D5E73CE20621BC4F267DBD519D113DC59DD1BC211E72BD1A1A1DBC4510273D852D053E8F0AE6BC42B785BC369D0EBD15E97BBB347680BD8C8FCBBCE5A03BBD59597BBB24EDAABD09D661BBD8F0823D53E273BD4E0FFEBC42C08EBDE736C03D209AC7BCCE27F03CBC1E18BCE6E689BDC5A5953DCEB729BDFDA01EBDD48C6BBD57F3FBBB19FA2E3D984EF5BCE98925BEB25236BB403698BCA59BE5BC606BF4BC84362B3D4835173DFB2E11BB39D44DBD2445CDBB363608BD77B0F5BC07C26F3DBBEBB8BC99E07DBC438E91BDC5EB803D86E8883DA0DEEABD4438A0BDA4479CBDA7E69ABD1EA1FD3CB442833D6B6AA83DEB1AEB3C782215BDF6EB823D01EC8C3CEC58B8BB2EF2053D740C28BD0BBCE93D57C0833C041457BD666C153D4CD6F9BC792392BD69E2B6BD3FEB81BB9875F93C8CDCF53D209D423D36680FBD4112F43C480CAD3DB741E2BC432C9A3D0D0BDBBBA783F93C98FA9FB95A9381BDFBF9D43C9670133D5555C73C89B87C3BD3AE863C1504F03C7C47903CF6DFC23CEC5A79BBF75F11BDA255DEBC33EC4E3BAC57013D7C9496BD7ACF8E3D4A96893A7233B33DD25F33BD7FCAA1BCD4E7593D8A98A0BC0ADBA63C5C79D53B1CEDBFBCD93062BC784E94BC00B34E3CE701EBBC5F6BC5BDC5EDAD3C5C869EBC209D6FBC9292743B4A6258BD75EB8C3DBC5DA2BCF324FA3C0BF050BDDC1164BDBA9D683D53DDFFBCB591003DE57BD2BCCB8683BC7F1C253C67D8313CE1020F3CD4699F3C17B1F23D7EE0D8BD0B9992BC5D2584BC1C86113B9B7B03BD7DA35BBD22B9FE3CB43B0CBD87DBAE3DDF1602BD2BE2F4BD5AD2833CF872EFBDFF9FE93B91BB713C0B369B3D03FB793DBEB4A6BD78FEBDBCF81F343C480D083D6717BD3C19A1193D75A56BBD824CF0BCD5FCCB3CE831183DEA3D133DC620263DA371183DCABB563CB4AD41BDADA7ACBC8276A43C820B93BDAAAB41BD8EB9AA3B232713BD159F103DA303013D26C4463DB76B83BC30FE513D38174E3C98472CBB54CC953CBBD13B3D218CF23C8013723C2641D53D3AE6BFBBD8FAC33CF654C7BC835DECBCAA60FF3CFCA6053D47F2073D8FA296B9D9E025BD73FE423C41E7463D832315BC0B18C93B7DE6323DC577183D1BD063BDCF02FE3C938132BD3811EABCEADE173D380A0C3DAC424E3DC66167BCD409CC3DA17790BD),
+('DOC0003','### echarts在html使用參考資料\n```html\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>ECharts Example</title>\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js\"></script>\n    <style>\n        .chart {\n            width: 740px;\n            height: 600px;\n        }\n    </style>\n</head>\n<body>\n    <h1>Pie Chart</h1>\n    <div id=\"pieChart\" class=\"chart\"></div>\n\n    <h1>Bar Chart</h1>\n    <div id=\"barChart\" class=\"chart\"></div>\n\n    <h1>Line Chart</h1>\n    <div id=\"lineChart\" class=\"chart\"></div>\n\n    <script type=\"text/javascript\">\n        var jsonData = [\n            {\"W_ID\":235733,\"QUANTITY\":932165.000000,\"TOTAL_AMOUNT\":6435667.00,\"F_NAMEC\":\"測試公司\",\"WATER_SOURCES_ID\":\"A1098F-3112-3492-04-K\"},\n            {\"W_ID\":235836,\"QUANTITY\":447715.000000,\"TOTAL_AMOUNT\":3091024.00,\"F_NAMEC\":\"好好公司\",\"WATER_SOURCES_ID\":\"A12672-3112-0010-27-6\"},\n            {\"W_ID\":235771,\"QUANTITY\":388852.000000,\"TOTAL_AMOUNT\":2684634.00,\"F_NAMEC\":\"宏一電子股份有限公司\",\"WATER_SOURCES_ID\":\"A11525-3112-0010-30-2\"}\n        ];\n\n        var pieData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var barData = jsonData.map(item => ({\n            name: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            value: item.QUANTITY\n        }));\n\n        var lineData = jsonData.map(item => ({\n            x: item.F_NAMEC + \' (\' + item.WATER_SOURCES_ID + \')\',\n            y: item.QUANTITY\n        }));\n\n        var pieChart = echarts.init(document.getElementById(\'pieChart\'));\n        var barChart = echarts.init(document.getElementById(\'barChart\'));\n        var lineChart = echarts.init(document.getElementById(\'lineChart\'));\n\n        optionPie = {\n            title: {\n                text: \'Pie Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            series: [{\n                name: \'Quantity\',\n                type: \'pie\',\n                radius: \'50%\',\n                data: pieData\n            }]\n        };\n\n        optionBar = {\n            title: {\n                text: \'Bar Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: barData.map(item => item.name)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'bar\',\n                data: barData.map(item => item.value)\n            }]\n        };\n\n        optionLine = {\n            title: {\n                text: \'Line Chart\',\n                subtext: \'Quantity Distribution\'\n            },\n            tooltip: {},\n            xAxis: {\n                type: \'category\',\n                data: lineData.map(item => item.x)\n            },\n            yAxis: {\n                type: \'value\'\n            },\n            series: [{\n                name: \'Quantity\',\n                type: \'line\',\n                data: lineData.map(item => item.y)\n            }]\n        };\n\n        pieChart.setOption(optionPie);\n        barChart.setOption(optionBar);\n        lineChart.setOption(optionLine);\n    </script>\n</body>\n</html>\n```','{}',0xEDD673BC8EECAD3A9AEBBF3CD9004A3D7AED03BD52F04BBDF17B5B3D8474803C7A9CB33CD27545BD3AFB263D2B7CAABDF1A6023E4B1F8F3C53BFCB3D00BE20BD7EBA04BD4143423C201805BBD57DAABCE3F85B3CBAFF2EBDBE12873C7FD118BDB85365BC413174BD8B71E6BCF4B2D03C2D4F7BBC606503BC57F05C3D76C9863DE17DF0BC943DA23D2AB5ABBCA561333D75DB4ABD0AA63DBD442437BD2F2C843D5574A9BD8D41713D9AEF803BD028A03D85A7AF3DCFD6283D82BCF2BC604CFEBCE0BFB9BC8C03DE3C0E8290BC41A1D1BC14BECDBD9C066D3DBD3C113D032E13B95279153C64CAD5BD2E4B3CBD6C64283DE3EF0D3DDDE8C2BCABE70DBD40ED4A3D042068BD52C3933D86B1133D9E7B4F3CF9F22CBDE339443DF2DFBBBB55CA8CBD24E7FB3BAFCE503D1982F03CBE9EA8BDE5CCADBCD005583C1D04DFBAA13454BC01A97B3C887184BBBAC94F3B4876A33D23E50B3DE7211E3D17947BBD7F99193C7C848DBCC52D263D79BE97BC5F16BFBD6F15C23B2A1D853D574D683C0C9EC6BC85234D3C3F6449BD9D152D3D6C253F3E34DFAEBA0099FF3C5899453CBC810EBC77F119BDB9D4073DB340FA3D77A1983DF7C5083DF08D27BD83B76B3C29F95BBDBB55A5BDDA8E73BCDF4188BD51DE1CBCD3301BBDD273D7BDA85998BC450B3F3CAFC23B3DFFE3063C9D77BBBDE8EF6A3DBBCCAF3D10346DBD57A7C9BC0DFE97BDA310813D5BC5273DB105203DD401073DF02A023DEE24453DF0823EBAF564DCBC0B31D1BD5E76843DCCEC6DBD17AC07BC674743BD713F833D77D050BDDE4FA4BD98AECF3B46C5AC3D9C849FBD4AAEDB3CA39A023D4F0FC03C0393F13D5AF248BC4B780BBDB902C83D50BF5BBDF496F73CE6539C3C8F2C0ABDBAC2DEBB194302BDF574F1BCFE9C043DE8B6F8BC8547B4BDD169643D51C41EBDC2357BBD8F3D263C8CD396BC3C8902BD969791BDF297873B225E8B3C0CFF4A3DE25C133CE30C93BD9689E9BA5DB9EABC0A6C71BDA055263DDF944C3D8350E73DC5EAAEBC2656E7BBD44869BDCD3BB23C778246BD1798E53C8A76CBBBB1C9BABCF26B6DBD7E566BBD0DEB613D74EC52BDC42E1C3CF90B60BDE901CB3D17022A3CFB024A3C8E3C32BC4C2574BD744EA63D37D7E5BCDF2C07BD03D78DBD8674983C8FCAE63C8F47DBBAA8EDB7BD9A9AD83C202886BDEB9028BD45648DBD2779D33C5A9F923DC88237BCA404D3BBE505BB3B5F4FB0BDBF14D73C0EE5D03D7C69A0BDC8448ABDE12BA5BD60D26A3DBDB20B3D0B3F11BEBFDC84BDB33BA3BDEB2267BD7F54033DD7CE893D28F3173D1AB795BB621C7F3CA18D8F3DBA69BEBB80A0A1BD3A0C0A3C673E61BC602D233D703292BC4B32233CD719203C595B763C990FBFBD8FB8B8BD6F10243DE0018E3BA69DF83D6D17BB3DFA07F23B3F24D43CD2CF9B3D8E468BBC1F23393D1EF6093DCE153D3C034B083D2E10B4BD789965BD21F5033DD92A783DBA74C63C807C95BC6B5502BCE263473D8F23833C0206D4BCC74BEDBC9E2B84BD6D1F8C3BFDFC073D819F61BD5C71FE3CD47590BD709DB43DAFE5EEBDEB2BBE3C0ADB693C1DCFE6BC45BC693AFA81A13D3ECC10BDA600163A992F79BC7D35EC3CBCEF373CDF2846BD4A9538BD4E39A5BCB2250FBD89035DBD3D3A86BC3E90533D5189CD3A7207933C878D853A64C7BABDAC2A77BC7B72BD3D344C853CF52AE3BA378D14BC6C35DA3C45D2AA3C79C389BCD5D613BD8A3CAA3DF285A3BDE09D80BCCAD02B3DF8ED7DBD1C3F5FBCE007A5BC233DA93C08E0D3BC29F2893D9B1534BD0C3EF8BD00E0E7BC62F3D0BDC02CA9BC434288B85558A33DA1B3903CF1832ABDB347C7BCC859EBBC937DA8BC5046573D00CBD2BC89B3A7BD4BEC0EBD88AF38BC68EF833CF8FA283AAC38B33C1C9C963C1D987F3CB42938BDB342B7BCE92509BC8486A3BD4E6C1FBDA59731BCB610B6BD53A8213DC3191E3DDAA714BDF4CBBCBBA59D0D3E989C83BDCE6679BB27AED43CE15A833D5E4D7DBD38041CBB76FFCC3D5600C53D1EC2903DCFA21DBCE33A313D5D096B3D13C0303D121B743D5035503DC851BD3A8BF91A3D00C6F83C3A5F6EBC758F92BCD063463C19A10D3D988184BD2CCB733C3FDCE1BC33EBDA3CBCEA353DFCA3F93C2A36993D629BE23C20DA9A3D07341AB9),
+('DOC9999','印度司机丧彪 , 印度大巴司机丧彪：\n直线加油谁不会？弯道快才是真的快！\n过得去就是坎，过不去就是命！\n只要不出啥意外，油门必须往死了踹！\n印度大巴司机有多疯狂，半路甩飞乘客实属正常！\n刹车片拆下来扔掉，胆小的乘客当场被吓尿！\n心不慌、手不抖，一车乘客全送走！\n到终点站，乘客少一半！\n大巴当成赛车开，这条路上我最跩！\n加速过弯真的帅，乘客飞出去也很快！\n乘客走得没有一点痛苦，嗖的一下就直达地府！\n一路不要命，全靠八字硬！\n油一踩，车一超，阎王面前走一遭！','{}',0x376B2D3D893C083D5E1787BB9B2FB9BCDC408F3B8FD8D5BC849A003E2702EF3C2ACD493D33AE60BD87B3913D2DA9453D1C025CBB817C003D7740A5BD5EBB2DBD0717193C15A23ABC592619BD96FB8E3C75A9833CA7B3A63CF60286BCC98DBC3DACAB3BBD44F4203C0D45A2BB1BD6733C6EFF7DBDAC91E63B936B9FBD3266B8BC6E27C9BC47F6FD3CFDA7803D0E566FBD20C8FC3C73A3103DC4FB813CF6DCA23DBD0818BC40344BBDE5795DBCB20FB63C47859D3CA2E001BDB6D1A83AF5F2353DF920C13BAC1D19BD47ECF9BC9FCA2C3C02BDE4BC7A46AEBB4E696BBA1F4E1CBE771E153CFA24C43C9932C3BD68D30F3D82C8E8BB514D05BD5A1103BDD5DA17BDD5EE92BD37EF2BBDF9E8133D7308A0BCDBCA21BD2EB4223EC917053D885DC9BC89663ABD688AC93CAFF2043D00592DBC018D10BC4709AABC5F4980BC010320BD49B2503CE0B7C7BD9B1AC7BD1E80DABCB19C74BD26639CBB9C10F03C35D91F3AFBEFEC3C6E0105BD11AD15BDC9BD44BD3ED5E63D6E6224BDA33ACE3DCDBE1C3DD7B165BDC7368B3DE1A93DBD28D5793D49279B3C327E9EBCF5EC25BD4FE07BBD06C4CA3D6024043D215F4FBCCB8357BD2AA6D03BDEE22ABD735948BCF8A16B3DBFD1B63DCA3B4C3DE6318FBCE1BE063BE1D5B6BD9D18C03D1C64EBBD33AD5E3DD217F3BCA72FA4BD920840BD64D4083D4307943C45F795BD1023553C63B0BA3BD057D03C411824BD1FBEEFB91512DABC5FD51E3B0A0CDF3C82A9C3BDD600BA3CC743B23DE46F033E62C0FA3C7E9F97BDC1265ABD687BFC3CF3C477BDB6A62B3CF11648BCA25667BCCE0E59BD1DF397BD4D48073D0A139D3C56D4033D25CFC13C5EEF833CFC79D43D7091CABD1201373C7344513DACBC923DCB5B0CBD706E9A3C09AC2E3D0D79BB3D2E4E893CFD8BBEBC22450F3D15ED983DBC6A573B2EF5423CADBD01BD18E48B3A0634463C9DBCE3382EA906BDBD98A83BA6F8A0BD337FB3BC47FC24BDC031273D927A2A3B668325BD076E3B3D472B9B3DD17741BC27FEB93CB8E3E93CEA48813D8D7E6FBCDC0E80BDB2240BBC70082FBC1C4E0A3DACEC1A3C29B6DE3DFB0E04BC490BCA3B1537113D8E55B0BAE95A543D27CE1B3DD1A56F3CD086E2BDE72198BCB997D7BC414F0DBDB055323C227B34BD4EBDF93C709BD8BD855796BCFB90863DC4E327BC3F33B9BCCF452F3D56046E3DD7995D3D5063BBBC233445BDD4C8013E648D6DBD4FB7D63B9AC87D3D899D583CC9AD8D3BBB52D1BD3FF319BC972CE53C1C7D2DBDF8CDCDBC2A492EBD73D3BDBCF8FA06BD836B1EBD970BBFBCCB5F983C70FC10BE0F0100BD3806D23B83CA953D2E09303D82C68CBDC0A7333DFE002ABDA5C2C0BD4DA5523D598AC83D2FF980BDA00A28BD1FE7FE3D07C7163DBFD5A83D4D9AB5BC103BF23C7A4BDCBD948EC23C5934D13CDE5AA13D508AC13BB42E173DC214A8BC1071793DFB45253BC2518A3DC8050BBDB4D3A9BD1240BB3B81E339BD392B12BDE5BD1A3D15BF823C822F90BD2109B3BC0A9420BE60B0A93BAB5BA4BC7923B33CB0BB3EBC0D0D1BBC67ED763D56DCE3BD0139783D65BD88BC25E1A8BDB4B7A23D3DE2B9BC47C7CB3D5F2E82BB97FC24BD81979DBC8DA74F3D332E8DBB7E55F7BCC9EF953D60FB903D1F9F20BDED04E83CC3A8233C698A1BBDB6B9123CF055DD3CDD54CD3DC44668BDA914CA3C44240ABD9A6763BD963F85BB9096F5BA9151193D1F03B03CD65B4FBBF199BA3C90FD89BB222FE2BA29ED6D3C687EA4BB275AB23DA83270B89D7A19BC826E623C593B503CA28206BE324D1CBD9FDD2ABDCEDF6BBC4EE2E73C787CAF3D665687BD129D883C7BC5B0BD8215EEBC51F327BD7E3A21BC7F06943D8CFE62BD306D01BC832CA23CA16E9F3DF5EE10BE40FAABBCBFCE5CBD170DA2BC54372E3CB3BB00BDF9BB7E3CCAE4C4BCBE35A93B2EBEB8BC8BA2353AF46E99BCBFA4A33C1FD62D3DA60118BD5CE5613DE9588EBD7337843D920C3D3DBFD2363BB074B73CB29B733D5307CC3DB67F58BD54240A3CB5CBC13C1CF94FBD70A3CB3D1ED6983C24313F3C92B9A6BCE1BC543D6892C5BCE57F693C15CFF73C3DD51A3D65D120BD06A5763CC5F3B13DAECEA4BD09D399BC0534283C180395BDE816B93B2DEC71BC062B153D58FD4F3D2C48D73C);
+/*!40000 ALTER TABLE `vector_store` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -1143,6 +1278,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2024-11-19 21:56:00
+-- Dump completed on 2024-12-03 21:08:42
