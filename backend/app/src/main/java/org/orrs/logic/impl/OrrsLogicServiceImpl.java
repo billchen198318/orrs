@@ -65,6 +65,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hankcs.hanlp.HanLP;
+
 @Service
 @ServiceAuthority(check = true)
 @Transactional(propagation=Propagation.REQUIRED, readOnly=true)
@@ -404,7 +406,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.setStringValueMaxLength(doc, "sysPromptTpl", OrrsConstants.MAX_SYSTEM_PROMPT_TEMPLATE_SIZE);
 		this.checkSystemPromptTemplateWithVariable(doc);
 		DefaultResult<TbOrrsDoc> result = this.orrsDocService.insert(doc);
-		List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+		List<Document> documents = this.getDocuments(doc.getDocId(), doc.getContent());
 		this.vectorStore.add(documents);
 		return result;
 	}
@@ -425,7 +427,7 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 		this.checkSystemPromptTemplateWithVariable(doc);
 		DefaultResult<TbOrrsDoc> result = this.orrsDocService.update(doc);
 		this.vectorStore.delete(List.of(doc.getDocId()));
-		List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+		List<Document> documents = this.getDocuments(doc.getDocId(), doc.getContent());
 		this.vectorStore.add(documents);		
 		return result;
 	}
@@ -460,9 +462,28 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 			return;
 		}
 		for (TbOrrsDoc doc : docList) {
-			List<Document> documents = List.of(new Document(doc.getDocId(), doc.getContent(), new HashMap<>()));
+			List<Document> documents = this.getDocuments(doc.getDocId(), doc.getContent());
             this.vectorStore.add(documents);
 		}
+	}
+	
+	private List<Document> getDocuments(String docId, String content) throws Exception {
+		Map<String, Object> metadata = new HashMap<String, Object>();
+		int k = 8;
+		int p = 5;
+		int s = 3;
+		if (StringUtils.defaultString(content).length() <= 20) {
+			k = 3;
+			p = 2;
+			s = 1;
+		}
+		List<String> keyword = HanLP.extractKeyword(content, k);
+		List<String> phrase = HanLP.extractPhrase(content, p);
+		List<String> summary = HanLP.extractPhrase(content, s);
+		metadata.put("keyword", keyword);
+		metadata.put("phrase", phrase);
+		metadata.put("summary", summary);
+		return List.of(new Document(docId, content, metadata));
 	}
 	
 }
