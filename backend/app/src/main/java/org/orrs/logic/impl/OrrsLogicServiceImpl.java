@@ -470,12 +470,20 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	
 	private List<Document> getDocuments(String docId, String content) throws Exception {
 		Map<String, Object> metadata = new HashMap<String, Object>();
+		/*
+		String keyword = HanLP.extractKeyword(content, HanLpModel.getExtractKeywordSize(content)).toString();
+		String phrase = HanLP.extractPhrase(content, HanLpModel.getExtractPhraseSize(content)).toString();
+		String summary = HanLP.extractSummary(content, HanLpModel.getExtractSummary(content)).toString();
+		metadata.put("keyword", keyword != null && keyword.length() > 3 ? keyword.substring(1, keyword.length() - 1) : "");
+		metadata.put("phrase", phrase != null && phrase.length() > 3 ? phrase.substring(1, phrase.length() - 1) : "");
+		metadata.put("summary", summary != null && summary.length() > 3 ? summary.substring(1, summary.length() - 1) : "");
+		*/
 		List<String> keyword = HanLP.extractKeyword(content, HanLpModel.getExtractKeywordSize(content));
 		List<String> phrase = HanLP.extractPhrase(content, HanLpModel.getExtractPhraseSize(content));
 		List<String> summary = HanLP.extractSummary(content, HanLpModel.getExtractSummary(content));
 		metadata.put("keyword", keyword);
 		metadata.put("phrase", phrase);
-		metadata.put("summary", summary);
+		metadata.put("summary", summary);		
 		return List.of(new Document(docId, content, metadata));
 	}
 	
