@@ -1,0 +1,9 @@
+{
+	"distinguishLength"		:	20,
+	"minExtractKeywordSize"	:	3,
+	"minExtractPhraseSize"	:	2,
+	"minExtractSummary"		:	1,
+	"maxExtractKeywordSize"	:	8,
+	"maxExtractPhraseSize"	:	5,
+	"maxExtractSummary"		:	3	
+}

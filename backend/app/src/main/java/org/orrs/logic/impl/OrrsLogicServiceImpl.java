@@ -38,6 +38,7 @@ import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
 import org.orrs.logic.IOrrsTaskSchedService;
+import org.orrs.model.HanLpModel;
 import org.orrs.runnable.OrrsTaskRunnable;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
@@ -469,17 +470,9 @@ public class OrrsLogicServiceImpl extends BaseLogicService implements IOrrsLogic
 	
 	private List<Document> getDocuments(String docId, String content) throws Exception {
 		Map<String, Object> metadata = new HashMap<String, Object>();
-		int k = 8;
-		int p = 5;
-		int s = 3;
-		if (StringUtils.defaultString(content).length() <= 20) {
-			k = 3;
-			p = 2;
-			s = 1;
-		}
-		List<String> keyword = HanLP.extractKeyword(content, k);
-		List<String> phrase = HanLP.extractPhrase(content, p);
-		List<String> summary = HanLP.extractPhrase(content, s);
+		List<String> keyword = HanLP.extractKeyword(content, HanLpModel.getExtractKeywordSize(content));
+		List<String> phrase = HanLP.extractPhrase(content, HanLpModel.getExtractPhraseSize(content));
+		List<String> summary = HanLP.extractSummary(content, HanLpModel.getExtractSummary(content));
 		metadata.put("keyword", keyword);
 		metadata.put("phrase", phrase);
 		metadata.put("summary", summary);
