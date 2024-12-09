@@ -21,16 +21,14 @@
  */
 package org.orrs.api;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.orrs.entity.TbOrrsDoc;
 import org.orrs.logic.IOrrsLogicService;
 import org.orrs.service.IOrrsDocService;
+import org.orrs.util.DocumentSearch;
 import org.qifu.base.exception.ControllerException;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
@@ -41,8 +39,6 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SearchBody;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -72,6 +68,9 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 	
 	@Autowired
 	VectorStore vectorStore;
+	
+	@Autowired
+	DocumentSearch documentSearch;
 	
 	@ControllerMethodAuthority(programId = "ORRS001D0004Q", check = true)
 	@Operation(summary = "ORRS001D0004 - findPage", description = "查核tb_orrs_doc資料")
@@ -109,19 +108,7 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 		try {
 			String userMessage = searchBody.getField().get("userMessage");
 			double similarityThreshold = NumberUtils.toDouble(searchBody.getField().get("similarityThreshold"), 1.0d);
-	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
-	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
-	        if (!CollectionUtils.isEmpty(similarDocuments)) {
-	        	List<Map<String, Object>> resultList = similarDocuments.stream()
-	        			.map(document -> {
-	        				Map<String, Object> map = new HashMap<>();
-                            map.put("docId", document.getId());
-                            map.put("content", document.getContent());
-                            return map;
-                        })
-	        			.collect(Collectors.toList());
-                result.setValue(resultList);;
-	        }
+	        result.setValue( this.documentSearch.queryByMetadataOrDefaultOrQuestionNL2ListMap(userMessage, similarityThreshold) );
 	        if (result.getValue() != null) {
 	        	result.setSuccess( YES );
 	        } else {

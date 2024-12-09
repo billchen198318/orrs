@@ -52,6 +52,7 @@ import org.orrs.service.IOrrsDocService;
 import org.orrs.service.IOrrsTaskCmdService;
 import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
+import org.orrs.util.DocumentSearch;
 import org.orrs.util.MarkdownCodeExtractor;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
@@ -68,7 +69,6 @@ import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
 import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.BeansException;
@@ -104,6 +104,8 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	private OllamaApi ollamaApi;
 	
 	private VectorStore vectorStore;
+	
+	private DocumentSearch documentSearch;
 	
 	public OrrsTaskRunnable() {
 		super();
@@ -152,6 +154,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		this.ollamaChatModel = this.ollamaChatModel == null ? (OllamaChatModel) AppContext.getBean(OllamaChatModel.class) : this.ollamaChatModel;
 		this.ollamaApi = this.ollamaApi == null ? (OllamaApi) AppContext.getBean(OllamaApi.class) : this.ollamaApi;
 		this.vectorStore = this.vectorStore == null ? (VectorStore) AppContext.getBean(VectorStore.class) : this.vectorStore;
+		this.documentSearch = this.documentSearch == null ? (DocumentSearch) AppContext.getBean(DocumentSearch.class) : this.documentSearch;
 		this.env = this.env == null ? (Environment) AppContext.getBean(Environment.class) : this.env;
 	}
 	
@@ -252,8 +255,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			if (similarityThreshold < 0.0d || similarityThreshold > 1.0d) {
 				similarityThreshold = LlmModels.getSimilarityThreshold();
 			}
-	        SearchRequest query = SearchRequest.query(userMessage).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
-	        List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
+	        List<Document> similarDocuments = this.documentSearch.queryByMetadataOrDefaultOrQuestionNL(userMessage, similarityThreshold);
 	        if (CollectionUtils.isEmpty(similarDocuments)) {
 	        	return;
 	        }
