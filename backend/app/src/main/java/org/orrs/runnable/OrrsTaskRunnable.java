@@ -267,8 +267,8 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	        		continue;
 	        	}
             	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(orrsDoc.getSysPromptTpl());
-            	String sysPrompt = systemPromptTemplate.createMessage(Map.of(orrsDoc.getTplVariable(), doc.getContent())).getContent();
-            	messageList.add(Message.builder(Message.Role.ASSISTANT).withContent(sysPrompt).build()); 
+            	String sysPrompt = systemPromptTemplate.createMessage(Map.of(orrsDoc.getTplVariable(), doc.getText())).getText();
+            	messageList.add(Message.builder(Message.Role.ASSISTANT).content(sysPrompt).build()); 
 	        }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -280,7 +280,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		if (!CollectionUtils.isEmpty(prompts)) {
 			for (TbOrrsCommandPrompt prompt : prompts) {
 				logger.info("prompt: {}", prompt.getPromptContent());
-				messageList.add(Message.builder(Message.Role.SYSTEM).withContent(prompt.getPromptContent()).build());
+				messageList.add(Message.builder(Message.Role.SYSTEM).content(prompt.getPromptContent()).build());
 			}			
 		}
 		String userMessage = command.getUserMessage();
@@ -316,7 +316,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			this.fillPromptMessageFromDocuments(userMessage, messageList, command.getSimThreshold());
 		}
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
-		messageList.add(Message.builder(Message.Role.USER).withContent(userMessage).build());
+		messageList.add(Message.builder(Message.Role.USER).content(userMessage).build());
 		// env.getProperty("spring.ai.ollama.chat.options.model")
 		var req = ChatRequest.builder(command.getLlmModel()).withStream(false).withMessages(messageList).withOptions(this.options()).build();
 		ChatResponse response = ollamaApi.chat(req);

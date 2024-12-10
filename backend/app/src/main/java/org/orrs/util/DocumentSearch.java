@@ -30,7 +30,7 @@ public class DocumentSearch {
         			.map(document -> {
         				Map<String, Object> map = new HashMap<>();
                         map.put("docId", document.getId());
-                        map.put("content", document.getContent());
+                        map.put("content", document.getText());
                         return map;
                     })
         			.collect(Collectors.toList());
