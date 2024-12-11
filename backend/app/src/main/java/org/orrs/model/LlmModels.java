@@ -30,6 +30,10 @@ public class LlmModels {
 		}
 	}
 	
+	public static String getFirst() {
+		return list.get(0);
+	}
+	
 	public static boolean has(String modelName) {
 		return list.contains(modelName);
 	}

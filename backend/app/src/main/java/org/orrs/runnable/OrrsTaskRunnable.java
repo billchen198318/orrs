@@ -21,7 +21,6 @@
  */
 package org.orrs.runnable;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,7 +42,6 @@ import org.orrs.entity.TbOrrsTask;
 import org.orrs.entity.TbOrrsTaskCmd;
 import org.orrs.entity.TbOrrsTaskResult;
 import org.orrs.logic.IOrrsLogicService;
-import org.orrs.model.LlmModels;
 import org.orrs.model.MarkdownCodeType;
 import org.orrs.service.IOrrsCommandAdvService;
 import org.orrs.service.IOrrsCommandPromptService;
@@ -54,6 +52,7 @@ import org.orrs.service.IOrrsTaskResultService;
 import org.orrs.service.IOrrsTaskService;
 import org.orrs.util.DocumentSearch;
 import org.orrs.util.MarkdownCodeExtractor;
+import org.orrs.util.OrrsSupport;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.ScriptTypeCode;
@@ -62,8 +61,6 @@ import org.qifu.base.model.YesNo;
 import org.qifu.base.scheduled.BaseScheduledTasksProvide;
 import org.qifu.util.ScriptExpressionUtils;
 import org.qifu.util.SimpleUtils;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
@@ -106,6 +103,8 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 	private VectorStore vectorStore;
 	
 	private DocumentSearch documentSearch;
+	
+	private OrrsSupport orrsSupport;
 	
 	public OrrsTaskRunnable() {
 		super();
@@ -155,6 +154,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		this.ollamaApi = this.ollamaApi == null ? (OllamaApi) AppContext.getBean(OllamaApi.class) : this.ollamaApi;
 		this.vectorStore = this.vectorStore == null ? (VectorStore) AppContext.getBean(VectorStore.class) : this.vectorStore;
 		this.documentSearch = this.documentSearch == null ? (DocumentSearch) AppContext.getBean(DocumentSearch.class) : this.documentSearch;
+		this.orrsSupport = this.orrsSupport == null ? (OrrsSupport) AppContext.getBean(OrrsSupport.class) : this.orrsSupport;
 		this.env = this.env == null ? (Environment) AppContext.getBean(Environment.class) : this.env;
 	}
 	
@@ -246,35 +246,6 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		return options;
 	}
 	
-	private void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList, BigDecimal simThreshold) {
-		try {
-			double similarityThreshold = -1.0d;
-			if (simThreshold != null) {
-                similarityThreshold = simThreshold.doubleValue();
-            }
-			if (similarityThreshold < 0.0d || similarityThreshold > 1.0d) {
-				similarityThreshold = LlmModels.getSimilarityThreshold();
-			}
-	        List<Document> similarDocuments = this.documentSearch.queryByMetadataOrDefaultOrQuestionNL(userMessage, similarityThreshold);
-	        if (CollectionUtils.isEmpty(similarDocuments)) {
-	        	return;
-	        }
-	        for (Document doc : similarDocuments) {
-	        	TbOrrsDoc orrsDoc = new TbOrrsDoc();
-	        	orrsDoc.setDocId(doc.getId());
-	        	orrsDoc = this.orrsDocService.selectByUniqueKey(orrsDoc).getValue();
-	        	if (null == orrsDoc || StringUtils.isBlank(orrsDoc.getSysPromptTpl()) || StringUtils.isBlank(orrsDoc.getTplVariable())) {
-	        		continue;
-	        	}
-            	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(orrsDoc.getSysPromptTpl());
-            	String sysPrompt = systemPromptTemplate.createMessage(Map.of(orrsDoc.getTplVariable(), doc.getText())).getText();
-            	messageList.add(Message.builder(Message.Role.ASSISTANT).content(sysPrompt).build()); 
-	        }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsCommand commandPrev, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		if (!CollectionUtils.isEmpty(prompts)) {
@@ -313,7 +284,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 			}
 		}
 		if (YesNo.YES.equals(command.getDocRetrieval())) {
-			this.fillPromptMessageFromDocuments(userMessage, messageList, command.getSimThreshold());
+			this.orrsSupport.fillPromptMessageFromDocuments(userMessage, messageList, command.getSimThreshold());
 		}
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).content(userMessage).build());
