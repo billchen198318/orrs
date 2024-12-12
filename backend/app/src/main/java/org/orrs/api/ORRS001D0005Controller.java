@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.orrs.model.LlmModels;
 import org.orrs.util.DocumentSearch;
 import org.orrs.util.OrrsSupport;
+import org.orrs.vo.ORRS001D0005ChatBody;
 import org.qifu.core.util.CoreApiSupport;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
@@ -17,8 +18,8 @@ import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,14 +45,15 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 	OrrsSupport orrsSupport;
 	
 	@PostMapping("/chat")
-    public Flux<ChatResponse> chat(@RequestParam String model, @RequestParam String system, @RequestParam String message) {
+    public Flux<ChatResponse> chat(@RequestBody ORRS001D0005ChatBody chatBody) {
 		List<Message> messageList = new LinkedList<Message>();
-		if (!StringUtils.isEmpty(system)) {
-			messageList.add(Message.builder(Message.Role.SYSTEM).content(system).build());
+		if (!StringUtils.isEmpty(chatBody.getSystem())) {
+			messageList.add(Message.builder(Message.Role.SYSTEM).content(chatBody.getSystem()).build());
 		}
-		this.orrsSupport.fillPromptMessageFromDocuments(message, messageList, BigDecimal.ZERO);
-		messageList.add(Message.builder(Message.Role.USER).content(message).build());
-		var req = ChatRequest.builder(LlmModels.has(model) ? model : LlmModels.getFirst()).withStream(true).withMessages(messageList).build();
+		//this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, BigDecimal.ZERO);
+		messageList.add(Message.builder(Message.Role.USER).content(chatBody.getMessage()).build());
+		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).withStream(true)
+				.withOptions(this.orrsSupport.getOptions()).withMessages(messageList).build();
 		return ollamaApi.streamingChat(req);
     }	
 	

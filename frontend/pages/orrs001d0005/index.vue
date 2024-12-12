@@ -43,9 +43,9 @@ export default {
 
 		},
 		btnClear : function() {
+			this.queryPageStore.queryParam.model = 'gemma2';
 			this.queryPageStore.queryParam.message = '';
 			this.queryPageStore.queryParam.system = '';
-			this.queryPageStore.queryParam.similarityThreshold = 0.0;
 			this.msgList = [];
 		},
 		send : function() {
@@ -58,10 +58,17 @@ export default {
 				body : JSON.stringify(this.queryPageStore.queryParam),
 				openWhenHidden : true,
 				onmessage(msg) {
-					console.log(msg);
+					var data = JSON.parse(msg.data);
+					
+					console.log(data.message.content);
+
+					if (data.done) {
+						toast.info('done...');
+					}
+
 				},
 				onerror(err) {
-					console.log(err);
+					toast.error(err);
 				}
 			});
 		}
@@ -69,6 +76,7 @@ export default {
 	created() {
 	},
 	mounted() { 
+		//this.send();
 	}
 }
 
@@ -101,3 +109,4 @@ export default {
 
 
 </template>
+

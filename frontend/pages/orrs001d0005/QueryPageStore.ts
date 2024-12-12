@@ -10,8 +10,7 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
             queryParam : {
                 model : 'gemma2',
                 system : '',
-                message : '',
-                similarityThreshold : 0.0
+                message : ''
             }
         }
     },
@@ -23,7 +22,6 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
             this.queryParam.model = 'gemma2';
             this.queryParam.system = '';
             this.queryParam.message = '';
-            this.queryParam.similarityThreshold = 0.0;
         }
     },
 })

@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.orrs.OrrsConstants;
@@ -67,7 +66,6 @@ import org.springframework.ai.ollama.api.OllamaApi.ChatRequest;
 import org.springframework.ai.ollama.api.OllamaApi.ChatResponse;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.BeansException;
 import org.springframework.core.env.Environment;
 
@@ -223,29 +221,6 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		}
 	}
 	
-	private OllamaOptions options() {
-		OllamaOptions options = new OllamaOptions();
-		if (env.getProperty("spring.ai.ollama.chat.options.temperature") != null) {
-			options.setTemperature( NumberUtils.toDouble(env.getProperty("spring.ai.ollama.chat.options.temperature"), 0.8d) );
-		}
-		if (env.getProperty("spring.ai.ollama.chat.options.top-k") != null) {
-			options.setTopK( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.top-k"), 40) );
-		}
-		if (env.getProperty("spring.ai.ollama.chat.options.top-p") != null) {
-			options.setTopP( NumberUtils.toDouble(env.getProperty("spring.ai.ollama.chat.options.top-p"), 0.9d) );
-		}
-		if (env.getProperty("spring.ai.ollama.chat.options.num-gpu") != null) {
-			options.setNumGPU( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.num-gpu"), -1) );
-		}
-		if (env.getProperty("spring.ai.ollama.chat.options.numa") != null) {
-			options.setUseNUMA( Boolean.valueOf(env.getProperty("spring.ai.ollama.chat.options.numa")) );
-		}
-		if (env.getProperty("spring.ai.ollama.chat.options.num-ctx") != null) {
-			options.setNumCtx( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.num-ctx"), 2048) );
-		}
-		return options;
-	}
-	
 	private void processTaskWithCommand(TbOrrsTask task, TbOrrsTaskCmd taskCmd, TbOrrsCommand command, List<TbOrrsCommandPrompt> prompts, TbOrrsTaskResult taskRes, TbOrrsCommand commandPrev, TbOrrsTaskResult taskResPrev) throws ServiceException, Exception {
 		List<Message> messageList = new LinkedList<Message>();
 		if (!CollectionUtils.isEmpty(prompts)) {
@@ -289,7 +264,7 @@ public class OrrsTaskRunnable extends BaseScheduledTasksProvide implements Runna
 		taskRes.setTaskUserMessage( userMessage.getBytes(StandardCharsets.UTF_8) );
 		messageList.add(Message.builder(Message.Role.USER).content(userMessage).build());
 		// env.getProperty("spring.ai.ollama.chat.options.model")
-		var req = ChatRequest.builder(command.getLlmModel()).withStream(false).withMessages(messageList).withOptions(this.options()).build();
+		var req = ChatRequest.builder(command.getLlmModel()).withStream(false).withMessages(messageList).withOptions(this.orrsSupport.getOptions()).build();
 		ChatResponse response = ollamaApi.chat(req);
 		String content = StringUtils.defaultString(response.message().content());		
 		logger.info("response content: {}", content);

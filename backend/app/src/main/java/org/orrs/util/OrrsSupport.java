@@ -6,17 +6,23 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.orrs.entity.TbOrrsDoc;
 import org.orrs.model.LlmModels;
 import org.orrs.service.IOrrsDocService;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrrsSupport {
+	
+	@Autowired
+	Environment env;
 	
 	@Autowired
 	IOrrsDocService<TbOrrsDoc, String> orrsDocService;
@@ -51,6 +57,29 @@ public class OrrsSupport {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}	
+	
+	public OllamaOptions getOptions() {
+		OllamaOptions options = new OllamaOptions();
+		if (env.getProperty("spring.ai.ollama.chat.options.temperature") != null) {
+			options.setTemperature( NumberUtils.toDouble(env.getProperty("spring.ai.ollama.chat.options.temperature"), 0.8d) );
+		}
+		if (env.getProperty("spring.ai.ollama.chat.options.top-k") != null) {
+			options.setTopK( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.top-k"), 40) );
+		}
+		if (env.getProperty("spring.ai.ollama.chat.options.top-p") != null) {
+			options.setTopP( NumberUtils.toDouble(env.getProperty("spring.ai.ollama.chat.options.top-p"), 0.9d) );
+		}
+		if (env.getProperty("spring.ai.ollama.chat.options.num-gpu") != null) {
+			options.setNumGPU( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.num-gpu"), -1) );
+		}
+		if (env.getProperty("spring.ai.ollama.chat.options.numa") != null) {
+			options.setUseNUMA( Boolean.valueOf(env.getProperty("spring.ai.ollama.chat.options.numa")) );
+		}
+		if (env.getProperty("spring.ai.ollama.chat.options.num-ctx") != null) {
+			options.setNumCtx( NumberUtils.toInt(env.getProperty("spring.ai.ollama.chat.options.num-ctx"), 2048) );
+		}
+		return options;
 	}	
 	
 }
