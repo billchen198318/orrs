@@ -3,8 +3,12 @@ import Swal from 'sweetalert2';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
+import { Codemirror } from 'vue-codemirror'
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { languages } from '@codemirror/language-data'
+import { oneDark } from '@codemirror/theme-one-dark'
+
 import Toolbar from '@/components/Toolbar.vue';
-import HiddenQueryFieldAlertInfo from '@/components/HiddenQueryFieldAlertInfo.vue';
 import { PageConstants } from './config';
 import { useOrrs001d0005Store } from './QueryPageStore'; 
 import { 
@@ -17,12 +21,26 @@ import {
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 export default {
-	components: { Toolbar, HiddenQueryFieldAlertInfo },
+	components: { Toolbar, Codemirror },
 	setup() { 
 		definePageMeta({ middleware : ['auth'] });
 		const queryPageStore = useOrrs001d0005Store();
+
+		const cmRef = ref();
+		const cmOptions = {
+			mode: "text/x-markdown",
+		};
+
+		const cmExtensions = [
+			markdown({ base: markdownLanguage, codeLanguages: languages })
+			/*, oneDark*/ 
+		];
+
 		return {
-			queryPageStore
+			queryPageStore,
+			cmRef,
+			cmOptions,
+			cmExtensions			
 		}
 	},
 	data() {
@@ -53,7 +71,11 @@ export default {
 		send : function() {
 			this.queryBtnDisable = true;
 			var that = this;
-			this.reqList.push({"question" : this.queryPageStore.queryParam.message, "ans" : ''});
+			this.reqList.push({
+				"question"	: this.queryPageStore.queryParam.message, 
+				"ans" 		: '', 
+				"model"		: this.queryPageStore.queryParam.model
+			});
 			let currPos = this.reqList.length - 1;
 			fetchEventSource(import.meta.env.VITE_API_URL + PageConstants.eventNamespace + '/chat',{
 				method : "POST",
@@ -79,7 +101,18 @@ export default {
 					that.reqList[currPos].ans = '...';
 				}
 			});
+		},
+
+		cmOnChange0 : function(val, cm) {
+			
+		},
+		cmOnInput0 : function(val) {
+			
+		},
+		cmOnReady0 : function(cm) {
+
 		}
+
 	},
 	created() {
 	},
@@ -129,22 +162,33 @@ export default {
 
 						<div v-for=" r in this.reqList ">
                         	<div class="d-flex justify-content-between">
-                            	<p class="small mb-1">You</p>
+                            	<p class="small mb-1">Question</p>
                         	</div>
                         	<div class="d-flex flex-row justify-content-start">
-                            	<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava5-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;" />
+                            	<img src="/img/Q.png" alt="avatar 1" style="width: 45px; height: 100%;" />
                             	<div>
                                 	<p class="small p-2 ms-3 mb-3 rounded-3 bg-body-tertiary">{{ r.question }}</p>
                             	</div>
                         	</div>
 							<div class="d-flex justify-content-between">
-								<p class="small mb-1">LLM</p>
+								<p class="small mb-1 text-muted">&nbsp;</p>
+								<p class="small mb-1">{{ r.model }}</p>
 							</div>
 							<div class="d-flex flex-row justify-content-end mb-4 pt-1">
 								<div>
-									<p class="small p-2 me-3 mb-3 text-white rounded-3 bg-warning">{{ '' == r.ans ? '...' : r.ans }}</p>
+									<Codemirror
+										v-model="r.ans"
+										:options="cmOptions"
+										:extensions="cmExtensions"
+										:style="{ height: '100%', width: '100%' }"
+										ref="cmRef"
+										@change="cmOnChange0"
+										@input="cmOnInput0"
+										@ready="cmOnReady0"
+										>
+									</Codemirror>	
 								</div>
-								<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;" />
+								<img src="/img/A.png" alt="avatar 1" style="width: 45px; height: 100%;" />
                         	</div>							
 						</div>
 						
