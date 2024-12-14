@@ -6,6 +6,7 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	private String model;
 	private String system;
 	private String message;
+	private String docmode;
 	
 	public String getModel() {
 		return model;
@@ -24,6 +25,12 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	public String getDocmode() {
+		return docmode;
+	}
+	public void setDocmode(String docmode) {
+		this.docmode = docmode;
 	}
 	
 }

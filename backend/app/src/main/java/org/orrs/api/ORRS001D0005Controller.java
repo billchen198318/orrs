@@ -50,7 +50,9 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 		if (!StringUtils.isEmpty(chatBody.getSystem())) {
 			messageList.add(Message.builder(Message.Role.SYSTEM).content(chatBody.getSystem()).build());
 		}
-		//this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, BigDecimal.ZERO);
+		if (YES.equals(chatBody.getDocmode())) {
+			this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, BigDecimal.ZERO);
+		}
 		messageList.add(Message.builder(Message.Role.USER).content(chatBody.getMessage()).build());
 		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).withStream(true)
 				.withOptions(this.orrsSupport.getOptions()).withMessages(messageList).build();

@@ -41,7 +41,10 @@ public class OrrsSupport {
 			}
 	        List<Document> similarDocuments = this.documentSearch.queryByMetadataOrDefaultOrQuestionNL(userMessage, similarityThreshold);
 	        if (CollectionUtils.isEmpty(similarDocuments)) {
-	        	return;
+	        	similarDocuments = this.documentSearch.query(userMessage, similarityThreshold);
+	        	if (CollectionUtils.isEmpty(similarDocuments)) {
+	        		return;
+	        	}
 	        }
 	        for (Document doc : similarDocuments) {
 	        	TbOrrsDoc orrsDoc = new TbOrrsDoc();
