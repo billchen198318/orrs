@@ -88,7 +88,7 @@ export default {
 				onmessage(msg) {
 					var data = JSON.parse(msg.data);
 					//console.log(data.message.content);
-					that.reqList[currPos].ans += data.message.content;
+					that.reqList[currPos].ans = that.reqList[currPos].ans.concat(data.message.content);
 					if (data.done) {
 						that.queryBtnDisable = false;
 						that.queryPageStore.queryParam.message = '';
@@ -129,7 +129,7 @@ export default {
     <Toolbar 
         :progId="this.pageProgramId" 
         description="Chat test." 
-        marginBottom="Y"
+        marginBottom="N"
         refreshFlag="Y"
         @refreshMethod="tbRefresh"
         backFlag="N"
@@ -144,69 +144,51 @@ export default {
   </div>
 </div>
 
-<section>
-    <div class="container py-5">
-        <div class="row d-flex justify-content-center">
-            <div class="col-md-12 col-lg-12 col-xl-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center p-3" style="border-top: 4px solid #ffa900;">
-                        <h5 class="mb-0">Chat</h5>
-                        <div class="d-flex flex-row align-items-center">
-                            <span class="badge bg-warning me-3">{{ this.reqList.length }}</span>
-                            <i class="fas fa-minus me-3 text-muted fa-xs"></i>
-                            <i class="fas fa-comments me-3 text-muted fa-xs"></i>
-                            <i class="fas fa-times text-muted fa-xs"></i>
-                        </div>
+<div class="row d-flex justify-content-center">
+    <div class="col-md-12 col-lg-12 col-xl-12">
+        <div class="card-body" data-mdb-perfect-scrollbar-init style="position: relative; height: 100%;">
+            <div class="col-md-12 col-lg-12 col-xl-12" v-for=" r in this.reqList ">
+                <div class="d-flex justify-content-between">
+                    <p class="small mb-1">Question</p>
+                </div>
+                <div class="d-flex flex-row justify-content-start">
+                    <img src="/img/Q.png" alt="avatar 1" style="width: 45px; height: 100%;" />
+                    <div>
+                        <p class="small p-2 ms-3 mb-3 rounded-3 bg-body-tertiary">{{ r.question }}</p>
                     </div>
-                    <div class="card-body" data-mdb-perfect-scrollbar-init style="position: relative; height: 100%;">
-
-						<div v-for=" r in this.reqList ">
-                        	<div class="d-flex justify-content-between">
-                            	<p class="small mb-1">Question</p>
-                        	</div>
-                        	<div class="d-flex flex-row justify-content-start">
-                            	<img src="/img/Q.png" alt="avatar 1" style="width: 45px; height: 100%;" />
-                            	<div>
-                                	<p class="small p-2 ms-3 mb-3 rounded-3 bg-body-tertiary">{{ r.question }}</p>
-                            	</div>
-                        	</div>
-							<div class="d-flex justify-content-between">
-								<p class="small mb-1 text-muted">&nbsp;</p>
-								<p class="small mb-1">{{ r.model }}</p>
-							</div>
-							<div class="d-flex flex-row justify-content-end mb-4 pt-1">
-								<div>
-									<Codemirror
-										v-model="r.ans"
-										:options="cmOptions"
-										:extensions="cmExtensions"
-										:style="{ height: '100%', width: '100%' }"
-										ref="cmRef"
-										@change="cmOnChange0"
-										@input="cmOnInput0"
-										@ready="cmOnReady0"
-										>
-									</Codemirror>	
-								</div>
-								<img src="/img/A.png" alt="avatar 1" style="width: 45px; height: 100%;" />
-                        	</div>							
-						</div>
-						
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p class="small mb-1 text-muted">&nbsp;</p>
+                    <p class="small mb-1">{{ r.model }}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-end mb-4 pt-1">
+                    <div>
+                        <Codemirror
+                            v-model="r.ans"
+                            :options="cmOptions"
+                            :extensions="cmExtensions"
+                            :style="{ height: '100%', width: '960px', minWidth: '250px', maxWidth: '1440px' }"
+                            ref="cmRef"
+                            @change="cmOnChange0"
+                            @input="cmOnInput0"
+                            @ready="cmOnReady0"
+                        >
+                        </Codemirror>
                     </div>
-                    <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
-                        <div class="input-group mb-0">
-                            <input type="text" class="form-control" placeholder="Type message" aria-label="message" aria-describedby="button-addon2" v-model="this.queryPageStore.queryParam.message" />
-                            <button data-mdb-button-init data-mdb-ripple-init class="btn btn-warning" type="button" id="button-addon2" style="padding-top: 0.55rem;" @click="btnQuery" v-bind:disabled="this.queryBtnDisable">
-                                送出
-                            </button>
-                        </div>
-                    </div>
+                    <img src="/img/A.png" alt="avatar 1" style="width: 45px; height: 100%;" />
                 </div>
             </div>
         </div>
+        <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+            <div class="input-group mb-0">
+                <input type="text" class="form-control" placeholder="Type message" aria-label="message" aria-describedby="button-addon2" v-model="this.queryPageStore.queryParam.message" />
+                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-warning" type="button" id="button-addon2" style="padding-top: 0.55rem;" @click="btnQuery" v-bind:disabled="this.queryBtnDisable">
+                    送出
+                </button>
+            </div>
+        </div>
     </div>
-</section>
-
+</div>
 
 </template>
 
