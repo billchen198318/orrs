@@ -188,7 +188,16 @@ export default {
                 <div class="d-flex flex-row justify-content-start">
                     <img src="/img/Q.png" alt="avatar 1" style="width: 45px; height: 100%;" />
                     <div>
-                        <p class="small p-2 ms-3 mb-3 rounded-3 bg-body-tertiary">{{ r.question }}</p>
+                        <Codemirror
+                            v-model="r.question"
+                            :options="cmOptions"
+                            :extensions="cmExtensions"
+                            :style="{ height: '100%', width: '960px', minWidth: '250px', maxWidth: '1440px' }"
+                            ref="cmRef"
+                            @change="cmOnChange0"
+                            @input="cmOnInput0"
+                            @ready="cmOnReady0">
+                        </Codemirror>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -205,8 +214,7 @@ export default {
                             ref="cmRef"
                             @change="cmOnChange0"
                             @input="cmOnInput0"
-                            @ready="cmOnReady0"
-                        >
+                            @ready="cmOnReady0">
                         </Codemirror>
                     </div>
                     <img src="/img/A.png" alt="avatar 1" style="width: 45px; height: 100%;" />
