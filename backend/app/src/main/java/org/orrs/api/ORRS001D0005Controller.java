@@ -1,6 +1,5 @@
 package org.orrs.api;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 			messageList.add(Message.builder(Message.Role.SYSTEM).content(chatBody.getSystem()).build());
 		}
 		if (YES.equals(chatBody.getDocmode())) {
-			this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, BigDecimal.ZERO);
+			this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, chatBody.getSimThreshold());
 		}
 		messageList.add(Message.builder(Message.Role.USER).content(chatBody.getMessage()).build());
 		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).withStream(true)

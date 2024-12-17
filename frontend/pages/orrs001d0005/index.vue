@@ -69,6 +69,7 @@ export default {
 			this.queryPageStore.queryParam.message = '';
 			this.queryPageStore.queryParam.system = '';
 			this.queryPageStore.queryParam.docmode = 'N';
+			this.queryPageStore.queryParam.simThreshold = 0.70;
 			this.reqList = [];
 			this.queryBtnDisable = false;
 			this.docSw = false;
@@ -238,7 +239,12 @@ export default {
 					</div>
     			</div>		
 			</div>
-		</div>				
+		</div>	
+		<p style="margin-bottom: 5px"></p>
+		<div class="col-xs-12 col-md-12 col-lg-12">
+        	<label for="simThreshold" class="form-label">Similarity Threshold&nbsp;/&nbsp;相似度閾值&nbsp;({{ this.queryPageStore.queryParam.simThreshold }})</label>
+        	<input type="range" class="form-range" min="0.00" max="1.00" step="0.05" id="simThreshold" v-model="this.queryPageStore.queryParam.simThreshold" v-bind:disabled="!this.docSw">        
+		</div>						
 		<p style="margin-bottom: 5px"></p>
 		<div class="row">
 			<div class="col-md-12 col-lg-12 col-xl-12">

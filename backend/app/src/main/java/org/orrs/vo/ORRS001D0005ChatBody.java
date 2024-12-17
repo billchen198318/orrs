@@ -1,5 +1,7 @@
 package org.orrs.vo;
 
+import java.math.BigDecimal;
+
 public class ORRS001D0005ChatBody implements java.io.Serializable {
 	private static final long serialVersionUID = -8143528356157087782L;
 	
@@ -7,6 +9,7 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	private String system;
 	private String message;
 	private String docmode;
+	private BigDecimal simThreshold;
 	
 	public String getModel() {
 		return model;
@@ -31,6 +34,12 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	}
 	public void setDocmode(String docmode) {
 		this.docmode = docmode;
+	}
+	public BigDecimal getSimThreshold() {
+		return simThreshold;
+	}
+	public void setSimThreshold(BigDecimal simThreshold) {
+		this.simThreshold = simThreshold;
 	}
 	
 }

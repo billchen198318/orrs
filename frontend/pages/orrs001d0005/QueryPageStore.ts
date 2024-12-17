@@ -11,7 +11,8 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
                 model : 'gemma2',
                 system : '',
                 message : '',
-                docmode : 'N'
+                docmode : 'N',
+                simThreshold : 0.70
             }
         }
     },
@@ -24,6 +25,7 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
             this.queryParam.system = '';
             this.queryParam.message = '';
             this.queryParam.docmode = 'N';
+            this.queryParam.simThreshold = 0.70;
         }
     },
 })
