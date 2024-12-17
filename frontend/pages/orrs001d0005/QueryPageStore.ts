@@ -13,7 +13,8 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
                 message : '',
                 docmode : 'N',
                 simThreshold : 0.70
-            }
+            },
+            reqList : []
         }
     },
     actions: {
@@ -26,6 +27,7 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
             this.queryParam.message = '';
             this.queryParam.docmode = 'N';
             this.queryParam.simThreshold = 0.70;
+            this.reqList = [];
         }
     },
 })

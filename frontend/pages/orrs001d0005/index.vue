@@ -47,7 +47,6 @@ export default {
 	data() {
 		return {
 			pageProgramId : PageConstants.QueryId,
-			reqList : [],
 			llmModelList : [],
 			queryBtnDisable : false,
 			docSw : false
@@ -70,19 +69,19 @@ export default {
 			this.queryPageStore.queryParam.system = '';
 			this.queryPageStore.queryParam.docmode = 'N';
 			this.queryPageStore.queryParam.simThreshold = 0.70;
-			this.reqList = [];
+			this.queryPageStore.reqList = [];
 			this.queryBtnDisable = false;
 			this.docSw = false;
 		},
 		send : function() {
 			this.queryBtnDisable = true;
 			var that = this;
-			this.reqList.push({
+			this.queryPageStore.reqList.push({
 				"question"	: this.queryPageStore.queryParam.message, 
 				"ans" 		: '', 
 				"model"		: this.queryPageStore.queryParam.model
 			});
-			let currPos = this.reqList.length - 1;
+			let currPos = this.queryPageStore.reqList.length - 1;
 			fetchEventSource(import.meta.env.VITE_API_URL + PageConstants.eventNamespace + '/chat',{
 				method : "POST",
 				headers : {
@@ -94,7 +93,7 @@ export default {
 				onmessage(msg) {
 					var data = JSON.parse(msg.data);
 					//console.log(data.message.content);
-					that.reqList[currPos].ans = that.reqList[currPos].ans.concat(data.message.content);
+					that.queryPageStore.reqList[currPos].ans = that.queryPageStore.reqList[currPos].ans.concat(data.message.content);
 					if (data.done) {
 						that.queryBtnDisable = false;
 						that.queryPageStore.queryParam.message = '';
@@ -105,7 +104,7 @@ export default {
 				onerror(err) {
 					that.queryBtnDisable = false;
 					toast.error(err);
-					that.reqList[currPos].ans = '...';
+					that.queryPageStore.reqList[currPos].ans = '...';
 				}
 			});
 		},
@@ -182,7 +181,7 @@ export default {
 <div class="row d-flex justify-content-center">
     <div class="col-md-12 col-lg-12 col-xl-12">
         <div class="card-body" data-mdb-perfect-scrollbar-init style="position: relative; height: 100%;">
-            <div class="col-md-12 col-lg-12 col-xl-12" v-for=" r in this.reqList ">
+            <div class="col-md-12 col-lg-12 col-xl-12" v-for=" r in this.queryPageStore.reqList ">
                 <div class="d-flex justify-content-between">
                     <p class="small mb-1">Question</p>
                 </div>
