@@ -37,11 +37,14 @@ export default {
 			/*, oneDark*/ 
 		];
 
+		const ctrl = new AbortController();
+
 		return {
 			queryPageStore,
 			cmRef,
 			cmOptions,
-			cmExtensions			
+			cmExtensions,
+			ctrl
 		}
 	},
 	data() {
@@ -64,6 +67,7 @@ export default {
 			this.send();
 		},
 		btnClear : function() {
+			this.ctrl.abort();
 			this.queryPageStore.queryParam.model = 'gemma2';
 			this.queryPageStore.queryParam.message = '';
 			this.queryPageStore.queryParam.system = '';
@@ -74,6 +78,7 @@ export default {
 			this.docSw = false;
 		},
 		send : function() {
+			this.ctrl = new AbortController();
 			this.queryBtnDisable = true;
 			var that = this;
 			this.queryPageStore.reqList.push({
@@ -90,21 +95,26 @@ export default {
 				},
 				body : JSON.stringify(this.queryPageStore.queryParam),
 				openWhenHidden : true,
+				signal : that.ctrl.signal,
 				onmessage(msg) {
 					var data = JSON.parse(msg.data);
-					//console.log(data.message.content);
+					if (that.ctrl.signal.aborted) {
+						toast.warn('aborted!');
+						return;
+					}
 					that.queryPageStore.reqList[currPos].ans = that.queryPageStore.reqList[currPos].ans.concat(data.message.content);
 					if (data.done) {
 						that.queryBtnDisable = false;
 						that.queryPageStore.queryParam.message = '';
 						that.queryPageStore.queryParam.system = '';
-						toast.info('done...');
+						toast.info('done!');
 					}
 				},
 				onerror(err) {
 					that.queryBtnDisable = false;
 					toast.error(err);
 					that.queryPageStore.reqList[currPos].ans = '...';
+					that.ctrl.abort();
 				}
 			});
 		},
@@ -220,45 +230,46 @@ export default {
                     <img src="/img/A.png" alt="avatar 1" style="width: 45px; height: 100%;" />
                 </div>
             </div>
+
+			<br>
+
+			<div class="row">
+				<div class="col-md-6 col-lg-6 col-xl-6">
+					<select class="form-select" aria-label="請選取LLM模組" v-model="this.queryPageStore.queryParam.model">
+						<option v-bind:value="llmItem" v-for="(llmItem, idx) in this.llmModelList">{{ llmItem }}</option>
+					</select>
+				</div>
+				<div class="col-md-6 col-lg-6 col-xl-6">
+					<div class="form-group form-floating">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" role="switch" id="docSw" v-model="this.docSw">
+							<label class="form-check-label" for="docSw">Search documents for assistant</label>
+						</div>
+					</div>		
+				</div>
+			</div>	
+			<p style="margin-bottom: 5px"></p>
+			<div class="col-xs-12 col-md-12 col-lg-12">
+				<label for="simThreshold" class="form-label">Similarity Threshold&nbsp;/&nbsp;相似度閾值&nbsp;({{ this.queryPageStore.queryParam.simThreshold }})</label>
+				<input type="range" class="form-range" min="0.00" max="1.00" step="0.05" id="simThreshold" v-model="this.queryPageStore.queryParam.simThreshold" v-bind:disabled="!this.docSw">        
+			</div>						
+			<p style="margin-bottom: 5px"></p>
+			<div class="row">
+				<div class="col-md-12 col-lg-12 col-xl-12">
+					<input type="text" class="form-control" id="system" placeholder="輸入Prompt" v-model="this.queryPageStore.queryParam.system">
+				</div>
+			</div>			
+			<p style="margin-bottom: 5px"></p>
+			<div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">			
+				<div class="input-group mb-0">
+					<textarea class="form-control" rows="3" cols="24" placeholder="Type message" aria-label="message" aria-describedby="button-addon2" v-model="this.queryPageStore.queryParam.message"></textarea>
+					<button class="btn btn-primary" type="button" id="button-addon2" style="padding-top: 0.55rem;" @click="btnQuery" v-bind:disabled="this.queryBtnDisable"><i v-bind:class="!this.queryBtnDisable ? 'bi bi-send' : 'bi bi-stop-circle'"></i>&nbsp;送出</button>
+					<button class="btn btn-warning" type="button" id="button-addon3" style="padding-top: 0.55rem;" @click="btnClear"><i class="bi bi-trash"></i>&nbsp;清除</button>					
+				</div>
+			</div>
+
         </div>
 
-		<br>
-
-		<div class="row">
-			<div class="col-md-6 col-lg-6 col-xl-6">
-				<select class="form-select" aria-label="請選取LLM模組" v-model="this.queryPageStore.queryParam.model">
-					<option v-bind:value="llmItem" v-for="(llmItem, idx) in this.llmModelList">{{ llmItem }}</option>
-				</select>
-			</div>
-			<div class="col-md-6 col-lg-6 col-xl-6">
-				<div class="form-group form-floating">
-					<div class="form-check form-switch">
-						<input class="form-check-input" type="checkbox" role="switch" id="docSw" v-model="this.docSw">
-						<label class="form-check-label" for="docSw">Search documents for assistant</label>
-					</div>
-    			</div>		
-			</div>
-		</div>	
-		<p style="margin-bottom: 5px"></p>
-		<div class="col-xs-12 col-md-12 col-lg-12">
-        	<label for="simThreshold" class="form-label">Similarity Threshold&nbsp;/&nbsp;相似度閾值&nbsp;({{ this.queryPageStore.queryParam.simThreshold }})</label>
-        	<input type="range" class="form-range" min="0.00" max="1.00" step="0.05" id="simThreshold" v-model="this.queryPageStore.queryParam.simThreshold" v-bind:disabled="!this.docSw">        
-		</div>						
-		<p style="margin-bottom: 5px"></p>
-		<div class="row">
-			<div class="col-md-12 col-lg-12 col-xl-12">
-				<input type="text" class="form-control" id="system" placeholder="輸入Prompt" v-model="this.queryPageStore.queryParam.system">
-			</div>
-		</div>			
-		<p style="margin-bottom: 5px"></p>
-        <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">			
-			<div class="input-group mb-0">
-                <textarea class="form-control" rows="3" cols="24" placeholder="Type message" aria-label="message" aria-describedby="button-addon2" v-model="this.queryPageStore.queryParam.message"></textarea>
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-warning" type="button" id="button-addon2" style="padding-top: 0.55rem;" @click="btnQuery" v-bind:disabled="this.queryBtnDisable">
-                    送出
-                </button>
-            </div>
-        </div>
     </div>
 </div>
 
