@@ -1,0 +1,5 @@
+{
+	"retryTimes" : 3,
+	"retryTimesSleepTime" : 1000,
+	"summaryUrl" : "https://zh.wikipedia.org/api/rest_v1/page/summary/"
+}

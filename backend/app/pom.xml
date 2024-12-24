@@ -211,13 +211,13 @@
 		<dependency>
 		    <groupId>org.mybatis</groupId>
 		    <artifactId>mybatis-spring</artifactId>
-		    <version>3.0.3</version>
+		    <version>3.0.4</version>
 		</dependency>		
 		
 		<dependency>
 		    <groupId>org.mybatis</groupId>
 		    <artifactId>mybatis</artifactId>
-		    <version>3.5.16</version>
+		    <version>3.5.17</version>
 		</dependency>		
 		
 		<dependency>
@@ -380,6 +380,17 @@
 		    <artifactId>hanlp</artifactId>
 		    <version>portable-1.8.5</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>us.codecraft</groupId>
+		    <artifactId>webmagic-core</artifactId>
+		    <version>1.0.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>us.codecraft</groupId>
+		    <artifactId>webmagic-extension</artifactId>
+		    <version>1.0.2</version>
+		</dependency>		
 				
 <!-- 		<dependency> -->
 <!-- 		    <groupId>com.oracle</groupId> -->
