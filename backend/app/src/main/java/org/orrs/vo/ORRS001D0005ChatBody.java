@@ -10,6 +10,7 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	private String message;
 	private String docmode;
 	private BigDecimal simThreshold;
+	private String wikimode;
 	
 	public String getModel() {
 		return model;
@@ -40,6 +41,12 @@ public class ORRS001D0005ChatBody implements java.io.Serializable {
 	}
 	public void setSimThreshold(BigDecimal simThreshold) {
 		this.simThreshold = simThreshold;
+	}
+	public String getWikimode() {
+		return wikimode;
+	}
+	public void setWikimode(String wikimode) {
+		this.wikimode = wikimode;
 	}
 	
 }

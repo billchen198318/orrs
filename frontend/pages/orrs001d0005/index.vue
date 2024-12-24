@@ -52,7 +52,8 @@ export default {
 			pageProgramId : PageConstants.QueryId,
 			llmModelList : [],
 			queryBtnDisable : false,
-			docSw : false
+			docSw : false,
+			wikiSw : false
 		}
 	},
 	methods: { 
@@ -73,9 +74,11 @@ export default {
 			this.queryPageStore.queryParam.system = '';
 			this.queryPageStore.queryParam.docmode = 'N';
 			this.queryPageStore.queryParam.simThreshold = 0.70;
+			this.queryPageStore.queryParam.wikimode = 'N';
 			this.queryPageStore.reqList = [];
 			this.queryBtnDisable = false;
 			this.docSw = false;
+			this.wikiSw = false;
 		},
 		send : function() {
 			this.ctrl = new AbortController();
@@ -158,6 +161,13 @@ export default {
 				this.queryPageStore.queryParam.docmode = 'N';
 			}
 		});		
+		watch(() => this.wikiSw, (newVal, oldVal) => {
+			if (newVal) {
+				this.queryPageStore.queryParam.wikimode = 'Y';
+			} else {
+				this.queryPageStore.queryParam.wikimode = 'N';
+			}
+		});			
 	},
 	mounted() { 
 		this.loadLlmModel();
@@ -245,6 +255,10 @@ export default {
 							<input class="form-check-input" type="checkbox" role="switch" id="docSw" v-model="this.docSw">
 							<label class="form-check-label" for="docSw">Search documents for assistant</label>
 						</div>
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" role="switch" id="wikiSw" v-model="this.wikiSw">
+							<label class="form-check-label" for="wikiSw">Search wikipedia for assistant</label>
+						</div>						
 					</div>		
 				</div>
 			</div>	

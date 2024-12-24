@@ -52,9 +52,12 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 		if (YES.equals(chatBody.getDocmode())) {
 			this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, chatBody.getSimThreshold());
 		}
+		if (YES.equals(chatBody.getWikimode())) {
+			this.orrsSupport.fillPromptMessageFromWiki(chatBody.getMessage(), messageList);
+		}
 		messageList.add(Message.builder(Message.Role.USER).content(chatBody.getMessage()).build());
-		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).withStream(true)
-				.withOptions(this.orrsSupport.getOptions()).withMessages(messageList).build();
+		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).stream(true)
+				.options(this.orrsSupport.getOptions()).messages(messageList).build();
 		return ollamaApi.streamingChat(req);
     }	
 	

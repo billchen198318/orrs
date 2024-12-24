@@ -1,6 +1,8 @@
 package org.orrs.util;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.orrs.entity.TbOrrsDoc;
+import org.orrs.model.HanLpModel;
 import org.orrs.model.LlmModels;
 import org.orrs.service.IOrrsDocService;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -17,6 +20,9 @@ import org.springframework.ai.ollama.api.OllamaApi.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriUtils;
+
+import com.hankcs.hanlp.HanLP;
 
 @Component
 public class OrrsSupport {
@@ -29,6 +35,35 @@ public class OrrsSupport {
 	
 	@Autowired
 	DocumentSearch documentSearch;
+	
+	public void fillPromptMessageFromWiki(String userMessage, List<Message> messageList) {
+		try {
+			List<String> kwList = HanLP.extractKeyword(userMessage, HanLpModel.getExtractKeywordSize(userMessage));
+			List<String> phList = HanLP.extractPhrase(userMessage, HanLpModel.getExtractPhraseSize(userMessage));
+			List<String> ssList = HanLP.extractSummary(userMessage, HanLpModel.getExtractSummary(userMessage));
+			List<String> searchList = new LinkedList<String>();
+			searchList.add(userMessage);
+			searchList.addAll(kwList);
+			searchList.addAll(phList);
+			searchList.addAll(ssList);
+			for (String s : searchList) {
+				WikiPageProcessor wpp = WikiPageProcessor.build(UriUtils.encodeQuery(s, StandardCharsets.UTF_8));
+				List<String> results = wpp.getResults();			
+				if (!CollectionUtils.isEmpty(results)) {
+					for (String result : results) {
+						String wikiExtract = wpp.getExtract(result);
+						if (!StringUtils.isEmpty(wikiExtract)) {
+							messageList.add(Message.builder(Message.Role.ASSISTANT).content(wikiExtract).build());
+							searchList.clear();
+							return;
+						}
+	                }
+	            }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList, BigDecimal simThreshold) {
 		try {
