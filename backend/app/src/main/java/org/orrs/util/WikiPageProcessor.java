@@ -20,6 +20,8 @@ public class WikiPageProcessor implements PageProcessor {
 	private static int retryTimes;
 	private static int retryTimesSleepTime;
 	private static String summaryUrl = "";
+	private static String queryTextUrl = "";
+	private static String queryTitleUrl = "";
 	
 	private String searchContent;
 	
@@ -31,6 +33,8 @@ public class WikiPageProcessor implements PageProcessor {
 			retryTimes = (int) confMap.getOrDefault("retryTimes", 3);
 			retryTimesSleepTime = (int) confMap.getOrDefault("retryTimesSleepTime", 1000);
 			summaryUrl = (String) confMap.getOrDefault("summaryUrl", "https://zh.wikipedia.org/api/rest_v1/page/summary/");
+			queryTextUrl = (String) confMap.getOrDefault("queryTextUrl", "https://zh.wikipedia.org/w/api.php?action=query&list=search&srwhat=text&format=json&srsearch=");
+			queryTitleUrl = (String) confMap.getOrDefault("queryTitleUrl", "https://zh.wikipedia.org/w/api.php?action=query&list=search&srwhat=title&format=json&srsearch=");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -51,6 +55,16 @@ public class WikiPageProcessor implements PageProcessor {
 		Spider.create(this).addUrl(summaryUrl + this.searchContent).thread(1).run();
         return results;
     }
+	
+	public List<String> getQueryTextResults() {
+		Spider.create(this).addUrl(queryTextUrl + this.searchContent).thread(1).run();
+        return results;
+    }	
+	
+	public List<String> getQueryTitleResults() {
+		Spider.create(this).addUrl(queryTitleUrl + this.searchContent).thread(1).run();
+        return results;
+    }	
 	
     @Override
     public Site getSite() {
@@ -76,12 +90,19 @@ public class WikiPageProcessor implements PageProcessor {
 		return "";
 	}
 	
+	/*
 	public static void main(String[] args) {
+		WikiPageProcessor wpp = WikiPageProcessor.build("桃園市");
+		List<String> results = wpp.getQueryTextResults();
+		for (String result : results) {
+			System.out.println(result);
+		}
+		
 		WikiPageProcessor wpp = WikiPageProcessor.build("桃園市");
         List<String> results = wpp.getResults();
         for (String result : results) {
             System.out.println(wpp.getExtract(result));
-        }
-	}	
+        } 
+	} */
 	
 }
