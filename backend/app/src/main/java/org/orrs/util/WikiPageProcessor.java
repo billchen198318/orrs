@@ -1,11 +1,17 @@
 package org.orrs.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.orrs.model.QueryTextSnippetData;
 import org.qifu.util.LoadResources;
+import org.springframework.ai.ollama.api.OllamaApi.Message;
+import org.springframework.web.util.UriUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -66,6 +72,40 @@ public class WikiPageProcessor implements PageProcessor {
         return results;
     }	
 	
+	public List<QueryTextSnippetData> getSnippetForQueryTextResults(List<String> results, int maxResult) {
+		if (CollectionUtils.isEmpty(results)) {
+			return new ArrayList<>();
+		}
+		List<QueryTextSnippetData> snippets = new ArrayList<>();
+		for (String result : results) {
+			Map<String, Object> m;
+			try {
+				m = new ObjectMapper().readValue(result, Map.class);
+				if (m != null && m.get("query") != null && m.get("query") instanceof Map) {
+					Map queryMap = (Map) m.get("query");
+					if (queryMap.get("search") != null && queryMap.get("search") instanceof List) {
+						List<Map> searchList = (List<Map>) queryMap.get("search");
+						for (Map smData : searchList) {
+							if (snippets.size() >= maxResult) {
+								continue;
+							}
+							String title = (String) smData.get("title");
+							String snippet = (String) smData.get("snippet");
+							String output = snippet.replaceAll("<[^>]*>", "");
+							QueryTextSnippetData d = new QueryTextSnippetData(title, snippet, output);
+							snippets.add(d);
+						}
+					}
+				}				
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+		return snippets;
+	}
+	
     @Override
     public Site getSite() {
         return Site.me().setRetryTimes(retryTimes).setSleepTime(retryTimesSleepTime);
@@ -92,17 +132,52 @@ public class WikiPageProcessor implements PageProcessor {
 	
 	/*
 	public static void main(String[] args) {
+		WikiPageProcessor wpp = WikiPageProcessor.build(UriUtils.encodeQuery("馬保國", StandardCharsets.UTF_8));
+		List<QueryTextSnippetData> snippets = wpp.getSnippetForQueryTextResults( wpp.getQueryTextResults() , 3 );
+		if (!CollectionUtils.isEmpty(snippets)) {
+			for (QueryTextSnippetData snippetData : snippets) {
+				if (StringUtils.isBlank(snippetData.getSnippet())) {
+					continue;
+				}
+				System.out.println("Wiki snippet>>>" + snippetData.getSnippet());
+			}
+		}		
+	}
+	*/
+	
+	/*
+	public static void main(String[] args) {
 		WikiPageProcessor wpp = WikiPageProcessor.build("桃園市");
 		List<String> results = wpp.getQueryTextResults();
 		for (String result : results) {
-			System.out.println(result);
+			try {
+				Map<String, Object> m = new ObjectMapper().readValue(result, Map.class);
+				if (m != null && m.get("query") != null && m.get("query") instanceof Map) {
+					Map queryMap = (Map) m.get("query");
+					if (queryMap.get("search") != null && queryMap.get("search") instanceof List) {
+						List<Map> searchList = (List<Map>) queryMap.get("search");
+						for (Map smData : searchList) {
+							String title = (String) smData.get("title");
+							String snippet = (String) smData.get("snippet");
+							String output = snippet.replaceAll("<[^>]*>", "");
+							System.out.println(title + ">>>" + output);
+						}
+					}
+				}				
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		WikiPageProcessor wpp = WikiPageProcessor.build("桃園市");
-        List<String> results = wpp.getResults();
-        for (String result : results) {
-            System.out.println(wpp.getExtract(result));
+		WikiPageProcessor wpp2 = WikiPageProcessor.build("桃園市");
+        List<String> results2 = wpp.getResults();
+        for (String result : results2) {
+            System.out.println(wpp2.getExtract(result));
         } 
-	} */
+		
+	} 
+	*/
 	
 }

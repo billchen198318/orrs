@@ -9,9 +9,13 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.orrs.entity.TbOrrsDoc;
+import org.orrs.event.InitOrrsConfigEvent;
 import org.orrs.model.HanLpModel;
 import org.orrs.model.LlmModels;
+import org.orrs.model.QueryTextSnippetData;
 import org.orrs.service.IOrrsDocService;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
@@ -26,6 +30,7 @@ import com.hankcs.hanlp.HanLP;
 
 @Component
 public class OrrsSupport {
+	protected Logger logger = LogManager.getLogger(OrrsSupport.class);
 	
 	@Autowired
 	Environment env;
@@ -54,6 +59,7 @@ public class OrrsSupport {
 						String wikiExtract = wpp.getExtract(result);
 						if (!StringUtils.isEmpty(wikiExtract)) {
 							messageList.add(Message.builder(Message.Role.ASSISTANT).content(wikiExtract).build());
+							logger.info("Wiki Extract>>> {}", wikiExtract);
 							searchList.clear();
 							return;
 						}
@@ -63,6 +69,20 @@ public class OrrsSupport {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void fillPromptMessageFromWikiByQueryText(String userMessage, List<Message> messageList) {
+		WikiPageProcessor wpp = WikiPageProcessor.build(UriUtils.encodeQuery(userMessage, StandardCharsets.UTF_8));
+		List<QueryTextSnippetData> snippets = wpp.getSnippetForQueryTextResults( wpp.getQueryTextResults() , 3 );
+		if (!CollectionUtils.isEmpty(snippets)) {
+			for (QueryTextSnippetData snippetData : snippets) {
+				if (StringUtils.isBlank(snippetData.getSnippet())) {
+					continue;
+				}
+				messageList.add(Message.builder(Message.Role.ASSISTANT).content(snippetData.getTitle() + "\n" + snippetData.getSnippet()).build());
+				logger.info("Wiki snippet title>>> {}\nWiki snippet >>> {}", snippetData.getTitle(), snippetData.getSnippet());
+			}
+		}		
 	}
 	
 	public void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList, BigDecimal simThreshold) {

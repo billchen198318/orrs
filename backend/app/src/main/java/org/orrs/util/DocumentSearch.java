@@ -62,7 +62,7 @@ public class DocumentSearch {
 	}
 	
 	public List<Document> queryByMetadata(String question) {
-        SearchRequest query = SearchRequest.query(question).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(SearchRequest.SIMILARITY_THRESHOLD_ACCEPT_ALL);
+        SearchRequest query = SearchRequest.builder().query(question).topK(SearchRequest.DEFAULT_TOP_K).similarityThreshold(SearchRequest.SIMILARITY_THRESHOLD_ACCEPT_ALL).build();
         List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
         List<Document> resultList = null;
         if (!CollectionUtils.isEmpty(similarDocuments)) {
@@ -107,7 +107,7 @@ public class DocumentSearch {
 	}
 	
 	public List<Document> query(String question, double similarityThreshold) {
-        SearchRequest query = SearchRequest.query(question).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(similarityThreshold);
+        SearchRequest query = SearchRequest.builder().query(question).topK(SearchRequest.DEFAULT_TOP_K).similarityThreshold(similarityThreshold).build();
         List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
         return similarDocuments;
 	}
