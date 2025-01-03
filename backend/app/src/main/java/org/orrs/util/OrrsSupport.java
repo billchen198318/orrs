@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.orrs.entity.TbOrrsDoc;
 import org.orrs.model.HanLpModel;
 import org.orrs.model.LlmModels;
+import org.orrs.model.News;
 import org.orrs.model.QueryTextSnippetData;
 import org.orrs.service.IOrrsDocService;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -82,6 +83,17 @@ public class OrrsSupport {
 				logger.info("Wiki snippet title>>> {}\nWiki snippet >>> {}", snippetData.getTitle(), snippetData.getSnippet());
 			}
 		}		
+	}
+	
+	public void fillPromptMessageFromNews(String userMessage, List<Message> messageList) {
+		NewsPageProcessor npp = NewsPageProcessor.build(UriUtils.encodeQuery(userMessage, StandardCharsets.UTF_8));
+		List<News> newsList = npp.getNewsResults( npp.getNews() , 5 );
+		if (!CollectionUtils.isEmpty(newsList)) {
+			for (News news : newsList) {
+				messageList.add(Message.builder(Message.Role.ASSISTANT).content(news.getTitle() + "\n" + news.getDescription()).build());
+				logger.info("News title>>> {}\nNews content >>> {}", news.getTitle(), news.getDescription());
+			}
+		}
 	}
 	
 	public void fillPromptMessageFromDocuments(String userMessage, List<Message> messageList, BigDecimal simThreshold) {

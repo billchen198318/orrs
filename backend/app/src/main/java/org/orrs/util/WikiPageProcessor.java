@@ -35,7 +35,7 @@ public class WikiPageProcessor implements PageProcessor {
 	
 	static {
 		try {
-			Map<String, Object> confMap = (Map<String, Object>) LoadResources.objectMapperReadValue("WikiPageProcessor.json", Map.class, WikiPageProcessor.class);
+			Map<String, Object> confMap = (Map<String, Object>) LoadResources.objectMapperReadValue("WebPageProcessor.json", Map.class, WikiPageProcessor.class);
 			retryTimes = (int) confMap.getOrDefault("retryTimes", 3);
 			retryTimesSleepTime = (int) confMap.getOrDefault("retryTimesSleepTime", 1000);
 			summaryUrl = (String) confMap.getOrDefault("summaryUrl", "https://zh.wikipedia.org/api/rest_v1/page/summary/");
