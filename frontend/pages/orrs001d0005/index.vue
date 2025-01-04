@@ -53,7 +53,8 @@ export default {
 			llmModelList : [],
 			queryBtnDisable : false,
 			docSw : false,
-			wikiSw : false
+			wikiSw : false,
+			newsSw : false
 		}
 	},
 	methods: { 
@@ -79,6 +80,7 @@ export default {
 			this.queryBtnDisable = false;
 			this.docSw = false;
 			this.wikiSw = false;
+			this.newsSw = false;
 		},
 		send : function() {
 			this.ctrl = new AbortController();
@@ -166,6 +168,13 @@ export default {
 				this.queryPageStore.queryParam.wikimode = 'Y';
 			} else {
 				this.queryPageStore.queryParam.wikimode = 'N';
+			}
+		});
+		watch(() => this.newsSw, (newVal, oldVal) => {
+			if (newVal) {
+				this.queryPageStore.queryParam.newsmode = 'Y';
+			} else {
+				this.queryPageStore.queryParam.newsmode = 'N';
 			}
 		});			
 	},
@@ -258,7 +267,11 @@ export default {
 						<div class="form-check form-switch">
 							<input class="form-check-input" type="checkbox" role="switch" id="wikiSw" v-model="this.wikiSw">
 							<label class="form-check-label" for="wikiSw">Search wikipedia for assistant</label>
-						</div>						
+						</div>	
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" role="switch" id="newsSw" v-model="this.newsSw">
+							<label class="form-check-label" for="newsSw">Search news for assistant</label>
+						</div>												
 					</div>		
 				</div>
 			</div>	

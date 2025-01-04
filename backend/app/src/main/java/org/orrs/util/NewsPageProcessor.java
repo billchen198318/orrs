@@ -29,6 +29,7 @@ public class NewsPageProcessor implements PageProcessor {
 	private static int retryTimes;
 	private static int retryTimesSleepTime;
 	private static String newsUrl = "";
+	private static String newsApiKey = "";
 	
 	private String searchContent;
 	
@@ -40,6 +41,7 @@ public class NewsPageProcessor implements PageProcessor {
 			retryTimes = (int) confMap.getOrDefault("retryTimes", 3);
 			retryTimesSleepTime = (int) confMap.getOrDefault("retryTimesSleepTime", 1000);
 			newsUrl = (String) confMap.getOrDefault("newsUrl", "");
+			newsApiKey = (String) confMap.getOrDefault("newsApiKey", "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,7 +59,7 @@ public class NewsPageProcessor implements PageProcessor {
 	}
 	
 	public List<String> getNews() {
-		if (newsUrl.endsWith("API_KEY")) {
+		if (newsApiKey.endsWith("API_KEY") || StringUtils.isBlank(newsApiKey)) {
 			logger.warn("getNews() no API_KEY ...");
 			return results;
 		}
@@ -67,6 +69,7 @@ public class NewsPageProcessor implements PageProcessor {
 		String currNewsUrl = newsUrl;
 		currNewsUrl = StringUtils.replaceOnce(currNewsUrl, "${q}", this.searchContent);
 		currNewsUrl = StringUtils.replaceOnce(currNewsUrl, "${from}", fromDate);
+		currNewsUrl = StringUtils.replaceOnce(currNewsUrl, "${apiKey}", newsApiKey);
 		Spider.create(this).addUrl(currNewsUrl).thread(1).run();
 		return results;
 	}
@@ -80,16 +83,16 @@ public class NewsPageProcessor implements PageProcessor {
 			if (newsList.size() >= maxResult) {
                 continue;
             }			
-			Map<String, Object> m;
+			Map<String, Object> m = null;
 			try {
 				m = new ObjectMapper().readValue(result, Map.class);
 				if (m != null && "ok".equals(m.get("status"))) {
-					List<Map> articles = (List<Map>) m.get("articles");
+					List<Map<String, Object>> articles = (List<Map<String, Object>>) m.get("articles");
 					for (int i = 0; articles != null && !articles.isEmpty() && i < articles.size(); i++) {
 						if (newsList.size() >= maxResult) {
                             continue;
                         }
-						Map article = articles.get(i);
+						Map<String, Object> article = articles.get(i);
 						String title = (String) article.get("title");
 						String description = (String) article.get("description");
 						if (!StringUtils.isEmpty(title) && !StringUtils.isEmpty(description)) {

@@ -13,7 +13,8 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
                 message : '',
                 docmode : 'N',
                 simThreshold : 0.70,
-                wikimode : 'N'
+                wikimode : 'N',
+                newsmode : 'N'
             },
             reqList : []
         }
@@ -29,6 +30,7 @@ export const useOrrs001d0005Store = defineStore('orrs001d0005', {
             this.queryParam.docmode = 'N';
             this.queryParam.simThreshold = 0.70;
             this.queryParam.wikimode = 'N';
+            this.queryParam.newsmode = 'N';
             this.reqList = [];
         }
     },

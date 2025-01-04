@@ -53,9 +53,11 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 			this.orrsSupport.fillPromptMessageFromDocuments(chatBody.getMessage(), messageList, chatBody.getSimThreshold());
 		}
 		if (YES.equals(chatBody.getWikimode())) {
-			//this.orrsSupport.fillPromptMessageFromWiki(chatBody.getMessage(), messageList);
-			this.orrsSupport.fillPromptMessageFromNews(chatBody.getMessage(), messageList);
+			this.orrsSupport.fillPromptMessageFromWiki(chatBody.getMessage(), messageList);
 			this.orrsSupport.fillPromptMessageFromWikiByQueryText(chatBody.getMessage(), messageList);
+		}
+		if (YES.equals(chatBody.getNewsmode())) {
+			this.orrsSupport.fillPromptMessageFromNews(chatBody.getMessage(), messageList);
 		}
 		messageList.add(Message.builder(Message.Role.USER).content(chatBody.getMessage()).build());
 		var req = ChatRequest.builder(LlmModels.has(chatBody.getModel()) ? chatBody.getModel() : LlmModels.getFirst()).stream(true)
