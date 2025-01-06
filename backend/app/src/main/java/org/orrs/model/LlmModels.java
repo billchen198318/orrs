@@ -14,12 +14,15 @@ public class LlmModels {
 	
 	private static String embedding = "nomic-embed-text";
 	
+	private static String commonTemplate = "";
+	
 	static {
 		try {
 			Map<String, Object> llmModelMap = (Map<String, Object>) LoadResources.objectMapperReadValue("llmModel.json", Map.class, LlmModels.class);
 			list = (List<String>) llmModelMap.get("models");
 			similarityThreshold = (Double) llmModelMap.getOrDefault("similarityThreshold", 1.0d);
 			embedding = (String) llmModelMap.getOrDefault("embedding", embedding);
+			commonTemplate = (String) llmModelMap.getOrDefault("commonTemplate", "about ${qustion} please reference: ${reference}");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -48,6 +51,10 @@ public class LlmModels {
 
 	public static String getEmbedding() {
 		return embedding;
+	}
+
+	public static String getCommonTemplate() {
+		return commonTemplate;
 	}
 	
 }

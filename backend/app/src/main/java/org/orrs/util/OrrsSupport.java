@@ -41,6 +41,13 @@ public class OrrsSupport {
 	@Autowired
 	DocumentSearch documentSearch;
 	
+	public static String getMessageFromCommonTemplate(String userMessage, String referenceContent) {
+		String template = LlmModels.getCommonTemplate();
+		template = StringUtils.replaceOnce(template, "$COMMON_TEMPLATE_PARAM{qustion}", userMessage);
+		template = StringUtils.replaceOnce(template, "$COMMON_TEMPLATE_PARAM{reference}", referenceContent);
+		return template;
+	}
+	
 	public void fillPromptMessageFromWiki(String userMessage, List<Message> messageList) {
 		try {
 			List<String> kwList = HanLP.extractKeyword(userMessage, HanLpModel.getExtractKeywordSize(userMessage));
@@ -58,7 +65,7 @@ public class OrrsSupport {
 					for (String result : results) {
 						String wikiExtract = wpp.getExtract(result);
 						if (!StringUtils.isEmpty(wikiExtract)) {
-							messageList.add(Message.builder(Message.Role.ASSISTANT).content(wikiExtract).build());
+							messageList.add(Message.builder(Message.Role.ASSISTANT).content(getMessageFromCommonTemplate(userMessage, wikiExtract)).build());
 							logger.info("Wiki Extract>>> {}", wikiExtract);
 							searchList.clear();
 							return;
@@ -79,7 +86,7 @@ public class OrrsSupport {
 				if (StringUtils.isBlank(snippetData.getSnippet())) {
 					continue;
 				}
-				messageList.add(Message.builder(Message.Role.ASSISTANT).content(snippetData.getTitle() + "\n" + snippetData.getSnippet()).build());
+				messageList.add(Message.builder(Message.Role.ASSISTANT).content(getMessageFromCommonTemplate(userMessage, snippetData.getTitle() + "\n" + snippetData.getSnippet())).build());
 				logger.info("Wiki snippet title>>> {}\nWiki snippet >>> {}", snippetData.getTitle(), snippetData.getSnippet());
 			}
 		}		
@@ -90,7 +97,7 @@ public class OrrsSupport {
 		List<News> newsList = npp.getNewsResults( npp.getNews() , 5 );
 		if (!CollectionUtils.isEmpty(newsList)) {
 			for (News news : newsList) {
-				messageList.add(Message.builder(Message.Role.ASSISTANT).content(news.getTitle() + "\n" + news.getDescription()).build());
+				messageList.add(Message.builder(Message.Role.ASSISTANT).content(getMessageFromCommonTemplate(userMessage, news.getTitle() + "\n" + news.getDescription())).build());
 				logger.info("News title>>> {}\nNews content >>> {}", news.getTitle(), news.getDescription());
 			}
 		}
