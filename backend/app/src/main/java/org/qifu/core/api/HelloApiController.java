@@ -101,10 +101,10 @@ public class HelloApiController extends CoreApiSupport {
 				);
 		this.vectorStore.add(documents);
 		
-        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.6d);;
+        SearchRequest query = SearchRequest.builder().query(msg).topK(SearchRequest.DEFAULT_TOP_K).similarityThreshold(0.6d).build();
         List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
         String relevantData = similarDocuments.stream()
-                            .map(Document::getContent)
+                            .map(Document::getFormattedContent)
                             .collect(Collectors.joining(System.lineSeparator()));
         result.setValue(relevantData);
         
@@ -117,7 +117,7 @@ public class HelloApiController extends CoreApiSupport {
 		QueryResult<String> result = this.initResult();
 		
 		// Retrieve embeddings
-        SearchRequest query = SearchRequest.query(msg).withTopK(SearchRequest.DEFAULT_TOP_K).withSimilarityThreshold(0.6d);
+        SearchRequest query = SearchRequest.builder().query(msg).topK(SearchRequest.DEFAULT_TOP_K).similarityThreshold(0.6d).build();
         List<Document> similarDocuments = this.vectorStore.similaritySearch(query);
         /*
         String information = similarDocuments.stream()
@@ -132,7 +132,7 @@ public class HelloApiController extends CoreApiSupport {
         if (!CollectionUtils.isEmpty(similarDocuments)) {
         	for (Document document : similarDocuments) {
         		System.out.println("doc-id>>>" + document.getId());
-        		System.out.println("doc-content>>>" + document.getContent());
+        		System.out.println("doc-content>>>" + document.getFormattedContent());
         		
             	SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate("""
                         You are a helpful assistant.
@@ -140,16 +140,16 @@ public class HelloApiController extends CoreApiSupport {
                         Use the following information to answer the question:
                         {information}
                         """);
-            	org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("information", document.getContent()));
-            	String sysPrompt = systemMessage.getContent();
+            	org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("information", document.getFormattedContent()));
+            	String sysPrompt = systemMessage.getText();
             	System.out.println("sysPrompt>>>" + sysPrompt);
-            	messageList.add(Message.builder(Message.Role.SYSTEM).withContent(sysPrompt).build());        		
+            	messageList.add(Message.builder(Message.Role.SYSTEM).content(sysPrompt).build());        		
         	}
         }        
         
-        messageList.add(Message.builder(Message.Role.USER).withContent(msg).build());
+        messageList.add(Message.builder(Message.Role.USER).content(msg).build());
         
-		var req = ChatRequest.builder("qwen2.5-coder").withStream(false).withMessages(messageList).build();
+		var req = ChatRequest.builder("qwen2.5-coder").stream(false).messages(messageList).build();
 		ChatResponse response = ollamaApi.chat(req);
 		String content = StringUtils.defaultString(response.message().content());		
 		
@@ -186,20 +186,20 @@ public class HelloApiController extends CoreApiSupport {
 		QueryResult<String> result = this.initResult();
 		
 		var req = ChatRequest.builder("codegeex4")
-			.withStream(false)
-			.withMessages(List.of(
+			.stream(false)
+			.messages(List.of(
 					//Message.builder(Message.Role.SYSTEM).withContent("中文回應").build()
 					//,
-					Message.builder(Message.Role.SYSTEM).withContent("echarts version 5.3.2").build()
+					Message.builder(Message.Role.SYSTEM).content("echarts version 5.3.2").build()
 					,
-					Message.builder(Message.Role.SYSTEM).withContent("echarts cdn base url https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js").build()
+					Message.builder(Message.Role.SYSTEM).content("echarts cdn base url https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.2/echarts.min.js").build()
 					//,
 					//Message.builder(Message.Role.SYSTEM).withContent("echarts width 640px, height 480px").build()
 					,
-					Message.builder(Message.Role.SYSTEM).withContent("give me full html code content").build()
+					Message.builder(Message.Role.SYSTEM).content("give me full html code content").build()
 					,
 					//實際值 [100, 107, 84, 91] 標題[week1, week2, week3, week3] 用 echarts 5.3.2 產生bar圖, pie圖, line圖
-					Message.builder(Message.Role.USER).withContent(content).build()
+					Message.builder(Message.Role.USER).content(content).build()
 				)
 			) // .withOptions(OllamaOptions.create().withTemperature(0.9f))
 		.build();
@@ -224,13 +224,13 @@ public class HelloApiController extends CoreApiSupport {
 		QueryResult<String> result = this.initResult();
 		
 		var req = ChatRequest.builder("codegeex4")
-			.withStream(false)
-			.withMessages(List.of(
-					Message.builder(Message.Role.SYSTEM).withContent(
+			.stream(false)
+			.messages(List.of(
+					Message.builder(Message.Role.SYSTEM).content(
 							"database is MariaDB, json output use com.fasterxml.jackson , need import java.sql.* , jdbc driver class org.mariadb.jdbc.Drive , jdbc url start is jdbc:mariadb:// ").build()
 					,
 					// mariadb IP位置 127.0.0.1 , port 3306, 帳戶: root 密碼: password 資料庫 orrs , 資料表 tb_sys_event_log 欄位 [OID, USER, SYS_ID, EXECUTE_EVENT] , 所有欄位都是varchar格式, 先將資料放入List<Map> 中, 再將List<Map>轉成json輸出, 給我 groovy code
-					Message.builder(Message.Role.USER).withContent(content).build()
+					Message.builder(Message.Role.USER).content(content).build()
 				)
 			)
 		.build();

@@ -44,7 +44,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@MapperScan(basePackages = "org.qifu.core.mapper, org.orrs.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = "org.qifu.core.mapper, org.orrs.mapper, org.qifu.hillfog.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
 @Configuration
 @EnableAutoConfiguration
 @EnableTransactionManagement

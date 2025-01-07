@@ -35,7 +35,8 @@ public class OrrsOllamaConfig {
 	@Bean
 	@DependsOn("ollamaApi")
 	public OllamaEmbeddingModel ollamaEmbeddingModel(OllamaApi ollamaApi) {
-		return OllamaEmbeddingModel.builder().withOllamaApi(ollamaApi).withDefaultOptions(OllamaOptions.create().withModel(LlmModels.getEmbedding())).build();
+		OllamaOptions options = OllamaOptions.builder().model(LlmModels.getEmbedding()).build();
+		return OllamaEmbeddingModel.builder().ollamaApi(ollamaApi).defaultOptions(options).build();
 	}
 	
 //	@Bean

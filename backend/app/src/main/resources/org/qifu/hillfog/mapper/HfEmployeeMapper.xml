@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.qifu.hillfog.mapper.HfEmployeeMapper">
+
+  <resultMap id="BaseResultMap" type="org.qifu.hillfog.entity.HfEmployee">
+    <id column="OID" jdbcType="CHAR" property="oid" />
+    <result column="ACCOUNT" jdbcType="VARCHAR" property="account" />
+    <result column="EMP_ID" jdbcType="VARCHAR" property="empId" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="UPLOAD_OID" jdbcType="CHAR" property="uploadOid" />
+    <result column="JOB_TITLE" jdbcType="VARCHAR" property="jobTitle" />    
+    <result column="CUSERID" jdbcType="VARCHAR" property="cuserid" />
+    <result column="CDATE" jdbcType="TIMESTAMP" property="cdate" />
+    <result column="UUSERID" jdbcType="VARCHAR" property="uuserid" />
+    <result column="UDATE" jdbcType="TIMESTAMP" property="udate" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    where OID = #{oid,jdbcType=CHAR}
+  </select>  
+  
+  <select id="selectListByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    WHERE 1=1
+	<if test="account != null and account != ''.toString() ">
+		AND ACCOUNT = #{account,jdbcType=VARCHAR}
+	</if>		
+	<if test="empId != null and empId != ''.toString() ">
+		AND EMP_ID = #{empId,jdbcType=VARCHAR}
+	</if>		
+	<if test="empIdLike != null and empIdLike != ''.toString() ">
+		AND EMP_ID like #{empIdLike,jdbcType=VARCHAR}
+	</if>			
+	<if test="name != null and name != ''.toString() ">
+		AND NAME = #{name,jdbcType=VARCHAR}
+	</if>
+	<if test="nameLike != null and nameLike != ''.toString() ">
+		AND NAME like #{nameLike,jdbcType=VARCHAR}
+	</if>			
+	<if test="jobTitle != null and jobTitle != ''.toString() ">
+		AND JOB_TITLE = #{jobTitle,jdbcType=VARCHAR}
+	</if>	
+	<if test="jobTitleLike != null and jobTitleLike != ''.toString() ">
+		AND JOB_TITLE like #{jobTitleLike,jdbcType=VARCHAR}
+	</if>		
+	<if test="orderBy != null and orderBy != ''.toString() and sortType != null and sortType != ''.toString() ">
+		ORDER BY  ${orderBy} ${sortType}
+	</if>	
+  </select>    
+  
+  <select id="findPage" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	<include refid="org.qifu.core.mapper.DB1Config.sql1"/>
+  	
+    select *
+    from <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    WHERE 1=1
+	<if test="account != null and account != ''.toString() ">
+		AND ACCOUNT = #{account,jdbcType=VARCHAR}
+	</if>		
+	<if test="empId != null and empId != ''.toString() ">
+		AND EMP_ID = #{empId,jdbcType=VARCHAR}
+	</if>		
+	<if test="empIdLike != null and empIdLike != ''.toString() ">
+		AND EMP_ID like #{empIdLike,jdbcType=VARCHAR}
+	</if>			
+	<if test="name != null and name != ''.toString() ">
+		AND NAME = #{name,jdbcType=VARCHAR}
+	</if>
+	<if test="nameLike != null and nameLike != ''.toString() ">
+		AND NAME like #{nameLike,jdbcType=VARCHAR}
+	</if>			
+	<if test="jobTitle != null and jobTitle != ''.toString() ">
+		AND JOB_TITLE = #{jobTitle,jdbcType=VARCHAR}
+	</if>	
+	<if test="jobTitleLike != null and jobTitleLike != ''.toString() ">
+		AND JOB_TITLE like #{jobTitleLike,jdbcType=VARCHAR}
+	</if>		
+			
+	<include refid="org.qifu.core.mapper.DB1Config.sql2"/>
+  </select>  
+  
+  <select id="count" parameterType="java.util.HashMap" resultType="java.lang.Long">
+    select count(*) from <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    WHERE 1=1
+	<if test="account != null and account != ''.toString() ">
+		AND ACCOUNT = #{account,jdbcType=VARCHAR}
+	</if>		
+	<if test="empId != null and empId != ''.toString() ">
+		AND EMP_ID = #{empId,jdbcType=VARCHAR}
+	</if>	
+	<if test="empIdLike != null and empIdLike != ''.toString() ">
+		AND EMP_ID like #{empIdLike,jdbcType=VARCHAR}
+	</if>			
+	<if test="name != null and name != ''.toString() ">
+		AND NAME = #{name,jdbcType=VARCHAR}
+	</if>
+	<if test="nameLike != null and nameLike != ''.toString() ">
+		AND NAME like #{nameLike,jdbcType=VARCHAR}
+	</if>		
+	<if test="jobTitle != null and jobTitle != ''.toString() ">
+		AND JOB_TITLE = #{jobTitle,jdbcType=VARCHAR}
+	</if>	
+	<if test="jobTitleLike != null and jobTitleLike != ''.toString() ">
+		AND JOB_TITLE like #{jobTitleLike,jdbcType=VARCHAR}
+	</if>							
+  </select>  
+  
+  <insert id="insert" parameterType="org.qifu.hillfog.entity.HfEmployee"> 
+    insert into <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        OID,
+      </if>
+      <if test="account != null">
+        ACCOUNT,
+      </if>
+      <if test="empId != null">
+        EMP_ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="uploadOid != null">
+        UPLOAD_OID,
+      </if>
+      <if test="jobTitle != null">
+        JOB_TITLE,
+      </if>      
+      <if test="cuserid != null">
+        CUSERID,
+      </if>
+      <if test="cdate != null">
+        CDATE,
+      </if>
+      <if test="uuserid != null">
+        UUSERID,
+      </if>
+      <if test="udate != null">
+        UDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        #{oid,jdbcType=CHAR},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null">
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadOid != null">
+        #{uploadOid,jdbcType=CHAR},
+      </if>
+      <if test="jobTitle != null">
+        #{jobTitle,jdbcType=VARCHAR},
+      </if>      
+      <if test="cuserid != null">
+        #{cuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null">
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uuserid != null">
+        #{uuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="udate != null">
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>  
+  
+  <update id="update" parameterType="org.qifu.hillfog.entity.HfEmployee">
+    update <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    <set>
+      <if test="account != null">
+        ACCOUNT = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null">
+        EMP_ID = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadOid != null">
+        UPLOAD_OID = #{uploadOid,jdbcType=CHAR},
+      </if>
+      <if test="jobTitle != null">
+        JOB_TITLE = #{jobTitle,jdbcType=VARCHAR},
+      </if>      
+      <!--  
+      <if test="cuserid != null">
+        CUSERID = #{cuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null">
+        CDATE = #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      -->
+      <if test="uuserid != null">
+        UUSERID = #{uuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="udate != null">
+        UDATE = #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where OID = #{oid,jdbcType=CHAR}
+  </update>  
+  
+  <delete id="delete" parameterType="org.qifu.hillfog.entity.HfEmployee">
+    delete from <include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee
+    where OID = #{oid,jdbcType=CHAR}
+  </delete>
+  
+  <!-- KPI的負責人 -->
+  <select id="findKpiOwner" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT M.*
+	FROM 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee M, 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_kpi_empl B
+	WHERE M.ACCOUNT = B.ACCOUNT
+	AND B.KPI_ID = #{kpiId,jdbcType=VARCHAR}
+	ORDER BY M.EMP_ID ASC    
+  </select>
+  
+  <!-- OBJECTIVE的負責人 -->
+  <select id="findObjectiveOwner" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT M.*
+	FROM 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee M, 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_obj_owner B
+	WHERE M.ACCOUNT = B.ACCOUNT
+	AND B.OBJ_OID = #{objOid,jdbcType=VARCHAR}
+	ORDER BY M.EMP_ID ASC    
+  </select>  
+  
+  <!-- PDCA的負責人 -->
+  <select id="findPdcaOwner" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT M.*
+	FROM 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee M, 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_pdca_owner B
+	WHERE M.ACCOUNT = B.OWNER_UID
+	AND B.PDCA_OID = #{pdcaOid,jdbcType=VARCHAR}
+	ORDER BY M.EMP_ID ASC    
+  </select>  
+  
+  <!-- PDCA-ITEM的負責人 -->
+  <select id="findPdcaItemOwner" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT M.*
+	FROM 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee M, 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_pdca_item_owner B
+	WHERE M.ACCOUNT = B.OWNER_UID
+	AND B.PDCA_OID = #{pdcaOid,jdbcType=VARCHAR} AND B.ITEM_OID = #{itemOid,jdbcType=VARCHAR}
+	ORDER BY M.EMP_ID ASC     
+  </select>  
+
+  <!-- Scorecard擁有的KPI的負責人 -->
+  <select id="findScorecardKpisOwner" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT distinct M.*
+	FROM 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_employee M, 
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_kpi_empl B,
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_kpi K,
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_so_owner_kpis SOK,
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_strategy_objective SO,
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_perspective PER,
+	<include refid="org.qifu.core.mapper.DB1Config.schema"/>hf_scorecard SC
+	
+	WHERE M.ACCOUNT = B.ACCOUNT
+	AND B.KPI_ID = K.ID
+	AND K.OID = SOK.KPI_OID
+	AND SOK.SO_OID = SO.OID
+	AND SO.PER_OID = PER.OID
+	AND PER.SC_OID = SC.OID
+	AND SC.OID = #{oid,jdbcType=VARCHAR}
+	
+	ORDER BY M.EMP_ID ASC    
+  </select> 
+      
+</mapper>
