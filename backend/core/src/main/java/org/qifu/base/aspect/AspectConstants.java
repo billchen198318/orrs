@@ -40,11 +40,12 @@ public class AspectConstants {
 	 */
 	public static final String LOGIC_SERVICE_PACKAGE = " @annotation(org.qifu.base.aspect.EnableAspectForLogicServiceMethod) || execution(* org.qifu.core.logic.*.*(..) ) || execution(* org.qifu.base.logic..*.*(..) ) || execution(* org.orrs.logic..*.*(..) ) || execution(* org.qifu.hillfog.logic..*.*(..) ) ";
 	
+	protected AspectConstants() {
+		throw new IllegalStateException("Constants class: AspectConstants");
+	}
+	
 	public static boolean isLogicService(String serviceId) {
-		if (StringUtils.defaultString(serviceId).indexOf(".logic.") > -1) {
-			return true;
-		}
-		return false;
+		return (StringUtils.defaultString(serviceId).indexOf(".logic.") >= 0) ? Boolean.TRUE : Boolean.FALSE;
 	}
 	
 	public static String getServiceId(Annotation[] annotations) {
@@ -53,7 +54,7 @@ public class AspectConstants {
 			return serviceId;
 		}
 		for (Annotation anno : annotations) {
-			if (anno instanceof Service) {
+			if (anno instanceof @SuppressWarnings("unused") Service s) {
 				serviceId = ((Service)anno).value();
 			}
 		}
@@ -66,7 +67,7 @@ public class AspectConstants {
 			return repoId;
 		}
 		for (Annotation anno : annotations) {
-			if (anno instanceof Repository) {
+			if (anno instanceof @SuppressWarnings("unused") Repository r) {
 				repoId = ((Repository)anno).value();
 			}
 		}

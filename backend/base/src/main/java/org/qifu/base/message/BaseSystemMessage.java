@@ -31,18 +31,18 @@ import org.qifu.util.LoadResources;
 public class BaseSystemMessage implements java.io.Serializable {
 	private static final long serialVersionUID = -4317284943704877962L;
 
-	private static final String _CONFIG = "org/qifu/base/message/BaseSystemMessage.json";
+	private static final String CONFIG = "org/qifu/base/message/BaseSystemMessage.json";
 	
 	private static Map<String, Object> messageMap = null;
 	
 	static {
 		try {
-			messageMap = LoadResources.objectMapperReadValue(_CONFIG, HashMap.class, BaseSystemMessage.class);
+			messageMap = LoadResources.objectMapperReadValue(CONFIG, HashMap.class, BaseSystemMessage.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (null==messageMap) {
-				messageMap = new HashMap<String, Object>();
+				messageMap = new HashMap<>();
 			}
 		}
 	}

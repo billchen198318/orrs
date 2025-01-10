@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysTemplateParam;
 import org.qifu.core.mapper.TbSysTemplateParamMapper;
 import org.qifu.core.service.ISysTemplateParamService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysTemplateParamServiceImpl extends BaseService<TbSysTemplateParam, String> implements ISysTemplateParamService<TbSysTemplateParam, String> {
 	
-	@Autowired
-	TbSysTemplateParamMapper sysTemplateParamMapper;
+	private final TbSysTemplateParamMapper sysTemplateParamMapper;
+	
+	public SysTemplateParamServiceImpl(TbSysTemplateParamMapper sysTemplateParamMapper) {
+		super();
+		this.sysTemplateParamMapper = sysTemplateParamMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysTemplateParam, String> getBaseMapper() {

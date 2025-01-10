@@ -36,8 +36,7 @@ public interface ISystemProgramLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	@Deprecated
-	public DefaultResult<TbSysProg> create(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysProg> create(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException;
 	
 	/**
 	 * 更新 TB_SYS_PROG 資料
@@ -49,8 +48,7 @@ public interface ISystemProgramLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	@Deprecated
-	public DefaultResult<TbSysProg> update(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysProg> update(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException;
 	
 	/**
 	 * 刪除 TB_SYS_PROG 資料
@@ -60,6 +58,6 @@ public interface ISystemProgramLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> delete(TbSysProg sysProg) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(TbSysProg sysProg) throws ServiceException;
 	
 }

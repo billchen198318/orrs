@@ -39,7 +39,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbRole> create(TbRole role) throws ServiceException, Exception;
+	public DefaultResult<TbRole> create(TbRole role) throws ServiceException;
 	
 	/**
 	 * 更新 TB_ROLE 資料
@@ -49,7 +49,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbRole> update(TbRole role) throws ServiceException, Exception;
+	public DefaultResult<TbRole> update(TbRole role) throws ServiceException;
 	
 	/**
 	 * 刪除 TB_ROLE, TB_ROLE_PERMISSION, TB_USER_ROLE 資料
@@ -59,7 +59,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> delete(TbRole role) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(TbRole role) throws ServiceException;
 	
 	/**
 	 * 產生 TB_ROLE_PERMISSION 資料
@@ -70,7 +70,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbRolePermission> createPermission(TbRolePermission permission, String roleOid) throws ServiceException, Exception;
+	public DefaultResult<TbRolePermission> createPermission(TbRolePermission permission, String roleOid) throws ServiceException;
 	
 	/**
 	 * 刪除 TB_ROLE_PERMISSION 資料
@@ -80,7 +80,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> deletePermission(TbRolePermission permission) throws ServiceException, Exception;
+	public DefaultResult<Boolean> deletePermission(TbRolePermission permission) throws ServiceException;
 	
 	/**
 	 * 找出全部的role與某帳戶下的role
@@ -94,7 +94,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public Map<String, List<TbRole>> findForAccountRoleEnableAndAll(String accountOid) throws ServiceException, Exception;
+	public Map<String, List<TbRole>> findForAccountRoleEnableAndAll(String accountOid) throws ServiceException;
 	
 	/**
 	 * 更新帳戶的role
@@ -105,7 +105,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> updateUserRole(String accountOid, List<String> roles) throws ServiceException, Exception;
+	public DefaultResult<Boolean> updateUserRole(String accountOid, List<String> roles) throws ServiceException;
 	
 	/**
 	 * 找出全部的role與某程式menu所屬的role
@@ -119,7 +119,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public Map<String, List<TbRole>> findForProgramRoleEnableAndAll(String programOid) throws ServiceException, Exception;
+	public Map<String, List<TbRole>> findForProgramRoleEnableAndAll(String programOid) throws ServiceException;
 	
 	/**
 	 * 更新存在選單中程式的選單所屬 role
@@ -130,7 +130,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> updateMenuRole(String progOid, List<String> roles) throws ServiceException, Exception;
+	public DefaultResult<Boolean> updateMenuRole(String progOid, List<String> roles) throws ServiceException;
 	
 	/**
 	 * 拷備一份role
@@ -141,7 +141,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbRole> copyAsNew(String fromRoleOid, TbRole role) throws ServiceException, Exception;
+	public DefaultResult<TbRole> copyAsNew(String fromRoleOid, TbRole role) throws ServiceException;
 	
 	/**
 	 * 使用者設的role-id(角色), 它設定在 tb_sys_code中
@@ -150,7 +150,7 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public String getDefaultUserRole() throws ServiceException, Exception;
+	public String getDefaultUserRole() throws ServiceException;
 	
 	/**
 	 * 使用者設的role(角色), 它設定在 tb_sys_code中
@@ -159,6 +159,6 @@ public interface IRoleLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public TbRole getDefaultUserRoleEntity() throws ServiceException, Exception;
+	public TbRole getDefaultUserRoleEntity() throws ServiceException;
 	
 }

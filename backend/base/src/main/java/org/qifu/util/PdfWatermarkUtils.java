@@ -22,36 +22,25 @@
 package org.qifu.util;
 
 import java.awt.Color;
-import java.io.FileOutputStream;
-import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfGState;
-import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 
 public class PdfWatermarkUtils {
 	
-	public static void main(String args[]) throws Exception {
-		URL url = Thread.currentThread().getContextClassLoader().getResource("fireflysung.ttf"); // test put fireflysung.ttf in classpath
-		FontFactory.register(url.toString(), "fireflysung"); // fonts/fireflysung.ttf in fireflysung.jar
-		Font font = FontFactory.getFont("fireflysung", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-		PdfReader pdfReader = new PdfReader("C:/tmp/create-pdfs.pdf");
-		PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileOutputStream("C:/tmp/out-create-pdfs.pdf"));
-		addWatermark(pdfStamper, font.getBaseFont(), Color.RED, "測試");
-		pdfStamper.close();
+	protected PdfWatermarkUtils() {
+		throw new IllegalStateException("Utils class: PdfWatermarkUtils");
 	}
 	
-	public static void addWatermark(PdfStamper pdfStamper, BaseFont baseFont, Color fontColor, String waterMarkString) throws Exception {
+	public static void addWatermark(PdfStamper pdfStamper, BaseFont baseFont, Color fontColor, String waterMarkString) throws IllegalArgumentException {
 		if (null == pdfStamper || null == baseFont) {
-			throw new java.lang.Exception("PdfStamper or BaseFont is null.");
+			throw new IllegalArgumentException("PdfStamper or BaseFont is null.");
 		}
 		if (StringUtils.isBlank(waterMarkString)) {
 			return;
@@ -83,9 +72,6 @@ public class PdfWatermarkUtils {
             }
         } catch (Exception e) {
         	e.printStackTrace();
-        } finally {
-        	pdfContentByte = null;
-            pageRect = null;        	
         }
 	}
 	

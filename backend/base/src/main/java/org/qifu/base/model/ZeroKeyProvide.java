@@ -23,10 +23,14 @@ package org.qifu.base.model;
 
 import java.math.BigDecimal;
 
-public interface ZeroKeyProvide {
-	public final String STR_KEY = " ";
-	public final int INTEGER_KEY = 0;
-	public final long LONG_KEY = 0L;
-	public final BigDecimal BIG_DECIMAL_KEY = BigDecimal.ZERO;
-	public final String OID_KEY="00000000-0000-0000-0000-000000000000";
+public class ZeroKeyProvide {
+	public static final String STR_KEY = " ";
+	public static final int INTEGER_KEY = 0;
+	public static final long LONG_KEY = 0L;
+	public static final BigDecimal BIG_DECIMAL_KEY = BigDecimal.ZERO;
+	public static final String OID_KEY="00000000-0000-0000-0000-000000000000";
+	
+	private ZeroKeyProvide() {
+		throw new IllegalStateException("static model class: ZeroKeyProvide");
+	}
 }

@@ -8,7 +8,7 @@ import org.qifu.core.entity.TbSysProg;
 public class ProgramAndMenuResult implements java.io.Serializable {
 	private static final long serialVersionUID = -8214299999117601069L;
 	
-	private List<Map<String, Object>> menuList = null;
+	private transient List<Map<String, Object>> menuList = null;
 	
 	private List<TbSysProg> programList = null;
 

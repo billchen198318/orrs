@@ -32,6 +32,10 @@ public class LocaleMessageSourceUtils {
 	
     private static MessageSource messageSource;
     
+    protected LocaleMessageSourceUtils() {
+    	throw new IllegalStateException("Util class: LocaleMessageSourceUtils");
+    }
+    
     public static String getMessage(String code) {
     	return getMessage(code, null);
     }
@@ -43,13 +47,14 @@ public class LocaleMessageSourceUtils {
     public static String getMessage(String code, Object[] args, String defaultMessage){
     	if (null == messageSource) {
     		try {
-				messageSource = (MessageSource) AppContext.getBean(MessageSource.class);
+    			messageSource = (MessageSource) AppContext.getBean(MessageSource.class);
 			} catch (BeansException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
 				e.printStackTrace();
 			}
     	}
+    	if (null == messageSource) {
+            return defaultMessage;
+        }
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage(code, args, defaultMessage, locale);
     }

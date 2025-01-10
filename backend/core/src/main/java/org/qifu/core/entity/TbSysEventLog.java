@@ -24,7 +24,7 @@ public class TbSysEventLog implements java.io.Serializable {
 	
 	/* for query grid show */
 	public String getCdateString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.cdate);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.cdate);
 	}	
 	
 	@EntityPK(name = "oid", autoUUID = true)

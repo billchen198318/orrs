@@ -27,8 +27,8 @@ import org.qifu.core.entity.TbSysEventLog;
 
 public interface ISysEventLogService<T, E> extends IBaseService<TbSysEventLog, String> {
 	
-	public Boolean deleteAll() throws ServiceException, Exception;
+	public Boolean deleteAll() throws ServiceException;
 	
-	public Boolean deleteByDate() throws ServiceException, Exception;
+	public Boolean deleteByDate() throws ServiceException;
 	
 }

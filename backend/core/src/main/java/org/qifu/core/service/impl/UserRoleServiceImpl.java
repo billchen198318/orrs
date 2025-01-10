@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbUserRole;
 import org.qifu.core.mapper.TbUserRoleMapper;
 import org.qifu.core.service.IUserRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,9 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class UserRoleServiceImpl extends BaseService<TbUserRole, String> implements IUserRoleService<TbUserRole, String> {
 	
-	@Autowired
-	TbUserRoleMapper tbUserRoleMapper;
-
+	private final TbUserRoleMapper tbUserRoleMapper;
+	
+	public UserRoleServiceImpl(TbUserRoleMapper tbUserRoleMapper) {
+		super();
+		this.tbUserRoleMapper = tbUserRoleMapper;
+	}
+	
 	@Override
 	protected IBaseMapper<TbUserRole, String> getBaseMapper() {
 		return this.tbUserRoleMapper;

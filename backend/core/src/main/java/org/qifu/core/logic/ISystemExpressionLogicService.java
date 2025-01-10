@@ -28,16 +28,16 @@ import org.qifu.core.entity.TbSysExpression;
 
 public interface ISystemExpressionLogicService {
 	
-	public DefaultResult<TbSysExpression> create(TbSysExpression expression) throws ServiceException, Exception;
+	public DefaultResult<TbSysExpression> create(TbSysExpression expression) throws ServiceException;
 	
-	public DefaultResult<TbSysExpression> update(TbSysExpression expression) throws ServiceException, Exception;
+	public DefaultResult<TbSysExpression> update(TbSysExpression expression) throws ServiceException;
 	
-	public DefaultResult<Boolean> delete(TbSysExpression expression) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(TbSysExpression expression) throws ServiceException;
 	
-	public DefaultResult<TbSysExprJob> createJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysExprJob> createJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException;
 	
-	public DefaultResult<TbSysExprJob> updateJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysExprJob> updateJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException;
 	
-	public DefaultResult<Boolean> deleteJob(TbSysExprJob exprJob) throws ServiceException, Exception;
+	public DefaultResult<Boolean> deleteJob(TbSysExprJob exprJob) throws ServiceException;
 	
 }

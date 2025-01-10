@@ -28,7 +28,8 @@ import java.util.Arrays;
 import javax.sql.DataSource;
 
 import org.qifu.base.AppContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,29 +40,38 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import jakarta.annotation.Resource;
 
 @SpringBootApplication
-@ComponentScans({
-	@ComponentScan("org.qifu.*, org.orrs.*")
-})
+@ComponentScan("org.qifu.*, org.orrs.*")
 @EnableWebMvc
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @EnableCaching
 @EnableScheduling
 public class Application {
+	protected static Logger logger = LoggerFactory.getLogger(Application.class);
 	
-	public static ApplicationContext context;
+	private static ApplicationContext context;
 	
-	@Autowired
-	@Resource(name = "dataSource")
 	private DataSource dataSource;	
 	
-	public static void main(String args[]) {
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+	
+	@Resource(name = "dataSource")
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
+	public static ApplicationContext getContext() {
+		return context;
+	}
+	
+	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 		AppContext.init(context);
 		Application.context = context;
@@ -70,20 +80,20 @@ public class Application {
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
     	
-		System.out.println("test DataBase connection....");
+    	logger.info("test DataBase connection....");
 		try (Connection connection = this.dataSource.getConnection()) {		
-			System.out.println("DataBase [" + this.dataSource.toString() + "] connection success.");
+			logger.info("DataBase [{}] connection success.", connection.getCatalog());
 		} catch (SQLException e) {
 			e.printStackTrace();
-			System.out.println("*** FAIL ***, test DataBase connection....");
+			logger.warn("*** FAIL ***, test DataBase connection....");
 		}
 		
         return args -> {
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
+        	logger.info("Let's inspect the beans provided by Spring Boot:");
             String[] beanNames = ctx.getBeanDefinitionNames();
             Arrays.sort(beanNames);
             for (String beanName : beanNames) {
-                System.out.println(beanName);
+            	logger.info(beanName);
             }
         };
     }		

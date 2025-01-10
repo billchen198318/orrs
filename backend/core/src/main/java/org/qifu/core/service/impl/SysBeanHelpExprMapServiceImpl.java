@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysBeanHelpExprMap;
 import org.qifu.core.mapper.TbSysBeanHelpExprMapMapper;
 import org.qifu.core.service.ISysBeanHelpExprMapService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysBeanHelpExprMapServiceImpl extends BaseService<TbSysBeanHelpExprMap, String> implements ISysBeanHelpExprMapService<TbSysBeanHelpExprMap, String> {
 	
-	@Autowired
-	TbSysBeanHelpExprMapMapper tbSysBeanHelpExprMapMapper;
+	private final TbSysBeanHelpExprMapMapper tbSysBeanHelpExprMapMapper;
+	
+	public SysBeanHelpExprMapServiceImpl(TbSysBeanHelpExprMapMapper tbSysBeanHelpExprMapMapper) {
+		super();
+		this.tbSysBeanHelpExprMapMapper = tbSysBeanHelpExprMapMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysBeanHelpExprMap, String> getBaseMapper() {

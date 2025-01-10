@@ -33,7 +33,7 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.PageOf;
 import org.qifu.base.model.QueryControllerJsonResultObj;
 import org.qifu.base.model.QueryResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.util.BaseApiSupport;
 import org.qifu.base.util.UserLocalUtils;
 
@@ -41,91 +41,14 @@ public class CoreApiSupport extends BaseApiSupport {
 	
 	private static final long serialVersionUID = -4750183395777134636L;	
 	
-	/*
-	@Autowired
-	RoleCheckUtils roleCheckUtils;
-	
-	@Autowired
-	UserBuilder userBuilder;
-	
-	@Autowired
-	IPrpduserService<Prpduser, String> prpduserService;
-	
-	public boolean hasRole(String comcode, String usercode, String gradecode, String taskcode) {
-		return roleCheckUtils.hasRole(comcode, usercode, gradecode, taskcode);
-	}
-	
-	public boolean hasRole(String comcode, String usercode, String gradecode) {
-		return roleCheckUtils.hasRole(comcode, usercode, gradecode);
-	}
-	
-	public String getUserCodeFromToken(String token) {
-		Map<String, Claim> claimToken = this.getTokenClaim(token);
-		if (claimToken != null && claimToken.get(Constants.SINOSOFT_USER_PARAM_NAME) != null && !StringUtils.isBlank(claimToken.get(Constants.SINOSOFT_USER_PARAM_NAME).asString())) {
-			return claimToken.get(Constants.SINOSOFT_USER_PARAM_NAME).asString();
-		}
-		return "";
-	}
-	
-	public <T> boolean checkAuthToken(String token) {
-		if (UserLocalUtils.getUserInfo() != null) {
-			return true;
-		}
-		String userCode = this.getUserCodeFromToken(token);
-		if (!StringUtils.isBlank(userCode)) {
-			this.buildUser(userCode);
-			return true;
-		}
-		return false;
-	}
-	
-	public <T> boolean checkAuthToken(String token, DefaultResult<T> result) {
-		boolean check = this.checkAuthToken(token);
-		result.setIsAuth(YES);
-		if (!check) {
-			result.setIsAuth(NO);
-			result.setMessage(BaseSystemMessage.noLoginAccessDenied());			
-		}
-		return check;
-	}
-	
-	public <T> boolean checkAuthFromUserLocalUtils(DefaultResult<T> result) {
-		result.setIsAuth(YES);
-		if (UserLocalUtils.getUserInfo() != null) {			
-			return true;
-		}
-		result.setIsAuth(NO);
-		result.setMessage(BaseSystemMessage.noLoginAccessDenied());
-		return false;
-	}
-	
-	public UserInfo buildUser(String userId) {
-		UserInfo userInfo = UserBuilder.build(userId);
-		userBuilder.setPrpduser(userInfo);
-		userBuilder.setUtiusergradetasks(userInfo);
-		return userInfo;
-	}
-	
-	public UserInfo buildUser(String userId, String comCode) {
-		UserInfo userInfo = UserBuilder.build(userId, comCode);
-		userBuilder.setPrpduser(userInfo);
-		userBuilder.setUtiusergradetasks(userInfo);		
-		return userInfo;
-	}
-	
-	public void logout() {
-		UserBuilder.logout();
-	}
-	*/
-	
 	protected <T> void setQueryGridJsonResult(QueryControllerJsonResultObj<T> jsonResult, QueryResult<T> queryResult, PageOf pageOf) {
 		if (queryResult.getValue() != null) {
 			jsonResult.setValue( queryResult.getValue() );
 			jsonResult.setPageOfCountSize( NumberUtils.toInt(pageOf.getCountSize(), 0) ); // queryResult.getRowCount()
 			jsonResult.setPageOfSelect( NumberUtils.toInt(pageOf.getSelect(), 1) );
-			jsonResult.setPageOfShowRow( NumberUtils.toInt(pageOf.getShowRow(), PageOf.Rows[0]) );
+			jsonResult.setPageOfShowRow( NumberUtils.toInt(pageOf.getShowRow(), PageOf.DEFAULT_ROW) );
 			jsonResult.setPageOfSize( NumberUtils.toInt(pageOf.getSize(), 1) );
-			jsonResult.setSuccess(YesNo.YES);
+			jsonResult.setSuccess(YesNoKeyProvide.YES);
 		} else {
 			jsonResult.setMessage( queryResult.getMessage() );
 		}		
@@ -144,14 +67,11 @@ public class CoreApiSupport extends BaseApiSupport {
 		if (queryResult == null || responseResult == null) {
 			return;
 		}
-		// FIXME: 要改 UserLocalUtils 為 Apache-shiro 或別的登入session管理元件
 		if (UserLocalUtils.getUserInfo() != null) {
 			responseResult.setIsAuth(YES);
 		}
-		if (StringUtils.isBlank(responseResult.getMessage())) {
-			if (!StringUtils.isBlank(queryResult.getMessage())) {
-				responseResult.setMessage( queryResult.getMessage() );
-			}
+		if (StringUtils.isBlank(responseResult.getMessage()) && (!StringUtils.isBlank(queryResult.getMessage()))) {
+			responseResult.setMessage( queryResult.getMessage() );
 		}
 		if ( queryResult.getValue() != null ) {
 			responseResult.setValue( queryResult.getValue() );
@@ -163,14 +83,11 @@ public class CoreApiSupport extends BaseApiSupport {
 		if (queryResult == null || responseResult == null) {
 			return;
 		}
-		// FIXME: 要改 UserLocalUtils 為 Apache-shiro 或別的登入session管理元件
 		if (UserLocalUtils.getUserInfo() != null) {
 			responseResult.setIsAuth(YES);
 		}
-		if (StringUtils.isBlank(responseResult.getMessage())) {
-			if (!StringUtils.isBlank(queryResult.getMessage())) {
-				responseResult.setMessage( queryResult.getMessage() );
-			}
+		if (StringUtils.isBlank(responseResult.getMessage()) && (!StringUtils.isBlank(queryResult.getMessage()))) {
+			responseResult.setMessage( queryResult.getMessage() );
 		}
 		if ( queryResult.getValue() != null ) {
 			responseResult.setValue( queryResult.getValue() );
@@ -182,14 +99,11 @@ public class CoreApiSupport extends BaseApiSupport {
 		if (queryResult == null || responseResult == null) {
 			return;
 		}
-		// FIXME: 要改 UserLocalUtils 為 Apache-shiro 或別的登入session管理元件
 		if (UserLocalUtils.getUserInfo() != null) {
 			responseResult.setIsAuth(YES);
 		}
-		if (StringUtils.isBlank(responseResult.getMessage())) {
-			if (!StringUtils.isBlank(queryResult.getMessage())) {
-				responseResult.setMessage( queryResult.getMessage() );
-			}
+		if (StringUtils.isBlank(responseResult.getMessage()) && (!StringUtils.isBlank(queryResult.getMessage()))) {
+			responseResult.setMessage( queryResult.getMessage() );
 		}
 		if ( queryResult.getValue() != null ) {
 			responseResult.setValue( queryResult.getValue() );
@@ -212,16 +126,13 @@ public class CoreApiSupport extends BaseApiSupport {
 	}	
 	
 	protected List<String> transformAppendKeyStringToList(String appendOid) {
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		if (StringUtils.isBlank(appendOid)) {
 			return list;
 		}
-		String tmp[] = appendOid.split(Constants.DEFAULT_SPLIT_DELIMITER);
+		String[] tmp = appendOid.split(Constants.DEFAULT_SPLIT_DELIMITER);
 		for (int i=0; tmp != null && i < tmp.length; i++) {
-			if (StringUtils.isBlank(tmp[i])) {
-				continue;
-			}
-			if (list.contains(tmp[i])) {
+			if (StringUtils.isBlank(tmp[i]) || list.contains(tmp[i])) {
 				continue;
 			}
 			list.add(tmp[i]);

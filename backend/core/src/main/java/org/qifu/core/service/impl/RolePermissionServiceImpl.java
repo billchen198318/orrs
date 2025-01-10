@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbRolePermission;
 import org.qifu.core.mapper.TbRolePermissionMapper;
 import org.qifu.core.service.IRolePermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class RolePermissionServiceImpl extends BaseService<TbRolePermission, String> implements IRolePermissionService<TbRolePermission, String> {
 	
-	@Autowired
-	TbRolePermissionMapper tbRolePermissionMapper;
+	private final TbRolePermissionMapper tbRolePermissionMapper;
+	
+	public RolePermissionServiceImpl(TbRolePermissionMapper tbRolePermissionMapper) {
+		super();
+		this.tbRolePermissionMapper = tbRolePermissionMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbRolePermission, String> getBaseMapper() {

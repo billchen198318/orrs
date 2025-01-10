@@ -38,7 +38,7 @@ public interface TbSysExpressionMapper extends IBaseMapper<TbSysExpression, Stri
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TbSysExpression> selectListByParamsSimple(Map<String, Object> paramMap) throws Exception;
+	public List<TbSysExpression> selectListByParamsSimple(Map<String, Object> paramMap);
 	
 	/**
 	 * for work with findPageSimple

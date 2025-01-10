@@ -29,11 +29,12 @@ public class ScriptExpressionRunType {
 	public static final String IS_AFTER = "AFTER";
 	public static final String IS_BEFORE = "BEFORE";
 	
+	protected ScriptExpressionRunType() {
+		throw new IllegalStateException("static model class: ScriptExpressionRunType");
+	}
+	
 	public static boolean isCode(String runType) {
-		if (IS_AFTER.equals(runType) || IS_BEFORE.equals(runType)) {
-			return true;
-		}
-		return false;
+		return (IS_AFTER.equals(runType) || IS_BEFORE.equals(runType));
 	}
 	
 	public static Map<String, String> getRunTypeMap(boolean pleaseSelect) {

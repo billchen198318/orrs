@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
@@ -34,7 +35,7 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.ServiceAuthority;
 import org.qifu.base.model.ServiceMethodAuthority;
 import org.qifu.base.model.ServiceMethodType;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.model.ZeroKeyProvide;
 import org.qifu.base.service.BaseLogicService;
 import org.qifu.core.entity.TbSysMenu;
@@ -45,7 +46,6 @@ import org.qifu.core.service.ISysMenuService;
 import org.qifu.core.service.ISysProgService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,16 +56,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISystemMenuLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(SystemMenuLogicServiceImpl.class);
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
+	private final ISysProgService<TbSysProg, String> sysProgService;
 	
-	@Autowired
-	ISysMenuService<TbSysMenu, String> sysMenuService;
+	private final ISysMenuService<TbSysMenu, String> sysMenuService;
 	
-	public SystemMenuLogicServiceImpl() {
+	public SystemMenuLogicServiceImpl(ISysProgService<TbSysProg, String> sysProgService,
+			ISysMenuService<TbSysMenu, String> sysMenuService) {
 		super();
+		this.sysProgService = sysProgService;
+		this.sysMenuService = sysMenuService;
 	}
-	
+
 	/**
 	 * 找出選單設定功能要的
 	 * 已在選單的程式 與 同SYS的程式
@@ -81,7 +82,7 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 	 */	
 	@ServiceMethodAuthority(type = ServiceMethodType.SELECT)
 	@Override
-	public Map<String, List<TbSysProg>> findForMenuSettingsEnableAndAll(String folderProgramOid) throws ServiceException, Exception {
+	public Map<String, List<TbSysProg>> findForMenuSettingsEnableAndAll(String folderProgramOid) throws ServiceException {
 		if (StringUtils.isBlank(folderProgramOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -90,7 +91,7 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 			throw new ServiceException(spResult.getMessage());
 		}
 		TbSysProg sysProg = spResult.getValue();
-		Map<String, List<TbSysProg>> dataMap = new HashMap<String, List<TbSysProg>>();
+		Map<String, List<TbSysProg>> dataMap = new HashMap<>();
 		TbSysMenu sysMenu = new TbSysMenu();
 		List<TbSysProg> enableList = null;
 		List<TbSysProg> allList = null;
@@ -103,10 +104,10 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 		}
 		allList = this.sysProgService.findForSystemItems(sysProg.getProgSystem());
 		if (enableList==null) {
-			enableList = new ArrayList<TbSysProg>();
+			enableList = new ArrayList<>();
 		}
 		if (allList==null) {
-			allList = new ArrayList<TbSysProg>();
+			allList = new ArrayList<>();
 		}
 		dataMap.put("enable", enableList);
 		dataMap.put("all", allList);
@@ -128,11 +129,11 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> createOrUpdate(String folderProgramOid, List<String> childProgramOidList) throws ServiceException, Exception {
+	public DefaultResult<Boolean> createOrUpdate(String folderProgramOid, List<String> childProgramOidList) throws ServiceException {
 		if (StringUtils.isBlank(folderProgramOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		DefaultResult<Boolean> result = new DefaultResult<>();
 		result.setValue(false);
 		result.setMessage( BaseSystemMessage.updateFail() );
 		
@@ -156,7 +157,7 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 		} else { // create new 新產
 			sysMenu.setProgId(sysProg.getProgId());
 			sysMenu.setParentOid(ZeroKeyProvide.OID_KEY);
-			sysMenu.setEnableFlag(YesNo.YES);
+			sysMenu.setEnableFlag(YesNoKeyProvide.YES);
 			DefaultResult<TbSysMenu> smResult = this.sysMenuService.insert(sysMenu);
 			if (smResult.getValue()==null) {
 				throw new ServiceException(smResult.getMessage());
@@ -171,11 +172,11 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 		return result;
 	}	
 	
-	private void removeMenuChildData(TbSysMenu parentSysMenu) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+	private void removeMenuChildData(TbSysMenu parentSysMenu) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("parentOid", parentSysMenu.getOid());
 		DefaultResult<List<TbSysMenu>> sysMenuResult = this.sysMenuService.selectListByParams(paramMap);
-		if (sysMenuResult.getValue()==null || sysMenuResult.getValue().size()<1) {
+		if (sysMenuResult == null || CollectionUtils.isEmpty(sysMenuResult.getValue())) {
 			return;
 		}
 		for (TbSysMenu childSysMenu : sysMenuResult.getValue()) {
@@ -183,7 +184,7 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 		}
 	}
 	
-	private void createOrUpdate(TbSysMenu parentSysMenu, List<String> childProgramOidList) throws ServiceException, Exception {
+	private void createOrUpdate(TbSysMenu parentSysMenu, List<String> childProgramOidList) throws ServiceException {
 		for (String progOid : childProgramOidList) {
 			DefaultResult<TbSysProg> spResult = this.sysProgService.selectByPrimaryKey(progOid);
 			if (spResult.getValue()==null) {
@@ -196,7 +197,7 @@ public class SystemMenuLogicServiceImpl extends BaseLogicService implements ISys
 			TbSysMenu childSysMenu = new TbSysMenu();
 			childSysMenu.setProgId(sysProg.getProgId());
 			childSysMenu.setParentOid(parentSysMenu.getOid());
-			childSysMenu.setEnableFlag(YesNo.YES);
+			childSysMenu.setEnableFlag(YesNoKeyProvide.YES);
 			DefaultResult<TbSysMenu> result = this.sysMenuService.insert(childSysMenu);
 			if (result.getValue()==null) {
 				throw new ServiceException(result.getMessage());

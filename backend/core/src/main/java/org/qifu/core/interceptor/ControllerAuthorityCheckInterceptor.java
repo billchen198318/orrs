@@ -21,6 +21,7 @@
  */
 package org.qifu.core.interceptor;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -28,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.Constants;
 import org.qifu.base.CoreAppConstants;
 import org.qifu.base.model.ControllerMethodAuthority;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.BaseInfoConfigProperties;
 import org.qifu.core.model.PermissionType;
 import org.qifu.core.model.User;
@@ -36,22 +37,29 @@ import org.qifu.core.support.SysEventLogSupport;
 import org.qifu.core.util.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 	protected static Logger logger = LoggerFactory.getLogger(ControllerAuthorityCheckInterceptor.class);
 	
-	@Autowired
-	BaseInfoConfigProperties baseInfoConfigProperties;
+	private BaseInfoConfigProperties baseInfoConfigProperties;
 	
-	private void log(String userId, String sysId, String url, boolean permit) throws Exception {
-		if (!YesNo.YES.equals(baseInfoConfigProperties.getEnableControllerAuthCheckLog())) {
+	public BaseInfoConfigProperties getBaseInfoConfigProperties() {
+		return baseInfoConfigProperties;
+	}
+	
+	@Resource
+	public void setBaseInfoConfigProperties(BaseInfoConfigProperties baseInfoConfigProperties) {
+		this.baseInfoConfigProperties = baseInfoConfigProperties;
+	}
+	
+	private void log(String userId, String sysId, String url, boolean permit) {
+		if (!YesNoKeyProvide.YES.equals(baseInfoConfigProperties.getEnableControllerAuthCheckLog())) {
 			return;
 		}
 		if (this.isEventLogPage(url)) {
@@ -72,12 +80,12 @@ public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 	}
 	
 	@Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 		String url = request.getServletPath();
 		String qifuPageTab = request.getParameter(Constants.QIFU_PAGE_IN_TAB_IFRAME);
 		User user = UserUtils.getCurrentUser();
 		if (user == null) {
-			if (YesNo.YES.equals(qifuPageTab)) {
+			if (YesNoKeyProvide.YES.equals(qifuPageTab)) {
 				response.sendRedirect( CoreAppConstants.SYS_PAGE_TAB_LOGIN_AGAIN );
 				return false;
 			}		
@@ -110,7 +118,7 @@ public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 			return true;
 		}		
 		logger.warn("[decline] user={} url={}", user.getUsername(), url);
-		if (YesNo.YES.equals(qifuPageTab)) {
+		if (YesNoKeyProvide.YES.equals(qifuPageTab)) {
 			this.log( user.getUsername(), baseInfoConfigProperties.getSystem(), url, false );
 			response.sendRedirect( CoreAppConstants.SYS_PAGE_NO_AUTH );
 			return false;
@@ -129,16 +137,6 @@ public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 		return false;
 	}
 	
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    	
-    }
-    
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-    	
-    }
-    
 	private boolean isControllerAuthority(Annotation[] actionMethodAnnotations) {
 		if (actionMethodAnnotations==null || actionMethodAnnotations.length == 0) { // 沒有 ControllerMethodAuthority 不需要check
 			return true;
@@ -153,17 +151,18 @@ public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 			return true;
 		}
 		for (Annotation anno : actionMethodAnnotations) {
-			if (anno instanceof ControllerMethodAuthority) {
-				if (!((ControllerMethodAuthority)anno).check()) { // check=false , 表示不要檢查權限
-					return true;
-				}
-				String progId = ((ControllerMethodAuthority)anno).programId();
-				if (StringUtils.isBlank(progId)) {
-					return false;	
-				}
-				if (UserUtils.isPermitted(progId, PermissionType.CONTROLLER.name())) {
-					return true;
-				}
+			if (!(anno instanceof @SuppressWarnings("unused") ControllerMethodAuthority cma)) {
+				continue;
+			}
+			if (!((ControllerMethodAuthority)anno).check()) { // check=false , 表示不要檢查權限
+				return true;
+			}
+			String progId = ((ControllerMethodAuthority)anno).programId();
+			if (StringUtils.isBlank(progId)) {
+				return false;	
+			}
+			if (UserUtils.isPermitted(progId, PermissionType.CONTROLLER.name())) {
+				return true;
 			}
 		}
 		return false;
@@ -173,10 +172,7 @@ public class ControllerAuthorityCheckInterceptor implements HandlerInterceptor {
 	 * Event log 查詢的頁面
 	 */
 	private boolean isEventLogPage(String url) {
-		if (StringUtils.defaultString(url).startsWith("/sysEventLog") || StringUtils.defaultString(url).startsWith("/api/PROG004D0002")) {
-			return true;
-		}
-		return false;
+		return (StringUtils.defaultString(url).startsWith("/sysEventLog") || StringUtils.defaultString(url).startsWith("/api/PROG004D0002"));
 	}
 	
 }

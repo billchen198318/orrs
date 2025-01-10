@@ -27,16 +27,15 @@ import java.util.Map;
 public class DefaultControllerJsonResultObj<T> implements java.io.Serializable {
 	private static final long serialVersionUID = 3754125684960027639L;
 	
-	private T value = null;
-	private String success = YesNo.NO;
+	private transient T value = null;
+	private String success = YesNoKeyProvide.NO;
 	private String message = "";
-	private String login = YesNo.NO;
-	private String isAuth = YesNo.NO;
-	private Map<String, String> checkFields = new LinkedHashMap<String, String>(); // 不符合條件的輸入欄位
+	private String login = YesNoKeyProvide.NO;
+	private String isAuth = YesNoKeyProvide.NO;
+	private Map<String, String> checkFields = new LinkedHashMap<>(); // 不符合條件的輸入欄位
 	
 	public static <T> DefaultControllerJsonResultObj<T> build() {
-		DefaultControllerJsonResultObj<T> obj = new DefaultControllerJsonResultObj<T>();
-		return obj;
+		return new DefaultControllerJsonResultObj<>();
 	}
 	
 	public T getValue() {

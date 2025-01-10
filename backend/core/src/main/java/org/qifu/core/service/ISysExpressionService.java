@@ -29,6 +29,6 @@ import org.qifu.core.entity.TbSysExpression;
 
 public interface ISysExpressionService<T, E> extends IBaseService<TbSysExpression, String> {
 	
-	public Map<String, String> findExpressionMap(boolean pleaseSelect) throws ServiceException, Exception;
+	public Map<String, String> findExpressionMap(boolean pleaseSelect) throws ServiceException;
 	
 }

@@ -32,21 +32,23 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysLoginLog;
 import org.qifu.core.mapper.TbSysLoginLogMapper;
 import org.qifu.core.service.ISysLoginLogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 // change use SysTokenServiceImpl
-@Deprecated
 @Component
 @Service
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysLoginLogServiceImpl extends BaseService<TbSysLoginLog, String> implements ISysLoginLogService<TbSysLoginLog, String> {
 	
-	@Autowired
-	TbSysLoginLogMapper tbSysLoginLogMapper;
+	private final TbSysLoginLogMapper tbSysLoginLogMapper;
+	
+	public SysLoginLogServiceImpl(TbSysLoginLogMapper tbSysLoginLogMapper) {
+		super();
+		this.tbSysLoginLogMapper = tbSysLoginLogMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysLoginLog, String> getBaseMapper() {
@@ -58,7 +60,7 @@ public class SysLoginLogServiceImpl extends BaseService<TbSysLoginLog, String> i
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public Boolean deleteAll() throws ServiceException, Exception {
+	public Boolean deleteAll() throws ServiceException {
 		return this.tbSysLoginLogMapper.deleteAll(null);
 	}
 	
@@ -67,9 +69,9 @@ public class SysLoginLogServiceImpl extends BaseService<TbSysLoginLog, String> i
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public Boolean deleteByDate() throws ServiceException, Exception {
+	public Boolean deleteByDate() throws ServiceException {
 		DateTime dt = new DateTime();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("cdate", dt.plusDays(-14).toDate());
 		return this.tbSysLoginLogMapper.deleteByDate(paramMap);
 	}	

@@ -34,15 +34,12 @@ import org.qifu.base.model.ServiceMethodAuthority;
 import org.qifu.base.model.ServiceMethodType;
 import org.qifu.base.service.BaseLogicService;
 import org.qifu.core.entity.TbSys;
-import org.qifu.core.entity.TbSysIcon;
 import org.qifu.core.entity.TbSysProg;
 import org.qifu.core.logic.IApplicationSystemLogicService;
-import org.qifu.core.service.ISysIconService;
 import org.qifu.core.service.ISysProgService;
 import org.qifu.core.service.ISysService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,19 +50,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicationSystemLogicServiceImpl extends BaseLogicService implements IApplicationSystemLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(ApplicationSystemLogicServiceImpl.class);
 	
-	@Autowired
-	ISysIconService<TbSysIcon, String> sysIconService;
+	private final ISysService<TbSys, String> sysService;
 	
-	@Autowired
-	ISysService<TbSys, String> sysService;
+	private final ISysProgService<TbSysProg, String> sysProgService;
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
-	
-	public ApplicationSystemLogicServiceImpl() {
+	public ApplicationSystemLogicServiceImpl(ISysService<TbSys, String> sysService, ISysProgService<TbSysProg, String> sysProgService) {
 		super();
+		this.sysService = sysService;
+		this.sysProgService = sysProgService;
 	}
-	
+
 	/**
 	 * 建立 TB_SYS 資料
 	 * 
@@ -81,16 +75,7 @@ public class ApplicationSystemLogicServiceImpl extends BaseLogicService implemen
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbSys> create(TbSys sys /*, String iconOid*/ ) throws ServiceException, Exception {
-		/*
-		TbSysIcon sysIcon = new TbSysIcon();
-		sysIcon.setOid(iconOid);
-		DefaultResult<TbSysIcon> iconResult = this.sysIconService.selectByPrimaryKey(iconOid);
-		if (iconResult.getValue()==null) {
-			throw new ServiceException( iconResult.getMessage() );
-		}		
-		sys.setIcon(iconResult.getValue().getIconId());
-		*/
+	public DefaultResult<TbSys> create(TbSys sys) throws ServiceException {
 		return this.sysService.insert(sys);
 	}
 	
@@ -108,7 +93,7 @@ public class ApplicationSystemLogicServiceImpl extends BaseLogicService implemen
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> delete(TbSys sys) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSys sys) throws ServiceException {
 		if (sys==null || StringUtils.isBlank(sys.getOid()) ) {
 			throw new ServiceException( BaseSystemMessage.parameterBlank() );
 		}
@@ -117,7 +102,7 @@ public class ApplicationSystemLogicServiceImpl extends BaseLogicService implemen
 			throw new ServiceException(sysResult.getMessage());
 		}
 		sys = sysResult.getValue();
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("progSystem", sys.getSysId());
 		if (this.sysProgService.count(params)>0) {
 			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
@@ -140,17 +125,7 @@ public class ApplicationSystemLogicServiceImpl extends BaseLogicService implemen
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSys> update(TbSys sys /*, String iconOid*/) throws ServiceException, Exception {
-		/*
-		if (null == sys || StringUtils.isBlank(sys.getOid()) ) {
-			throw new ServiceException( BaseSystemMessage.parameterBlank() );
-		}
-		DefaultResult<TbSysIcon> iconResult = this.sysIconService.selectByPrimaryKey(iconOid);
-		if (iconResult.getValue()==null) {
-			throw new ServiceException(iconResult.getMessage());
-		}		
-		sys.setIcon(iconResult.getValue().getIconId());
-		*/
+	public DefaultResult<TbSys> update(TbSys sys) throws ServiceException {
 		return this.sysService.update(sys);
 	}
 	

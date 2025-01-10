@@ -28,15 +28,14 @@ import org.qifu.core.entity.TbSysTemplateParam;
 
 public interface ISystemTemplateLogicService {
 
-	public DefaultResult<TbSysTemplate> create(TbSysTemplate sysTemplate) throws ServiceException, Exception;
+	public DefaultResult<TbSysTemplate> create(TbSysTemplate sysTemplate) throws ServiceException;
 	
-	public DefaultResult<TbSysTemplate> update(TbSysTemplate sysTemplate) throws ServiceException, Exception;
+	public DefaultResult<TbSysTemplate> update(TbSysTemplate sysTemplate) throws ServiceException;
 	
-	public DefaultResult<Boolean> delete(TbSysTemplate sysTemplate) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(TbSysTemplate sysTemplate) throws ServiceException;
 	
-	@Deprecated
-	public DefaultResult<TbSysTemplateParam> createParam(TbSysTemplateParam sysTemplateParam, String templateOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysTemplateParam> createParam(TbSysTemplateParam sysTemplateParam, String templateOid) throws ServiceException;
 	
-	public DefaultResult<Boolean> deleteParam(TbSysTemplateParam sysTemplateParam) throws ServiceException, Exception;	
+	public DefaultResult<Boolean> deleteParam(TbSysTemplateParam sysTemplateParam) throws ServiceException;	
 	
 }

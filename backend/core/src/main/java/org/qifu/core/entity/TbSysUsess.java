@@ -8,7 +8,6 @@ import org.qifu.base.model.EntityUK;
 import org.qifu.base.model.UpdateDateField;
 import org.qifu.base.model.UpdateUserField;
 
-@Deprecated
 public class TbSysUsess extends TbSysUsessKey {
 	private static final long serialVersionUID = 4699630657747152165L;
 	

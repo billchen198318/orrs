@@ -23,34 +23,26 @@ package org.qifu.util;
 
 import java.util.Map;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
-//import org.qifu.base.model.ScriptTypeCode;
+import org.qifu.base.model.ScriptTypeCode;
 
-//import bsh.Interpreter;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 public class ScriptExpressionUtils {
 	private static CompilerConfiguration groovyCompilerConfig = new CompilerConfiguration();
-//	private static ThreadLocal<Interpreter> bshInterpreterTL = new ThreadLocal<Interpreter>();
-	private static ThreadLocal<GroovyShell> groovyShellTL = new ThreadLocal<GroovyShell>();
+	private static ThreadLocal<GroovyShell> groovyShellTL = new ThreadLocal<>();
 	
 	static {
+		groovyShellTL.remove();
 		groovyCompilerConfig.getOptimizationOptions().put("indy", true);
 		groovyCompilerConfig.getOptimizationOptions().put("int", false);		
 	}
 	
-//	public static Interpreter buildBshInterpreter(boolean clean) {
-//		Interpreter bshInterpreter = null;
-//		if ((bshInterpreter=bshInterpreterTL.get()) == null) {
-//			bshInterpreter = new Interpreter();
-//			bshInterpreterTL.set(bshInterpreter);
-//		}
-//		if (clean && bshInterpreter.getNameSpace()!=null) {
-//			bshInterpreter.getNameSpace().clear();
-//		}
-//		return bshInterpreter;
-//	}
+	protected ScriptExpressionUtils() {
+		throw new IllegalStateException("Utils class: ScriptExpressionUtils");
+	}
 	
 	public static GroovyShell buildGroovyShell(boolean fromThreadLocal) {
 		if (fromThreadLocal) {
@@ -75,36 +67,14 @@ public class ScriptExpressionUtils {
 	 * @throws Exception
 	 */
 	public static Object execute(String type, String scriptExpression, 
-			Map<String, Object> results, Map<String, Object> parameters) throws Exception {
-//		if (!ScriptTypeCode.isTypeCode(type)) {
-//			throw new java.lang.IllegalArgumentException("no support script language of : " + type);
-//		}
-//		if (ScriptTypeCode.BSH.equals(type)) {
-//			executeBsh(scriptExpression, results, parameters);
-//		}
-//		if (ScriptTypeCode.GROOVY.equals(type)) {
-//			executeGroovy(scriptExpression, results, parameters);
-//		}
-		Object r = executeGroovy(scriptExpression, results, parameters);
-		return r;
+			Map<String, Object> results, Map<String, Object> parameters) throws IllegalArgumentException {
+		if (!ScriptTypeCode.isTypeCode(type)) {
+			throw new java.lang.IllegalArgumentException("no support script language of : " + type);
+		}
+		return executeGroovy(scriptExpression, results, parameters);
 	}	
 	
-//	private static void executeBsh(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws Exception {
-//		Interpreter bshInterpreter = buildBshInterpreter(true);
-//		if (parameters!=null) {
-//			for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-//				bshInterpreter.set(entry.getKey(), entry.getValue());
-//			}
-//		}
-//		bshInterpreter.eval(scriptExpression);
-//		if (results!=null) {
-//			for (Map.Entry<String, Object> entry : results.entrySet()) {
-//				entry.setValue( bshInterpreter.get(entry.getKey()) );
-//			}
-//		}
-//	}
-	
-	private static Object executeGroovy(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws Exception {	
+	private static Object executeGroovy(String scriptExpression, Map<String, Object> results, Map<String, Object> parameters) throws CompilationFailedException {	
 		GroovyShell groovyShell = buildGroovyShell(false);
 		Binding binding = groovyShell.getContext();		
 		if (parameters!=null) {			

@@ -36,6 +36,6 @@ public interface IAccountService<T, E> extends IBaseService<TbAccount, String> {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */	
-	public Map<String, String> findForAllMap(boolean pleaseSelect) throws ServiceException, Exception; 
+	public Map<String, String> findForAllMap(boolean pleaseSelect) throws ServiceException; 
 	
 }

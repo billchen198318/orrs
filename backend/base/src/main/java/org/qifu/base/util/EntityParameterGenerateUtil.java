@@ -24,6 +24,7 @@ package org.qifu.base.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,12 @@ import org.qifu.base.model.UpdateUserField;
 
 public class EntityParameterGenerateUtil {
 	
+	private EntityParameterGenerateUtil() {
+		throw new IllegalStateException("Utility class: EntityParameterGenerateUtil");
+	}
+	
 	public static Map<String, Object> createParamMap(String paramName, String value) {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put(paramName, value);
 		return paramMap;
 	}
@@ -67,72 +72,72 @@ public class EntityParameterGenerateUtil {
 	public static Map<String, Object> getUKParameter(Object entityObject) {
 		Method[] methods=entityObject.getClass().getMethods();
 		if (methods==null) {
-			return null;
+			return Collections.emptyMap();
 		}
-		Map<String, Object> ukMap=new HashMap<String, Object>();
+		Map<String, Object> ukMap=new HashMap<>();
 		for (int ix=0; ix<methods.length; ix++) {
 			Annotation[] annotations=methods[ix].getDeclaredAnnotations();
 			if (annotations==null) {
 				continue;
 			}
-			for(Annotation annotation : annotations) {
-				if(annotation instanceof EntityUK) {
-					if (methods[ix].getName().indexOf("get")==0) {
-						for (int nx=0; nx<annotations.length; nx++) {
-							if (annotations[nx] instanceof EntityUK) {
-								try {
-									ukMap.put(((EntityUK)annotations[nx]).name(), methods[ix].invoke(entityObject));
-									nx=annotations.length;
-								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
-								} catch (IllegalAccessException e) {
-									e.printStackTrace();
-								} catch (InvocationTargetException e) {
-									e.printStackTrace();
-								}								
-							}
-						}					
-					}					
-				}
-			}
+			fillUKParameterParam(entityObject, annotations, methods, ukMap, ix);
 		}		
 		return ukMap;
 	}	
 	
+	private static void fillUKParameterParam(Object entityObject, Annotation[] annotations, Method[] methods, Map<String, Object> ukMap, int methodIndex) {
+		for(Annotation annotation : annotations) {
+			if(!(annotation instanceof @SuppressWarnings("unused") EntityUK enuk &&  (methods[methodIndex].getName().indexOf("get")==0))) {
+				continue;
+			}
+			boolean r = true;
+			for (int nx=0; r && nx<annotations.length; nx++) {
+				if (annotations[nx] instanceof @SuppressWarnings("unused") EntityUK euk) {
+					try {
+						ukMap.put(((EntityUK)annotations[nx]).name(), methods[methodIndex].invoke(entityObject));
+						r = false;
+					} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+						e.printStackTrace();
+					}							
+				}
+			}
+		}		
+	}
+	
 	public static Map<String, Object> getPKParameter(Object entityObject) {
 		Method[] methods=entityObject.getClass().getMethods();
 		if (methods==null) {
-			return null;
+			return Collections.emptyMap();
 		}
-		Map<String, Object> ukMap=new HashMap<String, Object>();
+		Map<String, Object> ukMap=new HashMap<>();
 		for (int ix=0; ix<methods.length; ix++) {
 			Annotation[] annotations=methods[ix].getDeclaredAnnotations();
 			if (annotations==null) {
 				continue;
 			}
-			for(Annotation annotation : annotations) {
-				if(annotation instanceof EntityPK) {
-					if (methods[ix].getName().indexOf("get")==0) {
-						for (int nx=0; nx<annotations.length; nx++) {
-							if (annotations[nx] instanceof EntityPK) {
-								try {
-									ukMap.put(((EntityPK)annotations[nx]).name(), methods[ix].invoke(entityObject));
-									nx=annotations.length;
-								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
-								} catch (IllegalAccessException e) {
-									e.printStackTrace();
-								} catch (InvocationTargetException e) {
-									e.printStackTrace();
-								}								
-							}							
-						}					
-					}					
-				}
-			}
+			fillPKParameterParam(entityObject, annotations, methods, ukMap, ix);
 		}		
 		return ukMap;
 	}	
+	
+	private static void fillPKParameterParam(Object entityObject, Annotation[] annotations, Method[] methods, Map<String, Object> ukMap, int methodIndex) {
+		for(Annotation annotation : annotations) {
+			if(!(annotation instanceof @SuppressWarnings("unused") EntityPK enpk &&  (methods[methodIndex].getName().indexOf("get")==0))) {
+				continue;
+			}
+			boolean r = true;
+			for (int nx = 0; r && nx < annotations.length; nx++) {
+				if (annotations[nx] instanceof @SuppressWarnings("unused") EntityPK epk) {
+					try {
+						ukMap.put(((EntityPK)annotations[nx]).name(), methods[methodIndex].invoke(entityObject));
+						r = false;
+					} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+						e.printStackTrace();
+					}							
+				}
+			}
+		}
+	}
 	
 	public static EntityPK getPrimaryKeyField(Object entityObject) {
 		Method[] methods=entityObject.getClass().getMethods();
@@ -146,7 +151,7 @@ public class EntityParameterGenerateUtil {
 				continue;
 			}
 			for(Annotation annotation : annotations) {
-				if(annotation instanceof EntityPK) {
+				if(annotation instanceof @SuppressWarnings("unused") EntityPK epk) {
 					field = ((EntityPK)annotation);			
 				}
 			}
@@ -166,10 +171,10 @@ public class EntityParameterGenerateUtil {
 				continue;
 			}
 			for(Annotation annotation : annotations) {
-				if (annotation instanceof UpdateUserField) {
+				if (annotation instanceof @SuppressWarnings("unused") UpdateUserField uf) {
 					field.setUpdateUserField( (UpdateUserField)annotation );					
 				}
-				if (annotation instanceof UpdateDateField) {
+				if (annotation instanceof @SuppressWarnings("unused") UpdateDateField uf) {
 					field.setUpdateDateField( (UpdateDateField)annotation );
 				}
 			}
@@ -189,10 +194,10 @@ public class EntityParameterGenerateUtil {
 				continue;
 			}
 			for(Annotation annotation : annotations) {
-				if (annotation instanceof CreateUserField) {
+				if (annotation instanceof @SuppressWarnings("unused") CreateUserField cf) {
 					field.setCreateUserField( (CreateUserField)annotation );		
 				}
-				if (annotation instanceof CreateDateField) {
+				if (annotation instanceof @SuppressWarnings("unused") CreateDateField cf) {
 					field.setCreateDateField( (CreateDateField)annotation );
 				}
 			}

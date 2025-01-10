@@ -31,12 +31,16 @@ import org.qifu.util.SimpleUtils;
  */
 public class TemplateCode {
 	private static Properties props = new Properties();
-	private static String _USE_CODE[] = null;
+	private static String[] useCode = null;
+	
+	protected TemplateCode() {
+		throw new IllegalStateException("static model class: TemplateCode");
+	}
 	
 	static {
 		try {
 			props.load(TemplateCode.class.getClassLoader().getResource("template-code-use.properties").openStream());
-			_USE_CODE = SimpleUtils.getStr(props.getProperty("CODE")).trim().split(",");
+			useCode = SimpleUtils.getStr(props.getProperty("CODE")).trim().split(",");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -44,8 +48,8 @@ public class TemplateCode {
 	
 	public static boolean isUsed(String code) {
 		boolean f = false;
-		for (int i=0; !f && _USE_CODE!=null && i<_USE_CODE.length; i++) {
-			if (_USE_CODE[i].equals(code)) {
+		for (int i=0; !f && useCode!=null && i<useCode.length; i++) {
+			if (useCode[i].equals(code)) {
 				f = true;
 			}
 		}

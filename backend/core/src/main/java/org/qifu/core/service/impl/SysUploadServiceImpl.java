@@ -30,13 +30,12 @@ import org.qifu.base.exception.ServiceException;
 import org.qifu.base.mapper.IBaseMapper;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysUpload;
 import org.qifu.core.mapper.TbSysUploadMapper;
 import org.qifu.core.model.UploadTypes;
 import org.qifu.core.service.ISysUploadService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,8 +46,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysUploadServiceImpl extends BaseService<TbSysUpload, String> implements ISysUploadService<TbSysUpload, String> {
 	
-	@Autowired
-	TbSysUploadMapper tbSysUploadMapper;
+	private final TbSysUploadMapper tbSysUploadMapper;
+	
+	public SysUploadServiceImpl(TbSysUploadMapper tbSysUploadMapper) {
+		super();
+		this.tbSysUploadMapper = tbSysUploadMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysUpload, String> getBaseMapper() {
@@ -64,11 +67,11 @@ public class SysUploadServiceImpl extends BaseService<TbSysUpload, String> imple
 	 * @throws Exception
 	 */	
 	@Override
-	public DefaultResult<TbSysUpload> selectByPrimaryKeySimple(String oid) throws ServiceException, Exception {
+	public DefaultResult<TbSysUpload> selectByPrimaryKeySimple(String oid) throws ServiceException {
 		if (null == oid || StringUtils.isBlank(oid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		DefaultResult<TbSysUpload> result = new DefaultResult<TbSysUpload>();
+		DefaultResult<TbSysUpload> result = new DefaultResult<>();
 		TbSysUpload value = this.tbSysUploadMapper.selectByPrimaryKeySimple(oid);
 		if (value != null) {
 			result.setValue(value);
@@ -91,15 +94,15 @@ public class SysUploadServiceImpl extends BaseService<TbSysUpload, String> imple
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
 	@Override
-	public DefaultResult<Boolean> deleteTmpContentBySystem(String systemId) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteTmpContentBySystem(String systemId) throws ServiceException {
 		if (StringUtils.isBlank(systemId)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("system", systemId);
 		paramMap.put("type", UploadTypes.IS_TEMP);
-		paramMap.put("isFile", YesNo.NO);
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		paramMap.put("isFile", YesNoKeyProvide.NO);
+		DefaultResult<Boolean> result = new DefaultResult<>();
 		result.setValue( this.tbSysUploadMapper.deleteTmpContentBySystem(paramMap) );
 		if (result.getValue() != null && result.getValue()) {
 			result.setMessage(BaseSystemMessage.deleteSuccess());

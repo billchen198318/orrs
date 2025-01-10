@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysIcon;
 import org.qifu.core.mapper.TbSysIconMapper;
 import org.qifu.core.service.ISysIconService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysIconServiceImpl extends BaseService<TbSysIcon, String> implements ISysIconService<TbSysIcon, String> {
 	
-	@Autowired
-	TbSysIconMapper tbSysIconMapper;
+	private final TbSysIconMapper tbSysIconMapper;
+	
+	public SysIconServiceImpl(TbSysIconMapper tbSysIconMapper) {
+		super();
+		this.tbSysIconMapper = tbSysIconMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysIcon, String> getBaseMapper() {

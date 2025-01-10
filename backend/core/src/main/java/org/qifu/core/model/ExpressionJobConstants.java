@@ -78,4 +78,8 @@ public class ExpressionJobConstants {
 	 */
 	public static final String CONTACT_MODE_ALL = "3";	
 	
+	protected ExpressionJobConstants() {
+		throw new IllegalStateException("Constants class: ExpressionJobConstants");
+	}
+	
 }

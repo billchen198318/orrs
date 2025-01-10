@@ -21,6 +21,7 @@
  */
 package org.qifu.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -31,37 +32,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LoadResources {
 	
-	public static <T> T objectMapperReadValue(String fileRes, Class<T> resourceJson2HashMapOrListClazz, Class<?> resourceClazz) throws Exception {
-		return (T) new ObjectMapper().readValue( read( fileRes, resourceClazz), resourceJson2HashMapOrListClazz );
+	protected LoadResources() {
+		throw new IllegalStateException("Utils class: LoadResources");
 	}
 	
-	public static List<String> readLine(String fileRes, Class<?> resourceClazz) throws Exception {
+	public static <T> T objectMapperReadValue(String fileRes, Class<T> resourceJson2HashMapOrListClazz, Class<?> resourceClazz) throws IOException {
+		return new ObjectMapper().readValue( read( fileRes, resourceClazz), resourceJson2HashMapOrListClazz );
+	}
+	
+	public static List<String> readLine(String fileRes, Class<?> resourceClazz) throws IOException {
 		List<String> strList = null;
-		InputStream is = null;
-		try {
-			is = resourceClazz.getClassLoader().getResource( fileRes ).openStream();			
-			strList = IOUtils.readLines(is, Constants.BASE_ENCODING);			
-			is.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			is = null;
-		}		
+		try (InputStream is = resourceClazz.getClassLoader().getResource( fileRes ).openStream()) {		
+			strList = IOUtils.readLines(is, Constants.BASE_ENCODING);				
+		}
 		return strList;
 	}	
 	
-	public static String read(String fileRes, Class<?> resourceClazz) throws Exception {
+	public static String read(String fileRes, Class<?> resourceClazz) throws IOException {
 		String str = "";
-		InputStream is = null;
-		try {
-			is = resourceClazz.getClassLoader().getResource( fileRes ).openStream();
+		try (InputStream is = resourceClazz.getClassLoader().getResource( fileRes ).openStream()) {
 			str = IOUtils.toString(is, Constants.BASE_ENCODING);
-			is.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			is = null;
-		}		
+		}
 		return str;
 	}
 	

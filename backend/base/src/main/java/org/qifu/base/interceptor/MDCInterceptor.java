@@ -25,34 +25,28 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class MDCInterceptor implements HandlerInterceptor {
 	
-	private final static String _USERID_KEY_NAME = "userId";
+	protected static final String USERID_KEY_NAME = "userId";
 	
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String logUserId = "";
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && (auth.getPrincipal() instanceof UserDetails)) {
+		if (auth != null && (auth.getPrincipal() instanceof @SuppressWarnings("unused") UserDetails ud)) {
 			logUserId = ( (UserDetails) auth.getPrincipal() ).getUsername();
 		}
-		org.slf4j.MDC.put(_USERID_KEY_NAME, logUserId);
+		org.slf4j.MDC.put(USERID_KEY_NAME, logUserId);
 		return true;
 	}
 	
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    	
-    }
-    
-    @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-    	org.slf4j.MDC.remove(_USERID_KEY_NAME);
+    	org.slf4j.MDC.remove(USERID_KEY_NAME);
     }	
     
 }

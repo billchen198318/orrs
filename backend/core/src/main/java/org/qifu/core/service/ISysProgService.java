@@ -30,7 +30,7 @@ import org.qifu.core.entity.TbSysProg;
 
 public interface ISysProgService<T, E> extends IBaseService<TbSysProg, String> {
 	
-	public Map<String, String> findSysProgFolderMap(String basePath, String progSystem, String itemType, boolean pleaseSelect) throws ServiceException, Exception;
+	public Map<String, String> findSysProgFolderMap(String basePath, String progSystem, String itemType, boolean pleaseSelect) throws ServiceException;
 	
 	/**
 	 * 找在選單中(FOLDER) 之下已存在的項目
@@ -42,7 +42,7 @@ public interface ISysProgService<T, E> extends IBaseService<TbSysProg, String> {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public List<TbSysProg> findForInTheFolderMenuItems(String progSystem, String menuParentOid, String itemType) throws ServiceException, Exception;
+	public List<TbSysProg> findForInTheFolderMenuItems(String progSystem, String menuParentOid, String itemType) throws ServiceException;
 	
 	/**
 	 * 找同 PROG_SYSTEM 的資料
@@ -58,8 +58,8 @@ public interface ISysProgService<T, E> extends IBaseService<TbSysProg, String> {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public List<TbSysProg> findForSystemItems(String progSystem) throws ServiceException, Exception;	
+	public List<TbSysProg> findForSystemItems(String progSystem) throws ServiceException;	
 	
-	public List<TbSysProg> findForInThePermRoleOfUserId(String accountId) throws ServiceException, Exception;
+	public List<TbSysProg> findForInThePermRoleOfUserId(String accountId) throws ServiceException;
 	
 }

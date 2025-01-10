@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysMenuRole;
 import org.qifu.core.mapper.TbSysMenuRoleMapper;
 import org.qifu.core.service.ISysMenuRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysMenuRoleServiceImpl extends BaseService<TbSysMenuRole, String> implements ISysMenuRoleService<TbSysMenuRole, String> {
 	
-	@Autowired
-	TbSysMenuRoleMapper tbSysMenuRoleMapper;
+	private final TbSysMenuRoleMapper tbSysMenuRoleMapper;
+	
+	public SysMenuRoleServiceImpl(TbSysMenuRoleMapper tbSysMenuRoleMapper) {
+		super();
+		this.tbSysMenuRoleMapper = tbSysMenuRoleMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysMenuRole, String> getBaseMapper() {

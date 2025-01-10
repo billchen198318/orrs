@@ -30,13 +30,10 @@ import org.qifu.base.model.ControllerMethodAuthority;
 import org.qifu.base.model.DefaultControllerJsonResultObj;
 import org.qifu.base.model.DefaultResult;
 import org.qifu.core.entity.TbRole;
-import org.qifu.core.entity.TbSys;
 import org.qifu.core.entity.TbSysProg;
 import org.qifu.core.logic.IRoleLogicService;
 import org.qifu.core.service.ISysProgService;
-import org.qifu.core.service.ISysService;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -53,22 +50,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "CORE_PROG002D0003", description = "Role of menu.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG002D0003")
 public class PROG002D0003Controller extends CoreApiSupport {
 	private static final long serialVersionUID = -6375259391250545485L;
 	
-	@Autowired
-	ISysService<TbSys, String> sysService;
+	private final transient ISysProgService<TbSysProg, String> sysProgService;
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
+	private final transient IRoleLogicService roleLogicService;
 	
-	@Autowired
-	IRoleLogicService roleLogicService;
+	public PROG002D0003Controller(ISysProgService<TbSysProg, String> sysProgService, IRoleLogicService roleLogicService) {
+		super();
+		this.sysProgService = sysProgService;
+		this.roleLogicService = roleLogicService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0003Q", check = true)
 	@Operation(summary = "CORE_PROG002D0003 - findProgramFolderMenuItem", description = "讀取程式清單TB_SYS_PROG List資料")
-	@ResponseBody
 	@PostMapping(value = "/findProgramFolderMenuItem/{sysId}", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<List<TbSysProg>>> findProgramFolderMenuItem(@PathVariable String sysId) {
 		DefaultControllerJsonResultObj<List<TbSysProg>> result = this.initDefaultJsonResult();
@@ -78,15 +76,12 @@ public class PROG002D0003Controller extends CoreApiSupport {
 			result.setSuccess( YES );
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0003Q", check = true)
 	@Operation(summary = "CORE_PROG002D0003 - findMenuProgramRoleList", description = "讀取程式Role List資料")
-	@ResponseBody
 	@PostMapping(value = "/findMenuProgramRoleList", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj< Map<String, List<TbRole>> >> findMenuProgramRoleList(@RequestBody TbSysProg prog) {
 		DefaultControllerJsonResultObj< Map<String, List<TbRole>> > result = this.initDefaultJsonResult();
@@ -96,15 +91,12 @@ public class PROG002D0003Controller extends CoreApiSupport {
 			result.setSuccess( YES );
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0003U", check = true)
 	@Operation(summary = "CORE_PROG002D0003 - update menu role - 1.", description = "更新選單ROLE資料 - 1")
-	@ResponseBody
 	@RequestMapping(value = "/updateMenuRole/{progOid}/{appendOid}", produces = MediaType.APPLICATION_JSON_VALUE)		
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> updateUserRole(@PathVariable String progOid, @PathVariable String appendOid) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -113,11 +105,8 @@ public class PROG002D0003Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(result, uResult);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
-	
 	
 }

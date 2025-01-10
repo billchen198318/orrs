@@ -39,7 +39,7 @@ public interface ISysJreportService<T, E> extends IBaseService<TbSysJreport, Str
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbSysJreport> selectByPrimaryKeySimple(String oid) throws ServiceException, Exception;
+	public DefaultResult<TbSysJreport> selectByPrimaryKeySimple(String oid) throws ServiceException;
 	
 	/**
 	 * no CONTENT field for query , because sometime no need use this field, maybe field byte is big
@@ -49,6 +49,6 @@ public interface ISysJreportService<T, E> extends IBaseService<TbSysJreport, Str
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<List<TbSysJreport>> selectListByParamsSimple(Map<String, Object> paramMap) throws ServiceException, Exception;	
+	public DefaultResult<List<TbSysJreport>> selectListByParamsSimple(Map<String, Object> paramMap) throws ServiceException;	
 	
 }

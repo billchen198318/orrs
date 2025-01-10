@@ -32,7 +32,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysEventLog;
 import org.qifu.core.mapper.TbSysEventLogMapper;
 import org.qifu.core.service.ISysEventLogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,8 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysEventLogServiceImpl extends BaseService<TbSysEventLog, String> implements ISysEventLogService<TbSysEventLog, String> {
 	
-	@Autowired
-	TbSysEventLogMapper tbSysEventLogMapper;
+	private final TbSysEventLogMapper tbSysEventLogMapper;
+	
+	public SysEventLogServiceImpl(TbSysEventLogMapper tbSysEventLogMapper) {
+		super();
+		this.tbSysEventLogMapper = tbSysEventLogMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysEventLog, String> getBaseMapper() {
@@ -56,7 +59,7 @@ public class SysEventLogServiceImpl extends BaseService<TbSysEventLog, String> i
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public Boolean deleteAll() throws ServiceException, Exception {
+	public Boolean deleteAll() throws ServiceException {
 		return this.tbSysEventLogMapper.deleteAll(null);
 	}
 
@@ -65,9 +68,9 @@ public class SysEventLogServiceImpl extends BaseService<TbSysEventLog, String> i
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public Boolean deleteByDate() throws ServiceException, Exception {
+	public Boolean deleteByDate() throws ServiceException {
 		DateTime dt = new DateTime();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("cdate", dt.plusDays(-14).toDate());
 		return this.tbSysEventLogMapper.deleteByDate(paramMap);
 	}

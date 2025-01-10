@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.Constants;
 import org.qifu.base.CoreAppConstants;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -42,7 +42,7 @@ public class BaseLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
     
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        String xhrHeader = ((HttpServletRequest) request).getHeader("X-Requested-With"); // qifu3, qifu2... bambooBSC old
+        String xhrHeader = request.getHeader("X-Requested-With"); // qifu3, qifu2... bambooBSC old
         String contentType = request.getContentType().toLowerCase(); // qifu4
         if ("XMLHttpRequest".equals(xhrHeader) || StringUtils.indexOf(contentType, "json") >-1) {
         	response.setCharacterEncoding( Constants.BASE_ENCODING );
@@ -50,7 +50,7 @@ public class BaseLoginUrlAuthenticationEntryPoint extends LoginUrlAuthentication
         	response.getWriter().write(Constants.NO_AUTHZ_JSON_DATA);
         	return;
         }
-        if (YesNo.YES.equals(request.getParameter(Constants.QIFU_PAGE_IN_TAB_IFRAME))) {
+        if (YesNoKeyProvide.YES.equals(request.getParameter(Constants.QIFU_PAGE_IN_TAB_IFRAME))) {
         	response.sendRedirect(CoreAppConstants.SYS_PAGE_TAB_LOGIN_AGAIN);
         	return;
         }

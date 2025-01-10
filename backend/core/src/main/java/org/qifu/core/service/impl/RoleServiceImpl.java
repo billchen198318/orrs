@@ -33,7 +33,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbRole;
 import org.qifu.core.mapper.TbRoleMapper;
 import org.qifu.core.service.IRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,9 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class RoleServiceImpl extends BaseService<TbRole, String> implements IRoleService<TbRole, String> {
 	
-	@Autowired
-	TbRoleMapper roleMapper;
+	private final TbRoleMapper roleMapper;
 	
+	public RoleServiceImpl(TbRoleMapper roleMapper) {
+		super();
+		this.roleMapper = roleMapper;
+	}
+
 	@Override
 	protected IBaseMapper<TbRole, String> getBaseMapper() {
 		return this.roleMapper;
@@ -61,11 +64,11 @@ public class RoleServiceImpl extends BaseService<TbRole, String> implements IRol
 	 * @throws Exception
 	 */	
 	@Override
-	public List<TbRole> findForAccount(String account) throws ServiceException, Exception {
+	public List<TbRole> findForAccount(String account) throws ServiceException {
 		if (StringUtils.isBlank(account)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("account", account);		
 		return this.roleMapper.findForAccount(paramMap);
 	}
@@ -79,11 +82,11 @@ public class RoleServiceImpl extends BaseService<TbRole, String> implements IRol
 	 * 
 	 */
 	@Override
-	public List<TbRole> findForProgram(String progId) throws ServiceException, Exception {
+	public List<TbRole> findForProgram(String progId) throws ServiceException {
 		if (StringUtils.isBlank(progId)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("progId", progId);
 		return this.roleMapper.findForProgram(paramMap);
 	}

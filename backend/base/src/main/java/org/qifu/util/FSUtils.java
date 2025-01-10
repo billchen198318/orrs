@@ -23,7 +23,6 @@ package org.qifu.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -34,26 +33,25 @@ import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 
 public class FSUtils {
 	
-	public static void mv(final String sourceFile, final String destFile) throws IOException, Exception {		
+	protected FSUtils() {
+		throw new IllegalStateException("Utils class: FSUtils");
+	}
+	
+	public static void mv(final String sourceFile, final String destFile) throws IOException {		
 		File srcFile=new File(sourceFile);
 		File desFile=new File(destFile);	
-		org.apache.commons.io.FileUtils.moveFile(srcFile, desFile);			
-		srcFile=null;
-		desFile=null;		
+		org.apache.commons.io.FileUtils.moveFile(srcFile, desFile);				
 	}
 	
-	public static void cp(final String sourceFile, final String destFile) throws IOException, Exception {		
+	public static void cp(final String sourceFile, final String destFile) throws IOException {		
 		File srcFile=new File(sourceFile);
 		File desFile=new File(destFile);		
-		org.apache.commons.io.FileUtils.copyFile(srcFile, desFile);
-		srcFile=null;
-		desFile=null;		
+		org.apache.commons.io.FileUtils.copyFile(srcFile, desFile);		
 	}
 	
-	public static void rm(final String removeFile) throws IOException, Exception {
+	public static void rm(final String removeFile) throws IOException {
 		File rmFile=new File(removeFile);
 		org.apache.commons.io.FileUtils.forceDelete(rmFile);
-		rmFile=null;
 	}
 	
 	public static String[] getList(final String dir) {
@@ -65,15 +63,13 @@ public class FSUtils {
 		String v="";	
 		File f=new File(fileFullPath);
 		try {
-			if (f!=null && f.exists()) {
-				byte b[]=org.apache.commons.io.FileUtils.readFileToByteArray(f);
+			if (f.exists()) {
+				byte[] b = org.apache.commons.io.FileUtils.readFileToByteArray(f);
 				v=new String(b);				
 			}
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		f=null;
 		return v;
 	}
 	
@@ -81,14 +77,13 @@ public class FSUtils {
 		boolean s=false;
 		File f=new File(fileFullPath);		
 		try {
-			if (f!=null && f.exists()) {
-				org.apache.commons.io.FileUtils.writeByteArrayToFile(f, SimpleUtils.getStr(content, "").getBytes() );
+			if (f.exists()) {
+				org.apache.commons.io.FileUtils.writeByteArrayToFile(f, SimpleUtils.getStr(content).getBytes() );
 				s=true;				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
-		f=null;
 		return s;
 	}
 	
@@ -96,66 +91,53 @@ public class FSUtils {
 		boolean s=false;
 		File f=new File(fileFullPath);
 		try {
-			if (f!=null) {
-				org.apache.commons.io.FileUtils.writeByteArrayToFile(f, SimpleUtils.getStr(content, "").getBytes() );
-				s=true;				
-			}
+			org.apache.commons.io.FileUtils.writeByteArrayToFile(f, SimpleUtils.getStr(content).getBytes() );
+			s=true;	
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
-		f=null;
 		return s;
 	}
 	
 	public static List<String> findFileListByCondition(
-			final String directory, final String sub_name[], final String content) {
-		List<String> list1=new ArrayList<String>();
-		List<String> findList=new ArrayList<String>();
+			final String directory, final String[] subName, final String content) {
+		List<String> list1=new ArrayList<>();
+		List<String> findList=new ArrayList<>();
 		File dir=new File(directory);
-		if (dir!=null ) {
-			if (dir.isDirectory() ) {
-				findFileNext(directory, findList);
-				String f[]=null;
-				f=new String[findList.size()];
-				for (int ix=0; ix<findList.size(); ix++ ) {
-					f[ix]=findList.get(ix);
+		if (!dir.isDirectory() ) {
+			return list1;
+		}
+		findFileNext(directory, findList);
+		String[] f=null;
+		f=new String[findList.size()];
+		for (int ix=0; ix<findList.size(); ix++ ) {
+			f[ix]=findList.get(ix);
+		}
+		for (int ix=0; ix<f.length; ix++ ) {	
+			boolean foundSub=false;
+			for (int jx=0; jx<subName.length && !foundSub; jx++ ) {
+				if (f[ix].toUpperCase().indexOf(subName[jx].toUpperCase() )>-1 ) {
+					foundSub=true;
 				}
-				for (int ix=0; f!=null && ix<f.length; ix++ ) {	
-					boolean found_sub=false;
-					for (int jx=0; jx<sub_name.length && !found_sub; jx++ ) {
-						if (f[ix].toUpperCase().indexOf(sub_name[jx].toUpperCase() )>-1 ) {
-							found_sub=true;
-						}
-					}
-					if (found_sub) {
-						if (readStr(f[ix]).indexOf(content)>-1 ) {
-							list1.add(f[ix] );
-						}
-					}
-
-				}				
-				f=null;
+			}
+			if (foundSub &&  (readStr(f[ix]).indexOf(content)>-1 )) {
+				list1.add(f[ix] );
 			}
 		}		
-		dir=null;
 		findList.clear();		
 		return list1;
 	}
 	
 	private static void findFileNext(final String f, List<String> findList) {
-		System.out.println("find: " +  f);
 		File file=new File(f);
-		if (file!=null) {
-			if (file.isDirectory() ) {
-				File l[]=file.listFiles();
-				for (int ix=0; l!=null && ix<l.length; ix++ ) {
-					findFileNext(l[ix].getPath(), findList);
-				}				
-			} else {
-				findList.add(f);
-			}			
-		}
-		file=null;
+		if (file.isDirectory() ) {
+			File[] l=file.listFiles();
+			for (int ix=0; l!=null && ix<l.length; ix++ ) {
+				findFileNext(l[ix].getPath(), findList);
+			}				
+		} else {
+			findList.add(f);
+		}	
 	}
 	
 	/**
@@ -164,21 +146,17 @@ public class FSUtils {
 	 * 
 	 * @param file
 	 * @return
-	 * @throws Exception
+	 * @throws IOException 
 	 */
-	public static String getMimeType(File file) throws Exception {		
+	public static String getMimeType(File file) throws IOException {		
 		String mimeType="";
 		if (file==null || !file.exists() || file.isDirectory() ) {
 			return mimeType;
 		}
-		/*
-		mimeType=new MimetypesFileTypeMap().getContentType(file);
-		return mimeType;
-		*/
 		return Files.probeContentType(file.toPath());
 	}
 	
-	public static String getMimeType(String filename) throws Exception {
+	public static String getMimeType(String filename) {
 		ConfigurableMimeFileTypeMap mfm = new ConfigurableMimeFileTypeMap();		
 		return mfm.getContentType(filename);
 	}	
@@ -191,7 +169,7 @@ public class FSUtils {
 	 * @return
 	 * @throws Exception
 	 */	
-	public static String getMimeType4URL(File file) throws IOException, MalformedURLException, Exception {
+	public static String getMimeType4URL(File file) throws IOException {
 		String mimeType="";
 		if (file==null || !file.exists() || file.isDirectory() ) {
 			return mimeType;

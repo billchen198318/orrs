@@ -36,9 +36,10 @@ import org.qifu.base.properties.BaseInfoConfigProperties;
 import org.qifu.core.util.ServiceScriptExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.Resource;
 
 @Order(10)
 @Aspect
@@ -46,8 +47,16 @@ import org.springframework.stereotype.Component;
 public class ServiceScriptExpressionProcessAspect implements IBaseAspectService {
 	protected static Logger logger = LoggerFactory.getLogger(ServiceScriptExpressionProcessAspect.class);
 	
-	@Autowired
-	BaseInfoConfigProperties baseInfoConfigProperties;	
+	private BaseInfoConfigProperties baseInfoConfigProperties;	
+	
+	public BaseInfoConfigProperties getBaseInfoConfigProperties() {
+		return baseInfoConfigProperties;
+	}
+	
+	@Resource
+	public void setBaseInfoConfigProperties(BaseInfoConfigProperties baseInfoConfigProperties) {
+		this.baseInfoConfigProperties = baseInfoConfigProperties;
+	}
 	
 	/**
 	 * no enable for scan Base service package

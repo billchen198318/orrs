@@ -29,11 +29,12 @@ public class SortType {
 	
 	public static final String DESC = "DESC";
 	
+	protected SortType() {
+		throw new IllegalStateException("static model class: SortType");
+	}
+	
 	public static boolean isAllow(String type) {
-		if (StringUtils.defaultString(type).toUpperCase().equals(ASC) || StringUtils.defaultString(type).toUpperCase().equals(DESC)) {
-			return true;
-		}
-		return false;
+		return (ASC.equalsIgnoreCase(StringUtils.defaultString(type)) || DESC.equalsIgnoreCase(StringUtils.defaultString(type))) ? Boolean.TRUE : Boolean.FALSE;
 	}
 	
 }

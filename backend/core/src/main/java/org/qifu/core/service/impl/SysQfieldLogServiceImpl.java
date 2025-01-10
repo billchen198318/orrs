@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysQfieldLog;
 import org.qifu.core.mapper.TbSysQfieldLogMapper;
 import org.qifu.core.service.ISysQfieldLogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysQfieldLogServiceImpl extends BaseService<TbSysQfieldLog, String> implements ISysQfieldLogService<TbSysQfieldLog, String> {
 	
-	@Autowired
-	TbSysQfieldLogMapper tbSysQfieldLogMapper;
+	private final TbSysQfieldLogMapper tbSysQfieldLogMapper;
+	
+	public SysQfieldLogServiceImpl(TbSysQfieldLogMapper tbSysQfieldLogMapper) {
+		super();
+		this.tbSysQfieldLogMapper = tbSysQfieldLogMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysQfieldLog, String> getBaseMapper() {

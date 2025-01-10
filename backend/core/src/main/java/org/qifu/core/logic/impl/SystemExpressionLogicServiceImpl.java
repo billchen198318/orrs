@@ -45,7 +45,6 @@ import org.qifu.core.service.ISysExpressionService;
 import org.qifu.core.service.ISysService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,37 +57,40 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 	
 	private static final int MAX_CONTENT_LENGTH = 8000;
 	private static final int MAX_DESCRIPTION_LENGTH = 500;
+	private static final String DESCRIPTION_VAR = "description";
 	
-	@Autowired
-	ISysExpressionService<TbSysExpression, String> sysExpressionService;
+	private final ISysExpressionService<TbSysExpression, String> sysExpressionService;
 	
-	@Autowired
-	ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService;
+	private final ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService;
 	
-	@Autowired
-	ISysExprJobService<TbSysExprJob, String> sysExprJobService;
+	private final ISysExprJobService<TbSysExprJob, String> sysExprJobService;
 	
-	@Autowired
-	ISysService<TbSys, String> sysService;
+	private final ISysService<TbSys, String> sysService;
 	
-	public SystemExpressionLogicServiceImpl() {
+	public SystemExpressionLogicServiceImpl(ISysExpressionService<TbSysExpression, String> sysExpressionService,
+			ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService,
+			ISysExprJobService<TbSysExprJob, String> sysExprJobService, ISysService<TbSys, String> sysService) {
 		super();
+		this.sysExpressionService = sysExpressionService;
+		this.sysBeanHelpExprService = sysBeanHelpExprService;
+		this.sysExprJobService = sysExprJobService;
+		this.sysService = sysService;
 	}
-	
+
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysExpression> create(TbSysExpression expression) throws ServiceException, Exception {
+	public DefaultResult<TbSysExpression> create(TbSysExpression expression) throws ServiceException {
 		if (expression==null) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		if (super.defaultString(expression.getContent()).length() > MAX_CONTENT_LENGTH) {
 			throw new ServiceException("Expression only 8,000 words!");
 		}
-		this.setStringValueMaxLength(expression, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(expression, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		return this.sysExpressionService.insert(expression);
 	}
 	
@@ -98,14 +100,14 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysExpression> update(TbSysExpression expression) throws ServiceException, Exception {
+	public DefaultResult<TbSysExpression> update(TbSysExpression expression) throws ServiceException {
 		if (expression==null || super.isBlank(expression.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		if (super.defaultString(expression.getContent()).length() > MAX_CONTENT_LENGTH) {
 			throw new ServiceException("Expression only 8,000 words!");
 		}
-		this.setStringValueMaxLength(expression, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(expression, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		TbSysExpression oldSysExpression = this.sysExpressionService.selectByEntityPrimaryKey(expression).getValueEmptyThrowMessage();
 		expression.setExprId( oldSysExpression.getExprId() );
 		return this.sysExpressionService.update(expression);
@@ -117,12 +119,12 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> delete(TbSysExpression expression) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSysExpression expression) throws ServiceException {
 		if (expression==null || super.isBlank(expression.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		TbSysExpression oldSysExpression = this.sysExpressionService.selectByEntityPrimaryKey(expression).getValueEmptyThrowMessage();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("exprId", oldSysExpression.getExprId() );
 		if ( this.sysBeanHelpExprService.count(paramMap) > 0) {
 			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
@@ -139,7 +141,7 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbSysExprJob> createJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysExprJob> createJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException {
 		if (exprJob==null || super.isBlank(systemOid) || super.isBlank(expressionOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}	
@@ -148,7 +150,7 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 		exprJob.setSystem( sys.getSysId() );
 		exprJob.setExprId( expression.getExprId() );
 		exprJob.setRunStatus( ExpressionJobConstants.RUNSTATUS_SUCCESS ); // 預設值
-		this.setStringValueMaxLength(exprJob, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(exprJob, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		return this.sysExprJobService.insert(exprJob);
 	}
 	
@@ -158,7 +160,7 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbSysExprJob> updateJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysExprJob> updateJob(TbSysExprJob exprJob, String systemOid, String expressionOid) throws ServiceException {
 		if ( null == exprJob || StringUtils.isBlank(exprJob.getOid()) || StringUtils.isBlank(systemOid) || StringUtils.isBlank(expressionOid) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -173,7 +175,7 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			exprJob.setRunStatus( ExpressionJobConstants.RUNSTATUS_FAULT );
 			logger.warn( "Before runStatus flag is blank. Expression Job ID: {}" , oldSysExprJob.getId() );			
 		}
-		this.setStringValueMaxLength(exprJob, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(exprJob, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		return this.sysExprJobService.update(exprJob);
 	}
 	
@@ -183,7 +185,7 @@ public class SystemExpressionLogicServiceImpl extends BaseLogicService implement
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> deleteJob(TbSysExprJob exprJob) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteJob(TbSysExprJob exprJob) throws ServiceException {
 		if ( null == exprJob || StringUtils.isBlank(exprJob.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}

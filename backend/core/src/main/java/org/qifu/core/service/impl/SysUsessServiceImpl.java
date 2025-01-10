@@ -26,22 +26,24 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysUsess;
 import org.qifu.core.mapper.TbSysUsessMapper;
 import org.qifu.core.service.ISysUsessService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 //change use SysTokenServiceImpl
-@Deprecated
 @Component
 @Service
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysUsessServiceImpl extends BaseService<TbSysUsess, String> implements ISysUsessService<TbSysUsess, String> {
 	
-	@Autowired
-	TbSysUsessMapper sysUsessMapper;
-
+	private final TbSysUsessMapper sysUsessMapper;
+	
+	public SysUsessServiceImpl(TbSysUsessMapper sysUsessMapper) {
+		super();
+		this.sysUsessMapper = sysUsessMapper;
+	}
+	
 	@Override
 	protected IBaseMapper<TbSysUsess, String> getBaseMapper() {
 		return this.sysUsessMapper;

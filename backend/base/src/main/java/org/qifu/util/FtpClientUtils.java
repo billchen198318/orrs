@@ -25,11 +25,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.SocketException;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-
+import org.qifu.base.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +47,8 @@ public class FtpClientUtils {
 	private String ftpuser="";
 	private String ftppass="";		  
 	private File storeDir;		
+	
+	private static final String FPT_NOT_CONN_INFO = "FTP not connection...";
 	
 	public FtpClientUtils() {
 		ftpClient = new FTPClient();
@@ -85,12 +87,12 @@ public class FtpClientUtils {
 		this.storeDir = storeDir;
 	}	
 	
-	public void restConnection() throws Exception {
+	public void restConnection() throws IOException {
 		this.ftpClient.connect(this.ftpserver);
 		this.ftpClient.login(this.ftpuser, this.ftppass);			
 	}
 	
-	public void get() throws SocketException, IOException, Exception {
+	public void get() throws IOException {
 		this.get(ftpserver, ftpuser, ftppass, "", storeDir, false);
 	}		
 	
@@ -108,7 +110,7 @@ public class FtpClientUtils {
 	 * @throws IOException
 	 */
 	public void get(String ftpserver, String ftpuser, String ftppass, 
-			String cwdDirectory, File storeDir, boolean deleteFtpFile) throws SocketException, IOException, Exception {
+			String cwdDirectory, File storeDir, boolean deleteFtpFile) throws IOException {
 		
 		if (!this.ftpClient.isConnected()) {
 			this.login(ftpserver, ftpuser, ftppass);
@@ -127,7 +129,7 @@ public class FtpClientUtils {
 	 * @throws IOException
 	 * @throws Exception
 	 */	
-	public void get(String cwdDirectory, File storeDir, String head) throws SocketException, IOException, Exception {
+	public void get(String cwdDirectory, File storeDir, String head) throws IOException {
 		this.get(cwdDirectory, storeDir, head, false);
 	}
 	
@@ -146,34 +148,29 @@ public class FtpClientUtils {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public void getByName(String cwdDirectory, File storeDir, String head) throws SocketException, IOException, Exception {
+	public void getByName(String cwdDirectory, File storeDir, String head) throws IOException {
 		if (!this.ftpClient.isConnected() ) {
-			this.logger.error("FTP not connection...");
-			throw new Exception("FTP not connection...");
+			this.logger.error(FPT_NOT_CONN_INFO);
+			throw new IOException(FPT_NOT_CONN_INFO);
 		}				
-		this.ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題 
+		this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題 
 		if (cwdDirectory!=null && !"".equals(cwdDirectory)) {
 			this.ftpClient.cwd(cwdDirectory);
 		}
-		String names[]=this.ftpClient.listNames();
+		String[] names=this.ftpClient.listNames();
 		for (int ix=0; names!=null && ix<names.length; ix++) {
-			if (head!=null && !"".equals(head)) {
-				if (names[ix].indexOf(head)!=0) {
-					logger.info("not get : " + names[ix]);
-					continue;
-				}				
+			if (head!=null && !"".equals(head) &&  (names[ix].indexOf(head)!=0)) {
+				logger.info("not get : {}", names[ix]);
+				continue;				
 			}
 			logger.info( names[ix] );
-			if (names[ix].indexOf(".")>0 && names[ix].indexOf(".")<names[ix].length()) {
-				File downloadFile = new File(storeDir.getPath() + "/" + names[ix] );
+			if (names[ix].indexOf(".") >= 1 && names[ix].indexOf(".")<names[ix].length()) {
+				File downloadFile = new File(storeDir.getPath() + Constants.FORWARD_SLASH + names[ix] );
 				FileOutputStream fos = new FileOutputStream(downloadFile);
 				if (this.ftpClient.retrieveFile(names[ix], fos) ) {
-					logger.info(
-							"ftp GET (save to) : " + storeDir.getPath() + "/" + names[ix]);			
+					logger.info("ftp GET (save to) : {}/{}", storeDir.getPath(), names[ix]);			
 				}
-				downloadFile = null;
-				fos.close();
-				fos = null;				
+				fos.close();		
 			}			
 		}
 	}	
@@ -191,38 +188,39 @@ public class FtpClientUtils {
 	 * @throws Exception
 	 */
 	public void get(String cwdDirectory, File storeDir, String head, 
-			boolean deleteFtpFile) throws SocketException, IOException, Exception {
+			boolean deleteFtpFile) throws IOException {
 		
 		if (!this.ftpClient.isConnected() ) {
-			this.logger.error("FTP not connection...");
-			throw new Exception("FTP not connection...");
+			this.logger.error(FPT_NOT_CONN_INFO);
+			throw new IOException(FPT_NOT_CONN_INFO);
 		}				
-		this.ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題 
+		this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題 
 		if (cwdDirectory!=null && !"".equals(cwdDirectory)) {
 			this.ftpClient.cwd(cwdDirectory);
 		}
-		FTPFile ftpFiles[] = this.ftpClient.listFiles();		
+		FTPFile[] ftpFiles = this.ftpClient.listFiles();		
 		for (int ix=0; ftpFiles!=null && ix<ftpFiles.length; ix++) {
-			if (head!=null && !"".equals(head)) {
-				if (ftpFiles[ix].getName().indexOf(head)!=0) {
-					logger.info("not get : " + ftpFiles[ix].getName());
-					continue;
-				}				
+			if (head!=null && !"".equals(head) &&  (ftpFiles[ix].getName().indexOf(head)!=0)) {
+				logger.info("not get : {}", ftpFiles[ix].getName());
+				continue;				
 			}
 			logger.info("ftp file name: {}", ftpFiles[ix].getName() );
-			if (ftpFiles[ix].isFile()) {
-				File downloadFile = new File(storeDir.getPath() + "/" + ftpFiles[ix].getName() );
-				FileOutputStream fos = new FileOutputStream(downloadFile);
-				if (this.ftpClient.retrieveFile(ftpFiles[ix].getName(), fos) ) {
-					logger.info("ftp GET (save to) : " + storeDir.getPath() + "/" + ftpFiles[ix].getName());
-					if (deleteFtpFile) {
-						this.delete(ftpFiles[ix].getName());
-					}					
-				}
-				downloadFile = null;
-				fos.close();
-				fos = null;
-			}
+			this.getProcess(ftpFiles[ix], storeDir, deleteFtpFile);
+		}		
+	}
+	
+	private void getProcess(FTPFile ftpFile, File storeDir, boolean deleteFtpFile) throws IOException {
+		if (!ftpFile.isFile()) {
+			return;
+		}
+		File downloadFile = new File(storeDir.getPath() + Constants.FORWARD_SLASH + ftpFile.getName() );
+		try (FileOutputStream fos = new FileOutputStream(downloadFile)) {
+			if (this.ftpClient.retrieveFile(ftpFile.getName(), fos) ) {
+				logger.info("ftp GET (save to) : {}/{}", storeDir.getPath(), ftpFile.getName());
+				if (deleteFtpFile) {
+					this.delete(ftpFile.getName());
+				}					
+			}	
 		}		
 	}
 	
@@ -236,13 +234,13 @@ public class FtpClientUtils {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public boolean delete(String remoteFileName) throws SocketException, IOException, Exception {
+	public boolean delete(String remoteFileName) throws IOException {
 		if (!this.ftpClient.isConnected() ) {
-			this.logger.error("FTP not connection...");
-			throw new Exception("FTP not connection...");
+			this.logger.error(FPT_NOT_CONN_INFO);
+			throw new IOException(FPT_NOT_CONN_INFO);
 		}	
 		boolean delStatus = this.ftpClient.deleteFile(remoteFileName);
-		logger.warn("ftp DELETE : " + remoteFileName + " del-status : " + delStatus);
+		logger.warn("ftp DELETE : {} del-status : {}", remoteFileName, delStatus);
 		return delStatus;
 	}
 	
@@ -257,7 +255,7 @@ public class FtpClientUtils {
 	 * @throws Exception
 	 */
 	public boolean deleteRestConnection(String cwdDirectory, 
-			String remoteFileName) throws SocketException, IOException, Exception {
+			String remoteFileName) throws IOException {
 		
 		this.restConnection();
 		this.cwd(cwdDirectory);
@@ -275,22 +273,20 @@ public class FtpClientUtils {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public void put(
-			String cwdDirectory, String remoteFileName, File localFile) throws SocketException, IOException, Exception {
+	public void put(String cwdDirectory, String remoteFileName, File localFile) throws IOException {
 		
 		if (!this.ftpClient.isConnected()) {
 			this.logger.error("FTP not connection... put(String cwdDirectory, String remoteFileName, File localFile)");
 			restConnection();			
 		}		
-		FileInputStream fis = new FileInputStream(localFile);
-		this.ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題
-		if (cwdDirectory!=null && !"".equals(cwdDirectory)) {
-			this.ftpClient.cwd(cwdDirectory);
+		try (FileInputStream fis = new FileInputStream(localFile)) {
+			this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE); // 非 binary mode 在類 vsFtpd 可能會有問題
+			if (cwdDirectory!=null && !"".equals(cwdDirectory)) {
+				this.ftpClient.cwd(cwdDirectory);
+			}
+			this.ftpClient.storeFile(remoteFileName, fis);
+			this.logger.warn("ftp PUT : {}/{}", cwdDirectory , remoteFileName);			
 		}
-		this.ftpClient.storeFile(remoteFileName, fis);
-		this.logger.warn("ftp PUT : " + cwdDirectory + "/" + remoteFileName);
-		fis.close();
-		fis = null;
 	}
 	
 	/**
@@ -303,7 +299,7 @@ public class FtpClientUtils {
 	 * @throws SocketException
 	 * @throws IOException
 	 */
-	public void login(String ftpserver, String ftpuser, String ftppass) throws SocketException, IOException {
+	public void login(String ftpserver, String ftpuser, String ftppass) throws IOException {
 		this.ftpserver = ftpserver;
 		this.ftpuser = ftpuser;
 		this.ftppass = ftppass;		
@@ -312,7 +308,7 @@ public class FtpClientUtils {
 		this.ftpClient.login(this.ftpuser, this.ftppass);			
 	}
 	
-	public void cwd(String cwdDirectory) throws SocketException, IOException, Exception {
+	public void cwd(String cwdDirectory) throws IOException {
 		
 		if (!this.ftpClient.isConnected()) {			
 			this.logger.error("FTP not connection... cwd(String cwdDirectory) ");
@@ -329,16 +325,12 @@ public class FtpClientUtils {
 			this.ftpClient.logout();			
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+		} 
 		try {
 			this.ftpClient.disconnect();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+		} 
 	}
 	
 }

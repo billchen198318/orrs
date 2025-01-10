@@ -7,7 +7,6 @@ import org.apache.cxf.ext.logging.LoggingInInterceptor;
 import org.apache.cxf.ext.logging.LoggingOutInterceptor;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.qifu.core.webservice.interceptor.SoapForceDoclitBareInInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CxfConfig {
 	
-	@Autowired
-	Bus bus;
+	@SuppressWarnings("unused")
+	private final Bus bus;
 	
 	private LoggingInInterceptor loggingInInterceptor;
 	
@@ -24,9 +23,10 @@ public class CxfConfig {
 	
 	private SoapForceDoclitBareInInterceptor soapForceDoclitBareInInterceptor;
 	
-	//@Autowired
-	//ITestService testService;
-	
+	public CxfConfig(Bus bus) {
+		super();
+		this.bus = bus;
+	}	
 	
 	@Bean
 	public LoggingInInterceptor loggingInInterceptor() {
@@ -35,7 +35,7 @@ public class CxfConfig {
 		}
 		return this.loggingInInterceptor;
 	}
-	
+
 	@Bean
 	public LoggingOutInterceptor loggingOutInterceptor() {
 		if (null == this.loggingOutInterceptor) {
@@ -54,23 +54,10 @@ public class CxfConfig {
 	
 	@Bean
 	public ServletRegistrationBean<CXFServlet> cxfServlet() {
-		ServletRegistrationBean<CXFServlet> srb = new ServletRegistrationBean<CXFServlet>();
+		ServletRegistrationBean<CXFServlet> srb = new ServletRegistrationBean<>();
 		srb.setServlet(new CXFServlet());
 		srb.setUrlMappings(Arrays.asList("/services/*"));
 		return srb;
 	}	
-	
-	// change to config endpoint-publish.json file in classpath
-	/*
-	@Bean
-	public Endpoint testEndpoint() {
-		EndpointImpl endpoint = new EndpointImpl(bus, this.testService);
-		endpoint.publish("/testService");
-		endpoint.getInInterceptors().add( this.loggingInInterceptor() );
-		endpoint.getOutInterceptors().add( this.loggingOutInterceptor() );
-		endpoint.getInInterceptors().add( this.soapForceDoclitBareInInterceptor() );
-		return endpoint;
-	}	
-	*/
 	
 }

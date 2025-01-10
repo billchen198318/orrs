@@ -25,14 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.Constants;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.LdapLoginConfigProperties;
 import org.qifu.core.entity.TbAccount;
 import org.qifu.core.model.User;
 import org.qifu.core.service.IAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -53,56 +52,61 @@ import jakarta.servlet.http.HttpServletRequest;
 public class BaseUserDetailsService implements UserDetailsService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    
+    private final IAccountService<TbAccount, String> accountService;
+    
+    private final LdapLoginConfigProperties ldapLoginConfigProperties;
+    
+    private final LdapTemplate ldapTemplate;
+    
+    private final PasswordEncoder passwordEncoder;
+    
+    private final HttpServletRequest request;
+    
+    public BaseUserDetailsService(IAccountService<TbAccount, String> accountService,
+			LdapLoginConfigProperties ldapLoginConfigProperties, LdapTemplate ldapTemplate,
+			PasswordEncoder passwordEncoder, HttpServletRequest request) {
+		super();
+		this.accountService = accountService;
+		this.ldapLoginConfigProperties = ldapLoginConfigProperties;
+		this.ldapTemplate = ldapTemplate;
+		this.passwordEncoder = passwordEncoder;
+		this.request = request;
+	}
 
-    @Autowired
-    IAccountService<TbAccount, String> accountService;
-    
-    @Autowired
-    LdapLoginConfigProperties ldapLoginConfigProperties;
-    
-    @Autowired
-    LdapTemplate ldapTemplate;
-    
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    HttpServletRequest request;
-    
-    @Override
+	@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("login account: {}", username);
         if (StringUtils.isBlank(username)) {
         	logger.warn("account value blank.");
         	throw new UsernameNotFoundException( BaseSystemMessage.parameterBlank() );
         }
-        if (!YesNo.YES.equals(ldapLoginConfigProperties.getLoginEnable())) {
+        if (!YesNoKeyProvide.YES.equals(ldapLoginConfigProperties.getLoginEnable())) {
         	return this.loadFromDB(username);
         }
         return this.loadFromLDAP(username);
     }
     
     private UserDetails loadFromLDAP(String username) throws UsernameNotFoundException {
-    	String userPassword = (String) this.request.getAttribute(Constants.HTTP_REQUEST_PASSWORD_AuthLogin);
+    	String userPassword = (String) this.request.getAttribute(Constants.HTTP_REQUEST_PASSWORD_AUTH);
     	if (StringUtils.isBlank(userPassword)) {
     		throw new UsernameNotFoundException( "password " + BaseSystemMessage.parameterBlank() );
     	}
     	Boolean auth = false;
 		AndFilter filter = new AndFilter();
 		filter.and(new EqualsFilter(ldapLoginConfigProperties.getSearchFilter(), username));
-		String ouArr[] = StringUtils.defaultString(ldapLoginConfigProperties.getAuthSearchBase()).split(Constants.DEFAULT_SPLIT_DELIMITER);
+		String[] ouArr = StringUtils.defaultString(ldapLoginConfigProperties.getAuthSearchBase()).split(Constants.DEFAULT_SPLIT_DELIMITER);
 		if (null == ouArr || ouArr.length < 1) {
 			auth = ldapTemplate.authenticate("", filter.encode(), userPassword);
 		}
-		for (int i = 0; !auth && ouArr != null && i < ouArr.length; i++) {
+		for (int i = 0; Boolean.TRUE.equals(!auth && ouArr != null) && i < ouArr.length; i++) {
 			auth = ldapTemplate.authenticate(StringUtils.deleteWhitespace(ouArr[i]), filter.encode(), userPassword);
 		}
-		if (!auth) {
+		if (Boolean.FALSE.equals(auth)) {
 			throw new UsernameNotFoundException("LDAP auth fail!");
 		}
-		//User user = new User(ZeroKeyProvide.OID_KEY, username, passwordEncoder.encode(userPassword), YesNo.YES);
-		User user = new User(username, passwordEncoder.encode(userPassword), YesNo.YES);
-		user.setByLdap(YesNo.YES);
+		User user = new User(username, passwordEncoder.encode(userPassword), YesNoKeyProvide.YES);
+		user.setByLdap(YesNoKeyProvide.YES);
     	return user;
     }
     
@@ -115,14 +119,16 @@ public class BaseUserDetailsService implements UserDetailsService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (result == null || result.getValue() == null) {
-            throw new UsernameNotFoundException( result.getMessage() );
+        if (null == result) {
+        	throw new UsernameNotFoundException("loadFromDB operation failed");
+        }
+        if (result.getValue() == null) {
+        	throw new UsernameNotFoundException( result.getMessage() );
         }
         accObj = result.getValue();
-        if (!YesNo.YES.equals(accObj.getOnJob())) {
+        if (!YesNoKeyProvide.YES.equals(accObj.getOnJob())) {
         	throw new UsernameNotFoundException("auth fail!");
-        }
-        //return new User(accObj.getOid(), accObj.getAccount(), accObj.getPassword(), accObj.getOnJob());    	
+        }  	
         return new User(accObj.getAccount(), accObj.getPassword(), accObj.getOnJob());
     }
     

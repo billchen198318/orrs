@@ -36,7 +36,7 @@ public interface ISysUploadService<T, E> extends IBaseService<TbSysUpload, Strin
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<TbSysUpload> selectByPrimaryKeySimple(String oid) throws ServiceException, Exception;	
+	public DefaultResult<TbSysUpload> selectByPrimaryKeySimple(String oid) throws ServiceException;	
 	
 	/**
 	 * 刪除 IS_FILE='N' && CONTENT 欄位放byte 類別為暫存的資料
@@ -46,6 +46,6 @@ public interface ISysUploadService<T, E> extends IBaseService<TbSysUpload, Strin
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> deleteTmpContentBySystem(String systemId) throws ServiceException, Exception;
+	public DefaultResult<Boolean> deleteTmpContentBySystem(String systemId) throws ServiceException;
 	
 }

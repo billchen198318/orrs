@@ -46,7 +46,6 @@ import org.qifu.core.service.ISysExpressionService;
 import org.qifu.core.service.ISysService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,23 +56,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements ISystemBeanHelpLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(SystemBeanHelpLogicServiceImpl.class);
 	
-	@Autowired
-	ISysService<TbSys, String> sysService;
+	private final ISysService<TbSys, String> sysService;
 	
-	@Autowired
-	ISysBeanHelpService<TbSysBeanHelp, String> sysBeanHelpService;	
+	private final ISysBeanHelpService<TbSysBeanHelp, String> sysBeanHelpService;	
 	
-	@Autowired
-	ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService;
+	private final ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService;
 	
-	@Autowired
-	ISysBeanHelpExprMapService<TbSysBeanHelpExprMap, String> sysBeanHelpExprMapService;
+	private final ISysBeanHelpExprMapService<TbSysBeanHelpExprMap, String> sysBeanHelpExprMapService;
 	
-	@Autowired
-	ISysExpressionService<TbSysExpression, String> sysExpressionService;
+	private final ISysExpressionService<TbSysExpression, String> sysExpressionService;
 	
-	public SystemBeanHelpLogicServiceImpl() {
+	public SystemBeanHelpLogicServiceImpl(ISysService<TbSys, String> sysService,
+			ISysBeanHelpService<TbSysBeanHelp, String> sysBeanHelpService,
+			ISysBeanHelpExprService<TbSysBeanHelpExpr, String> sysBeanHelpExprService,
+			ISysBeanHelpExprMapService<TbSysBeanHelpExprMap, String> sysBeanHelpExprMapService,
+			ISysExpressionService<TbSysExpression, String> sysExpressionService) {
 		super();
+		this.sysService = sysService;
+		this.sysBeanHelpService = sysBeanHelpService;
+		this.sysBeanHelpExprService = sysBeanHelpExprService;
+		this.sysBeanHelpExprMapService = sysBeanHelpExprMapService;
+		this.sysExpressionService = sysExpressionService;
 	}
 	
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
@@ -82,7 +85,7 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysBeanHelp> create(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysBeanHelp> create(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException {
 		if (beanHelp==null || super.isBlank(systemOid) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -97,7 +100,7 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysBeanHelp> update(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysBeanHelp> update(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException {
 		if (beanHelp==null || super.isBlank(beanHelp.getOid()) || super.isBlank(systemOid) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -112,12 +115,12 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> delete(TbSysBeanHelp beanHelp) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSysBeanHelp beanHelp) throws ServiceException {
 		if (beanHelp==null || super.isBlank(beanHelp.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
 		// delete TB_SYS_BEAN_HELP_EXPR
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("helpOid", beanHelp.getOid());
 		List<TbSysBeanHelpExpr> exprList = this.sysBeanHelpExprService.selectListByParams(paramMap).getValue();
 		for (int i=0; exprList!=null && i<exprList.size(); i++) {
@@ -141,7 +144,7 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysBeanHelpExpr> createExpr(TbSysBeanHelpExpr beanHelpExpr, String helpOid, String expressionOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysBeanHelpExpr> createExpr(TbSysBeanHelpExpr beanHelpExpr, String helpOid, String expressionOid) throws ServiceException {
 		if (beanHelpExpr==null || super.isBlank(helpOid) || super.isBlank(expressionOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -158,12 +161,12 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> deleteExpr(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteExpr(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException {
 		if (null==beanHelpExpr || super.isBlank(beanHelpExpr.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		TbSysBeanHelpExpr oldSysBeanHelpExpr = this.sysBeanHelpExprService.selectByEntityPrimaryKey(beanHelpExpr).getValueEmptyThrowMessage(); // 查看有沒有資料
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("helpExprOid", oldSysBeanHelpExpr.getOid() );
 		List<TbSysBeanHelpExprMap> mapList = this.sysBeanHelpExprMapService.selectListByParams(paramMap).getValue();
 		for (int i=0; mapList!=null && i<mapList.size(); i++) {
@@ -178,7 +181,7 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )				
 	@Override
-	public DefaultResult<TbSysBeanHelpExprMap> createExprMap(TbSysBeanHelpExprMap beanHelpExprMap, String helpExprOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysBeanHelpExprMap> createExprMap(TbSysBeanHelpExprMap beanHelpExprMap, String helpExprOid) throws ServiceException {
 		if (beanHelpExprMap==null || super.isBlank(helpExprOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -193,7 +196,7 @@ public class SystemBeanHelpLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> deleteExprMap(TbSysBeanHelpExprMap beanHelpExprMap) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteExprMap(TbSysBeanHelpExprMap beanHelpExprMap) throws ServiceException {
 		if (beanHelpExprMap==null || super.isBlank(beanHelpExprMap.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		

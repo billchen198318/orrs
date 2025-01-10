@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,8 +35,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
+import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.BaseInfoConfigProperties;
 import org.qifu.core.entity.TbSysExprJob;
 import org.qifu.core.entity.TbSysExprJobLog;
@@ -56,10 +58,16 @@ public class SystemExpressionJobUtils {
 	private static ISysExpressionService<TbSysExpression, String> sysExpressionService;
 	private static BaseInfoConfigProperties baseInfoConfigProperties;
 	
+	private static final String SYSTEM = "system";
+	
+	protected SystemExpressionJobUtils() {
+		throw new IllegalStateException("Utils class: SystemExpressionJobUtils");
+	}
+	
 	static {
-		sysExprJobService = AppContext.context.getBean(ISysExprJobService.class);
-		sysExpressionService = AppContext.context.getBean(ISysExpressionService.class);
-		baseInfoConfigProperties = AppContext.context.getBean(BaseInfoConfigProperties.class);
+		sysExprJobService = AppContext.getContext().getBean(ISysExprJobService.class);
+		sysExpressionService = AppContext.getContext().getBean(ISysExpressionService.class);
+		baseInfoConfigProperties = AppContext.getContext().getBean(BaseInfoConfigProperties.class);
 	}
 	
 	private static boolean isRunTime(TbSysExprJob exprJob, String dayOfWeek, String hour, String minute) {
@@ -85,16 +93,16 @@ public class SystemExpressionJobUtils {
 		return true;
 	}		
 	
-	public static void initRunStatusFlag(String system) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("system", system);
+	public static void initRunStatusFlag(String system) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put(SYSTEM, system);
 		paramMap.put("runStatus", ExpressionJobConstants.RUNSTATUS_PROCESS_NOW);
 		List<TbSysExprJob> exprJobList = sysExprJobService.selectListByParams(paramMap).getValue();
 		if (CollectionUtils.isEmpty(exprJobList)) {
 			return;
 		}
 		Date udate = new Date();
-		String uuserid = "system";
+		String uuserid = SYSTEM;
 		for (TbSysExprJob exprJob : exprJobList) {
 			log.warn( "ExpressionJob current RUN_STATUS is 'R' update to 'Y' , Id: {} , Name: {}", exprJob.getId(), exprJob.getName() );
 			exprJob.setRunStatus(ExpressionJobConstants.RUNSTATUS_SUCCESS);
@@ -104,98 +112,23 @@ public class SystemExpressionJobUtils {
 		}
 	}
 	
-	public static TbSysExprJobLog executeJobForManual(String expressionJobOid) throws ServiceException, Exception {
+	public static TbSysExprJobLog executeJobForManual(String expressionJobOid) throws ServiceException {
 		ExpressionJobObj jobObj = getExpressionJobForManualMode(expressionJobOid);
 		ExecutorService exprJobPool = Executors.newFixedThreadPool( 1 );
-		jobObj = exprJobPool.submit( new ExpressionJobExecuteCallable(jobObj) ).get();
+		try {
+			@SuppressWarnings("unused")
+			Object s = exprJobPool.submit( new ExpressionJobExecuteCallable(jobObj) ).get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+		}
 		exprJobPool.shutdown();	
 		return jobObj.getSysExprJobLog();
 	}
 	
-//	public static SysExprJobLogVO executeJobForManualWebClient(SysExprJobVO sysExprJob, String accountId, 
-//			HttpServletRequest request) throws ServiceException, Exception {
-//		SysExprJobLogVO result = new SysExprJobLogVO();
-//		// 注意 executeJob/ 請參考 ManualJobServiceImpl.java @Path("/executeJob/") 設定是否有變更, 如果有變更的話, 這裡的 url 也要修改
-//		String url = ApplicationSiteUtils.getBasePath(sysExprJob.getSystem(), request);
-//		if (!url.endsWith("/")) {
-//			url += "/";
-//		}
-//		//url += "services/jaxrs/";
-//		url += Constants.getCxfWebServiceMainPathName() + Constants.getJAXRSServerFactoryBeanAddress();
-//		String encUploadOidStr = SystemExpressionJobUtils.getEncUploadOid(accountId, sysExprJob.getOid());
-//		WebClient client = WebClient.create(url);
-//		Response response = client.accept("application/json")
-//				.path("executeJob/{uploadOid}", encUploadOidStr)
-//				.post(encUploadOidStr);
-//        int statusCode = response.getStatus();
-//        if (statusCode != 200 && statusCode != 202 ) {
-//        	throw new Exception("error, http status code: " + statusCode);
-//        }
-//        String responseStr = response.readEntity(String.class);
-//        ObjectMapper mapper = new ObjectMapper();
-//        result = mapper.readValue(responseStr, SysExprJobLogVO.class);        
-//		return result;
-//	}
-//	
-//	public static SysExprJobLogVO executeJobForManualFromRestServiceUrl(SysExprJobVO sysExprJob, String accountId, 
-//			HttpServletRequest request) throws ServiceException, Exception {
-//		SysExprJobLogVO result = new SysExprJobLogVO();
-//		// 注意 executeJob/ 請參考 ManualJobServiceImpl.java @Path("/executeJob/") 設定是否有變更, 如果有變更的話, 這裡的 url 也要修改
-//		String url = ApplicationSiteUtils.getBasePath(sysExprJob.getSystem(), request);
-//		if (!url.endsWith("/")) {
-//			url += "/";
-//		}
-//		//url += "services/jaxrs/executeJob/";
-//		url += Constants.getCxfWebServiceMainPathName() + Constants.getJAXRSServerFactoryBeanAddress() + "executeJob/";
-//		String encUploadOidStr = SystemExpressionJobUtils.getEncUploadOid(accountId, sysExprJob.getOid());
-//		url += encUploadOidStr;
-//		InputStreamReader isr = null;
-//		BufferedReader reader = null;
-//		try {
-//			HttpClient httpClient = new HttpClient();
-//			PostMethod post = new PostMethod(url);
-//			/*
-//	        NameValuePair[] data = {
-//	        		new NameValuePair("uploadOid", encUploadOidStr)
-//	        };
-//	        post.setRequestBody(data);
-//	        */
-//	        post.setParameter("uploadOid", encUploadOidStr);
-//	        int statusCode = httpClient.executeMethod(post);
-//	        if (statusCode != 200 && statusCode != 202 ) {
-//	        	throw new Exception("error, http status code: " + statusCode);
-//	        }
-//	        isr = new InputStreamReader(post.getResponseBodyAsStream());
-//	        reader = new BufferedReader(isr);
-//	        String line = "";
-//	        StringBuilder str = new StringBuilder();
-//	        while ((line = reader.readLine()) != null) {
-//	        	str.append(line);
-//	        }
-//	        ObjectMapper mapper = new ObjectMapper();
-//	        result = mapper.readValue(str.toString(), SysExprJobLogVO.class);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			result.setFaultMsg( e.getMessage().toString() );
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			result.setFaultMsg( e.getMessage().toString() );
-//		} finally {
-//			if (reader != null) {
-//				reader.close();
-//			}
-//	        if (isr != null) {
-//	        	isr.close();
-//	        }
-//	        reader = null;
-//	        isr = null;
-//		}
-//		return result;
-//	}
-	
-	public static ExpressionJobObj getExpressionJobForManualMode(String expressionJobOid) throws ServiceException, Exception {
+	public static ExpressionJobObj getExpressionJobForManualMode(String expressionJobOid) throws ServiceException {
 		if (StringUtils.isBlank(expressionJobOid)) {
-			throw new Exception("error, expressionJobId is blank!");
+			throw new IllegalArgumentException("error, expressionJobId is blank!");
 		}
 		TbSysExprJob exprJob = sysExprJobService.selectByPrimaryKey(expressionJobOid).getValueEmptyThrowMessage();
 		TbSysExpression expr = new TbSysExpression();
@@ -208,40 +141,45 @@ public class SystemExpressionJobUtils {
 		return jobObj;
 	}
 	
-	public static void executeJobs() throws ServiceException, Exception {
+	public static void executeJobs() throws ServiceException, InterruptedException, ExecutionException {
 		List<ExpressionJobObj> jobObjList = getExpressionJobs();
 		if (CollectionUtils.isEmpty(jobObjList)) {
 			return;
 		}
 		ExecutorService exprJobPool = Executors.newFixedThreadPool( SimpleUtils.getAvailableProcessors(jobObjList.size()) );
 		for (ExpressionJobObj jobObj : jobObjList) {
-			jobObj = exprJobPool.submit( new ExpressionJobExecuteCallable(jobObj) ).get();
+			@SuppressWarnings("unused")
+			Object s = exprJobPool.submit( new ExpressionJobExecuteCallable(jobObj) ).get();
 		}
 		exprJobPool.shutdown();		
 	}
 	
-	public static List<ExpressionJobObj> getExpressionJobs() throws ServiceException, Exception {
+	public static List<ExpressionJobObj> getExpressionJobs() throws ServiceException {
 		int year = Integer.parseInt(SimpleUtils.getStrYMD(SimpleUtils.IS_YEAR));
 		int month = Integer.parseInt(SimpleUtils.getStrYMD(SimpleUtils.IS_MONTH));
 		String dayOfWeek = String.valueOf( SimpleUtils.getDayOfWeek(year, month) );
 		String hour = String.valueOf( LocalDateTime.now().getHourOfDay() );
 		String minute = String.valueOf( LocalDateTime.now().getMinuteOfHour() );		
-		List<ExpressionJobObj> jobObjList = new ArrayList<ExpressionJobObj>();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("system", baseInfoConfigProperties.getSystem());
-		paramMap.put("active", YesNo.YES);
+		List<ExpressionJobObj> jobObjList = new ArrayList<>();
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put(SYSTEM, baseInfoConfigProperties.getSystem());
+		paramMap.put("active", YesNoKeyProvide.YES);
 		List<TbSysExprJob> exprJobList = sysExprJobService.selectListByParams(paramMap).getValue();
 		if (CollectionUtils.isEmpty(exprJobList)) {
 			return jobObjList;
 		}
 		for (TbSysExprJob exprJob : exprJobList) {
+			boolean c = false;
 			if (ExpressionJobConstants.RUNSTATUS_PROCESS_NOW.equals(exprJob.getRunStatus())) {
 				log.warn( "[Expression-Job] Please check it, process now, Id: {} , name: {}", exprJob.getExprId(), exprJob.getName() );				
-				continue;
+				c = true;
 			}
 			if (!isRunTime(exprJob, dayOfWeek, hour, minute)) {
-				continue;
+				c = true;
 			}
+			if (c) {
+                continue;
+            }
 			ExpressionJobObj jobObj = new ExpressionJobObj();
 			jobObj.setSysExprJob(exprJob);
 			jobObj.setSysExprJobLog( new TbSysExprJobLog() );
@@ -251,8 +189,8 @@ public class SystemExpressionJobUtils {
 			if (exprResult.getValue() == null) {
 				log.error( "[Expression-Job] Id: {} , data not found.", exprJob.getExprId());				
 				log.error( exprResult.getMessage() );
-				continue;
-			}
+				throw new ServiceException(BaseSystemMessage.dataNoExist());
+			} 
 			expr = exprResult.getValue();
 			jobObj.setSysExpression(expr);
 			jobObjList.add(jobObj);			

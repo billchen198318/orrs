@@ -37,7 +37,7 @@ public interface TbSysUploadMapper extends IBaseMapper<TbSysUpload, String> {
 	 * @return
 	 * @throws Exception
 	 */
-	public TbSysUpload selectByPrimaryKeySimple(String oid) throws Exception;
+	public TbSysUpload selectByPrimaryKeySimple(String oid);
 	
 	/**
 	 * 刪除 IS_FILE='N' && CONTENT 欄位放byte 類別為暫存的資料
@@ -46,6 +46,6 @@ public interface TbSysUploadMapper extends IBaseMapper<TbSysUpload, String> {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteTmpContentBySystem(Map<String, Object> paramMap) throws Exception;
+	public boolean deleteTmpContentBySystem(Map<String, Object> paramMap);
 	
 }

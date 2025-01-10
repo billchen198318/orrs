@@ -41,7 +41,7 @@ public class QueryMeasureDataUtils {
 	private static IMeasureDataService<HfMeasureData, String> measureDataService;
 	
 	static {
-		measureDataService = AppContext.context.getBean(IMeasureDataService.class);
+		measureDataService = AppContext.getContext().getBean(IMeasureDataService.class);
 	}
 	
 	public static List<HfMeasureData> queryForScoreCalculationData(ScoreCalculationData data) throws ServiceException, Exception {

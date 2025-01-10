@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
@@ -37,11 +38,15 @@ public class IconUtils {
 	
 	private static ISysIconService<TbSysIcon, String> sysIconService;
 	
+	protected IconUtils() {
+		throw new IllegalStateException("Utils class: IconUtils");
+	}
+	
 	static {
-		sysIconService = (ISysIconService<TbSysIcon, String>) AppContext.context.getBean(ISysIconService.class);
+		sysIconService = AppContext.getContext().getBean(ISysIconService.class);
 	}
 
-	public static String getUrl(String basePath, String iconId) throws ServiceException, Exception {
+	public static String getUrl(String basePath, String iconId) throws ServiceException {
 		String url = "";
 		if (StringUtils.isBlank(iconId)) {
 			return url;
@@ -56,7 +61,7 @@ public class IconUtils {
 		return url;
 	}
 	
-	public static String getMenuIcon(String basePath, String iconId) throws ServiceException, Exception {
+	public static String getMenuIcon(String basePath, String iconId) throws ServiceException {
 		String img = getHtmlImg(basePath, iconId);
 		if (!"".equals(img)) {
 			img += "&nbsp;";
@@ -64,19 +69,19 @@ public class IconUtils {
 		return img;		
 	}
 	
-	public static String getHtmlImg(String basePath, String iconId) throws ServiceException, Exception {
+	public static String getHtmlImg(String basePath, String iconId) throws ServiceException {
 		String img = "";
-		String url = "";
-		if (!"".equals( url=getUrl(basePath, iconId) ) ) {
+		String url = getUrl(basePath, iconId);
+		if (!StringUtils.isEmpty(url)) {
 			img = "<img src='" + url + "' border='0' />";
 		}
 		return img;
 	}
 	
-	public static Map<String, String> getIconsSelectData() throws ServiceException, Exception {
-		Map<String, String> dataMap = new LinkedHashMap<String, String>();
+	public static Map<String, String> getIconsSelectData() throws ServiceException {
+		Map<String, String> dataMap = new LinkedHashMap<>();
 		DefaultResult<List<TbSysIcon>> result = sysIconService.selectList();
-		if (null==result.getValue() || result.getValue().size()<1) {
+		if (CollectionUtils.isEmpty(result.getValue())) {
 			return dataMap;
 		}
 		for (TbSysIcon entity : result.getValue()) {
@@ -86,12 +91,12 @@ public class IconUtils {
 		return dataMap;
 	}
 	
-	public static String getJsData() throws ServiceException, Exception {
+	public static String getJsData() throws ServiceException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("var _iconData = [];");
 		sb.append("\n");
 		DefaultResult<List<TbSysIcon>> result = sysIconService.selectList();
-		if (null==result.getValue() || result.getValue().size()<1) {
+		if (CollectionUtils.isEmpty(result.getValue())) {
 			return sb.toString();
 		}
 		for (TbSysIcon entity : result.getValue()) {

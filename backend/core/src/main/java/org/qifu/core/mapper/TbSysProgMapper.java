@@ -38,8 +38,8 @@ public interface TbSysProgMapper extends IBaseMapper<TbSysProg, String> {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TbSysProg> findForInTheFolderMenuItems(Map<String, Object> paramMap) throws Exception;
+	public List<TbSysProg> findForInTheFolderMenuItems(Map<String, Object> paramMap);
 	
-	public List<TbSysProg> findForInThePermRoleOfUserId(Map<String, Object> paramMap) throws Exception;
+	public List<TbSysProg> findForInThePermRoleOfUserId(Map<String, Object> paramMap);
 	
 }

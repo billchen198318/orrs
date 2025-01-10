@@ -33,10 +33,12 @@ public class PageOf implements java.io.Serializable {
 	private static final long serialVersionUID = -3060749245195776228L;
 	
 	@Parameter(hidden = true)
-	public static final int Rows[]={10, 30, 50, 100}; // 要配合 ui.grid.htm.flt
+	protected static final int[] Rows={10, 30, 50, 100}; // 要配合 ui.grid.htm.flt
+	
+	public static final int DEFAULT_ROW = Rows[0];
 	
 	private String countSize="0"; // count record 頁面grid資料count的筆數
-	private String showRow=Rows[0]+""; // a page show size 頁面要顯示grid row比數
+	private String showRow=DEFAULT_ROW+""; // a page show size 頁面要顯示grid row比數
 	private String size="1"; // page size 總共有幾頁
 	private String select="1"; // select page of 目前所在的頁面 , 下拉選到的頁數
 	private String orderBy = ""; // 欄位
@@ -69,7 +71,7 @@ public class PageOf implements java.io.Serializable {
 				c = true;
 			}
 		}
-		return ( c ? showRow : String.valueOf(Rows[0]) );
+		return ( c ? showRow : String.valueOf(DEFAULT_ROW) );
 	}
 
 	public void setShowRow(String showRow) {
@@ -99,9 +101,13 @@ public class PageOf implements java.io.Serializable {
 		if (null == orderBy) {
 			orderBy = "";
 		}
-		orderBy = orderBy.replaceAll(" ", "").replaceAll("\r", "").replaceAll("\t", "")
-				.replaceAll("\n", "").replaceAll(";", "")//.replaceAll("\"", "")
-				.replaceAll("'", "").replaceAll("-", "");
+		orderBy = StringUtils.replace(orderBy, " ", "");
+		orderBy = StringUtils.replace(orderBy, "\r", "");
+		orderBy = StringUtils.replace(orderBy, "\t", "");
+		orderBy = StringUtils.replace(orderBy, "\n", "");
+		orderBy = StringUtils.replace(orderBy, ";", "");
+		orderBy = StringUtils.replace(orderBy, "'", "");
+		orderBy = StringUtils.replace(orderBy, "-", "");
 		return orderBy;
 	}
 
@@ -126,23 +132,29 @@ public class PageOf implements java.io.Serializable {
 	public int getIntegerValue(final String str) {
 		if (str==null )
 			return 0;		
-		return org.apache.commons.lang3.math.NumberUtils.toInt(str);
+		return org.apache.commons.lang3.math.NumberUtils.toInt(str, 0);
 	}
+	
+	public long getLongValue(final String str) {
+		if (str==null )
+			return 0;		
+		return org.apache.commons.lang3.math.NumberUtils.toLong(str, 0L);
+	}	
 	
 	@Parameter(hidden = true)
 	public void toCalculateSize() {		
-		int _size=1;
-		int _showRow=this.getIntegerValue(this.getShowRow() );
-		int _countSize=this.getIntegerValue(this.getCountSize() );
-		if (_countSize>0 && _showRow>0 ) {
-			_size=_countSize/_showRow;
-			if (_countSize%_showRow>0 ) {
-				_size+=1;
+		int mySize=1;
+		int myShowRow=this.getIntegerValue(this.getShowRow() );
+		int myCountSize=this.getIntegerValue(this.getCountSize() );
+		if (myCountSize>0 && myShowRow>0 ) {
+			mySize=myCountSize/myShowRow;
+			if (myCountSize%myShowRow>0 ) {
+				mySize+=1;
 			}
 		}
-		this.setSize(_size+"");	
-		if ( NumberUtils.toInt(this.select, 0) > _size ) { // 2017-06-30 bug fix add
-			this.select = _size + "";
+		this.setSize(mySize+"");	
+		if ( NumberUtils.toInt(this.select, 0) > mySize ) { // 2017-06-30 bug fix add
+			this.select = mySize + "";
 		}		
 	}
 	
@@ -153,61 +165,24 @@ public class PageOf implements java.io.Serializable {
 	 */
 	@Parameter(hidden = true)
 	public void toCalculateSize(int currentStartRow) {
-		int _size=1;
-		int _showRow=this.getIntegerValue(this.getShowRow() );
-		int _countSize=this.getIntegerValue(this.getCountSize() );
-		if (_countSize>0 && _showRow>0 ) {
-			_size=_countSize/_showRow;
-			if (_countSize%_showRow>0 ) {
-				_size+=1;
+		int mySize=1;
+		int myShowRow=this.getIntegerValue(this.getShowRow() );
+		int myCountSize=this.getIntegerValue(this.getCountSize() );
+		if (myCountSize>0 && myShowRow>0 ) {
+			mySize=myCountSize/myShowRow;
+			if (myCountSize%myShowRow>0 ) {
+				mySize+=1;
 			}
 		}
-		this.setSize(_size+"");	
-		if ( NumberUtils.toInt(this.select, 0) > _size ) { // 2017-06-30 bug fix add
+		this.setSize(mySize+"");	
+		if ( NumberUtils.toInt(this.select, 0) > mySize ) { // 2017-06-30 bug fix add
 			if (currentStartRow == 0) {
 				this.select = "1";
 			} else {
-				this.select = _size + "";
+				this.select = mySize + "";
 			}
 		}
 	}
-	
-//	/**
-//	 * 查詢 grid 頁面沒有再用
-//	 * @return
-//	 */
-//	@Deprecated
-//	public String getHtmlSelectOptions() {
-//		StringBuilder out=new StringBuilder();
-//		String sel="";
-//		for (int ix=1; ix<=this.getIntegerValue(this.size); ix++ ) {
-//			sel="";
-//			if (this.select.equals(ix+"") )
-//				sel=" SELECTED ";
-//			out.append("<option value=\"").append(ix).append("\" ").append(sel).append(" >").append(ix).append("</option>");
-//		}
-//		return out.toString();
-//	}
-//	
-//	/**
-//	 * 查詢 grid 頁面沒有再用
-//	 * @return
-//	 */
-//	@Deprecated
-//	public String getHtmlRowShowSelectOptions() {
-//		StringBuilder out=new StringBuilder();
-//		String sel="";
-//		for (int ix=0; Rows!=null && ix<Rows.length; ix++ ) {
-//			sel="";
-//			if (this.showRow.equals(Rows[ix]+"") )
-//				sel=" SELECTED ";
-//			out.append("<option value=\"").append(Rows[ix]).append("\" ").append(sel).append(" >").append(Rows[ix]).append("</option>");
-//		}
-//		if (out.length()==0 ) {
-//			out.append("<option value=\"10\"").append(" >").append("10").append("</option>");
-//		}
-//		return out.toString();
-//	}
 	
 	/**
 	 * 把要代入查grid的 hql 的 map 參數加上 order by 條件
@@ -220,15 +195,11 @@ public class PageOf implements java.io.Serializable {
 		if (queryParam == null) {
 			return queryParam;
 		}
-		if (queryParam.get(Constants._RESERVED_PARAM_NAME_QUERY_ORDER_BY) == null) {
-			if (!StringUtils.isBlank(this.getOrderBy())) {
-				queryParam.put(Constants._RESERVED_PARAM_NAME_QUERY_ORDER_BY, this.getOrderBy());
-			}
+		if (queryParam.get(Constants.RESERVED_PARAM_NAME_QUERY_ORDER_BY) == null &&  (!StringUtils.isBlank(this.getOrderBy()))) {
+			queryParam.put(Constants.RESERVED_PARAM_NAME_QUERY_ORDER_BY, this.getOrderBy());
 		}
-		if (queryParam.get(Constants._RESERVED_PARAM_NAME_QUERY_SORT_TYPE) == null) {
-			if (!StringUtils.isBlank(this.getSortType())) {
-				queryParam.put(Constants._RESERVED_PARAM_NAME_QUERY_SORT_TYPE, this.getSortType());
-			}
+		if (queryParam.get(Constants.RESERVED_PARAM_NAME_QUERY_SORT_TYPE) == null &&  (!StringUtils.isBlank(this.getSortType()))) {
+			queryParam.put(Constants.RESERVED_PARAM_NAME_QUERY_SORT_TYPE, this.getSortType());	
 		}
 		return queryParam;
 	}
@@ -263,7 +234,7 @@ public class PageOf implements java.io.Serializable {
 			return this;
 		}
 		this.orderBy = StringUtils.deleteWhitespace(this.orderBy);
-		this.orderBy = this.orderBy.replaceAll(",,", ",");
+		this.orderBy = StringUtils.replace(this.orderBy, ",,", ",");
 		if (this.orderBy.endsWith(",")) {
 			this.orderBy = this.orderBy.substring(0, this.orderBy.length()-1);
 		}
@@ -273,18 +244,18 @@ public class PageOf implements java.io.Serializable {
 			}
 			return this;
 		}
-		String tmp[] = this.orderBy.split(",");
-		String newOrderBy = "";
+		String[] tmp = this.orderBy.split(",");
+		StringBuilder newOrderBy = new StringBuilder();
 		for (int i = 0; i < tmp.length; i++) {
 			if (!(tmp[i].startsWith("\"") && tmp[i].endsWith("\""))) {
 				tmp[i] = "\"" + tmp[i] + "\"";
 			}
-			newOrderBy += tmp[i];
+			newOrderBy.append(tmp[i]);
 			if ((i+1) < tmp.length) {
-				newOrderBy += ",";
+				newOrderBy.append(",");
 			}
 		}
-		this.orderBy = newOrderBy;
+		this.orderBy = newOrderBy.toString();
 		return this;
 	}
 	

@@ -26,7 +26,11 @@ import org.springframework.context.ApplicationContext;
 
 public class AppContext {
 	
-	public static ApplicationContext context = null;
+	private static ApplicationContext context = null;
+	
+	private AppContext() {
+		throw new IllegalStateException("Context class");
+	}
 	
 	public static void init(ApplicationContext applicationContext) {
 		context = applicationContext;
@@ -36,16 +40,16 @@ public class AppContext {
 		return context;
 	}
 	
-	public static Object getBean(String beanId) throws BeansException, Exception {
+	public static Object getBean(String beanId) throws BeansException {
 		if (null == context) {
-			throw new Exception("context is null.");
+			throw new IllegalArgumentException("context is null.");
 		}		
 		return context.getBean(beanId);
 	}
 	
-	public static Object getBean(Class<?> requiredType) throws BeansException, Exception {
+	public static Object getBean(Class<?> requiredType) throws BeansException {
 		if (null == context) {
-			throw new Exception("context is null.");
+			throw new IllegalArgumentException("context is null.");
 		}
 		return context.getBean(requiredType);
 	}

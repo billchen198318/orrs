@@ -478,7 +478,7 @@ public class PdcaLogicServiceImpl extends BaseLogicService implements IPdcaLogic
 		this.pdcaService.update(pdca);
 		this.setStringValueMaxLength(closeReq, "description", MAX_LENGTH);
 		closeReq.setApplyFlag(YesNo.YES);
-		closeReq.setApplyText(this.getAccountId() + " - " + SimpleUtils.getDateFormat_yyyyMMddHHmmss(sysDate));
+		closeReq.setApplyText(this.getAccountId() + " - " + SimpleUtils.getDateFormatOfyyyyMMddHHmmss(sysDate));
 		return this.pdcaCloseReqService.insert(closeReq);
 	}
 	

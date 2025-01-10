@@ -34,7 +34,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysJreport;
 import org.qifu.core.mapper.TbSysJreportMapper;
 import org.qifu.core.service.ISysJreportService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,9 +44,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysJreportServiceImpl extends BaseService<TbSysJreport, String> implements ISysJreportService<TbSysJreport, String> {
 	
-	@Autowired
-	TbSysJreportMapper sysJreportMapper;
+	private final TbSysJreportMapper sysJreportMapper;
 	
+	public SysJreportServiceImpl(TbSysJreportMapper sysJreportMapper) {
+		super();
+		this.sysJreportMapper = sysJreportMapper;
+	}
+
 	@Override
 	protected IBaseMapper<TbSysJreport, String> getBaseMapper() {
 		return this.sysJreportMapper;
@@ -57,11 +60,11 @@ public class SysJreportServiceImpl extends BaseService<TbSysJreport, String> imp
 	 * no CONTENT field for query , because sometime no need use this field, maybe field byte is big
 	 */
 	@Override
-	public DefaultResult<TbSysJreport> selectByPrimaryKeySimple(String oid) throws ServiceException, Exception {
+	public DefaultResult<TbSysJreport> selectByPrimaryKeySimple(String oid) throws ServiceException {
 		if (null == oid || StringUtils.isBlank(oid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		DefaultResult<TbSysJreport> result = new DefaultResult<TbSysJreport>();
+		DefaultResult<TbSysJreport> result = new DefaultResult<>();
 		TbSysJreport value = this.sysJreportMapper.selectByPrimaryKeySimple(oid);
 		if (value != null) {
 			result.setValue(value);
@@ -75,11 +78,11 @@ public class SysJreportServiceImpl extends BaseService<TbSysJreport, String> imp
 	 * no CONTENT field for query , because sometime no need use this field, maybe field byte is big
 	 */
 	@Override
-	public DefaultResult<List<TbSysJreport>> selectListByParamsSimple(Map<String, Object> paramMap) throws ServiceException, Exception {
+	public DefaultResult<List<TbSysJreport>> selectListByParamsSimple(Map<String, Object> paramMap) throws ServiceException {
 		if (MapUtils.isEmpty(paramMap)) {
 			throw new ServiceException(BaseSystemMessage.parameterIncorrect());
 		}
-		DefaultResult<List<TbSysJreport>> result = new DefaultResult<List<TbSysJreport>>();
+		DefaultResult<List<TbSysJreport>> result = new DefaultResult<>();
 		List<TbSysJreport> value = this.sysJreportMapper.selectListByParamsSimple(paramMap);
 		if (value != null) {
 			result.setValue(value);

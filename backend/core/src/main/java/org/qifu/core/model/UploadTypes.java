@@ -29,17 +29,17 @@ public class UploadTypes {
 	public static final String IS_IMAGE = "image"; // 圖片
 	public static final String IS_TEMP = "tmp"; // 暫存
 	public static final String IS_COMMON = "common"; // 共用
-//	public static final String IS_KPI_DOCUMENT = "kpi-doc"; // 給KPI的document類別用
-//	public static final String IS_PDCA_DOCUMENT = "pdca-doc"; // 給PDCA的document類別用
-	public static final String TYPES[] = new String[]{ IS_IMAGE, IS_TEMP, IS_COMMON, /*IS_KPI_DOCUMENT, IS_PDCA_DOCUMENT*/ };
+	protected static final String[] TYPES = new String[] { IS_IMAGE, IS_TEMP, IS_COMMON };
+	
+	protected UploadTypes() {
+        throw new IllegalStateException("static model class: UploadTypes");
+    }
 	
 	public static Map<String, String> getDataMap(boolean pleaseSelect) {
 		Map<String, String> dataMap = PleaseSelect.pageSelectMap(pleaseSelect);
 		dataMap.put(IS_TEMP, IS_TEMP);
 		dataMap.put(IS_IMAGE, IS_IMAGE);
 		dataMap.put(IS_COMMON, IS_COMMON);
-//		dataMap.put(IS_KPI_DOCUMENT, IS_KPI_DOCUMENT);
-//		dataMap.put(IS_PDCA_DOCUMENT, IS_PDCA_DOCUMENT);
 		return dataMap;
 	}
 	

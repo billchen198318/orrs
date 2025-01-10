@@ -37,7 +37,7 @@ public interface IRoleService<T, E> extends IBaseService<TbRole, String> {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public List<TbRole> findForAccount(String account) throws ServiceException, Exception;	
+	public List<TbRole> findForAccount(String account) throws ServiceException;	
 	
 	/**
 	 * 查某隻程式屬於的role
@@ -51,6 +51,6 @@ public interface IRoleService<T, E> extends IBaseService<TbRole, String> {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public List<TbRole> findForProgram(String progId) throws ServiceException, Exception;
+	public List<TbRole> findForProgram(String progId) throws ServiceException;
 	
 }

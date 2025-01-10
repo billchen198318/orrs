@@ -21,6 +21,7 @@
  */
 package org.qifu.core.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,6 @@ import org.qifu.core.service.ISysJreportParamService;
 import org.qifu.core.service.ISysJreportService;
 import org.qifu.core.util.CoreApiSupport;
 import org.qifu.core.util.JReportUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,26 +51,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import ognl.OgnlException;
 
 @Tag(name = "CORE_PROG001D0005", description = "Jasper report resources management.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG001D0005")
 public class PROG001D0005Controller extends CoreApiSupport {
 	private static final long serialVersionUID = -6882334788025159559L;
 	
-	@Autowired
-	ISysJreportService<TbSysJreport, String> sysJreportService;
+	private static final String REPORT_ID_VAR = "reportId";
 	
-	@Autowired
-	ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService;
+	private final transient ISysJreportService<TbSysJreport, String> sysJreportService;
 	
-	@Autowired
-	ISystemJreportLogicService systemJreportLogicService;
+	private final transient ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService;
+	
+	private final transient ISystemJreportLogicService systemJreportLogicService;
+	
+	public PROG001D0005Controller(ISysJreportService<TbSysJreport, String> sysJreportService,
+			ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService,
+			ISystemJreportLogicService systemJreportLogicService) {
+		super();
+		this.sysJreportService = sysJreportService;
+		this.sysJreportParamService = sysJreportParamService;
+		this.systemJreportLogicService = systemJreportLogicService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005Q", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - findPage", description = "查詢TB_SYS_JREPORT資料")
-	@ResponseBody
 	@PostMapping(value = "/findPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysJreport>>> findPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysJreport>> result = this.initResult();
@@ -78,20 +87,17 @@ public class PROG001D0005Controller extends CoreApiSupport {
 			QueryResult<List<TbSysJreport>> queryResult = this.sysJreportService.findPage(
 					"count", 
 					"findPageSimple",
-					this.queryParameter(searchBody).fullEquals("reportId").value(),
+					this.queryParameter(searchBody).fullEquals(REPORT_ID_VAR).value(),
 					searchBody.getPageOf().orderBy("REPORT_ID").sortTypeAsc());
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
-		} catch (ServiceException | ControllerException e) {
+		} catch (ServiceException | ControllerException | OgnlException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005D", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - delete", description = "刪除TB_SYS_JREPORT資料")
-	@ResponseBody
 	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbSysJreport sysJreport) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -100,16 +106,14 @@ public class PROG001D0005Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
-	private void handlerCheck(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport, boolean createMode) throws ControllerException, ServiceException, Exception {
+	private void handlerCheck(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport, boolean createMode) throws ControllerException, ServiceException {
 		CheckControllerFieldHandler<TbSysJreport> chk = this.getCheckControllerFieldHandler(result);
-		chk.testField("reportId", sysJreport, "@org.apache.commons.lang3.StringUtils@isBlank(reportId)", "請輸入報表編號").throwHtmlMessage();
-		chk.testField("reportId", sysJreport, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(reportId)", "報表編號只允許輸入0-9,a-z,A-Z正常字元").throwHtmlMessage();
+		chk.testField(REPORT_ID_VAR, sysJreport, "@org.apache.commons.lang3.StringUtils@isBlank(reportId)", "請輸入報表編號").throwHtmlMessage();
+		chk.testField(REPORT_ID_VAR, sysJreport, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(reportId)", "報表編號只允許輸入0-9,a-z,A-Z正常字元").throwHtmlMessage();
 		if (createMode) {
 			chk.testField("file", sysJreport, "@org.apache.commons.lang3.StringUtils@isBlank(file)", "請輸入檔案").throwHtmlMessage();
 			if (StringUtils.isBlank(sysJreport.getUploadBase64())) {
@@ -118,21 +122,21 @@ public class PROG001D0005Controller extends CoreApiSupport {
 		}
 	}
 	
-	private void deployReport(DefaultResult<TbSysJreport> result) throws ControllerException, ServiceException, Exception {
+	private void deployReport(DefaultResult<TbSysJreport> result) throws ControllerException, ServiceException, IOException {
 		if (YES.equals(result.getSuccess())) {
 			TbSysJreport sysJRpt = result.getValue();
 			JReportUtils.deployReport(sysJRpt);			
 		}		
 	}
 	
-	private void save(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport) throws ControllerException, ServiceException, Exception {
+	private void save(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport) throws ControllerException, ServiceException, IOException {
 		this.handlerCheck(result, sysJreport, true);
 		DefaultResult<TbSysJreport> cResult = this.systemJreportLogicService.create(sysJreport);
 		this.deployReport(cResult);
 		this.setDefaultResponseJsonResult(result, cResult);
 	}
 	
-	private void update(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport) throws ControllerException, ServiceException, Exception {
+	private void update(DefaultControllerJsonResultObj<TbSysJreport> result, TbSysJreport sysJreport) throws ControllerException, ServiceException, IOException {
 		this.handlerCheck(result, sysJreport, false);
 		DefaultResult<TbSysJreport> uResult = this.systemJreportLogicService.update(sysJreport);
 		this.deployReport(uResult);
@@ -141,23 +145,19 @@ public class PROG001D0005Controller extends CoreApiSupport {
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005C", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - save", description = "新增TB_SYS_JREPORT資料")
-	@ResponseBody
 	@PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysJreport>> doSave(@RequestBody TbSysJreport sysJreport) {
 		DefaultControllerJsonResultObj<TbSysJreport> result = this.initDefaultJsonResult();
 		try {
 			this.save(result, sysJreport);
-		} catch (ServiceException | ControllerException e) {
+		} catch (ServiceException | ControllerException | IOException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005E", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - load", description = "讀取TB_SYS_JREPORT資料")
-	@ResponseBody
 	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysJreport>> doLoad(@RequestBody TbSysJreport sysJreport) {
 		DefaultControllerJsonResultObj<TbSysJreport> result = this.initDefaultJsonResult();
@@ -166,60 +166,52 @@ public class PROG001D0005Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005U", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - update", description = "更新TB_SYS_JREPORT資料")
-	@ResponseBody
 	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysJreport>> doUpdate(@RequestBody TbSysJreport sysJreport) {
 		DefaultControllerJsonResultObj<TbSysJreport> result = this.initDefaultJsonResult();
 		try {
 			this.update(result, sysJreport);
-		} catch (ServiceException | ControllerException e) {
+		} catch (ServiceException | ControllerException | IOException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005Q", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - findSetParamPage", description = "查詢TB_SYS_JREPORT_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/findSetParamPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysJreportParam>>> findSetParamPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysJreportParam>> result = this.initResult();
 		try {
 			QueryResult<List<TbSysJreportParam>> queryResult = this.sysJreportParamService.findPage(
-					this.queryParameter(searchBody).fullEquals("reportId").value(), 
+					this.queryParameter(searchBody).fullEquals(REPORT_ID_VAR).value(), 
 					searchBody.getPageOf().orderBy("RPT_PARAM").sortTypeAsc());					
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
-	private void handlerCheckParam(DefaultControllerJsonResultObj<TbSysJreportParam> result, TbSysJreportParam param) throws ControllerException, ServiceException, Exception {
+	private void handlerCheckParam(DefaultControllerJsonResultObj<TbSysJreportParam> result, TbSysJreportParam param) throws ControllerException, ServiceException {
 		CheckControllerFieldHandler<TbSysJreportParam> chk = this.getCheckControllerFieldHandler(result);
 		chk
-		.testField("reportId", param, "@org.apache.commons.lang3.StringUtils@isBlank(reportId)", "請輸入Jasper報表編號")
+		.testField(REPORT_ID_VAR, param, "@org.apache.commons.lang3.StringUtils@isBlank(reportId)", "請輸入Jasper報表編號")
 		.testField("urlParam", param, "@org.apache.commons.lang3.StringUtils@isBlank(urlParam)", "請輸入Url參數")
 		.testField("rptParam", param, "@org.apache.commons.lang3.StringUtils@isBlank(rptParam)", "請輸入報表參數")	
 		.throwHtmlMessage();
 		
-		chk.testField("urlParam", param, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(urlParam)", "Url參數只允許輸入0-9,a-z,A-Z正常字元");		
-		chk.testField("rptParam", param, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(rptParam)", "報表參數只允許輸入0-9,a-z,A-Z正常字元");	
+		chk.testField("urlParam", param, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(urlParam)", "Url參數只允許輸入0-9,a-z,A-Z正常字元");		
+		chk.testField("rptParam", param, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(rptParam)", "報表參數只允許輸入0-9,a-z,A-Z正常字元");	
 	}	
 	
-	private void saveParam(DefaultControllerJsonResultObj<TbSysJreportParam> result, TbSysJreportParam param) throws ControllerException, ServiceException, Exception {
+	private void saveParam(DefaultControllerJsonResultObj<TbSysJreportParam> result, TbSysJreportParam param) throws ControllerException, ServiceException {
 		this.handlerCheckParam(result, param);
 		DefaultResult<TbSysJreportParam> cResult = this.sysJreportParamService.insert(param);
 		this.setDefaultResponseJsonResult(cResult, result);
@@ -227,7 +219,6 @@ public class PROG001D0005Controller extends CoreApiSupport {
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005C", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - saveSetParam", description = "新增TB_SYS_TEMPLATE_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/saveSetParam", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysJreportParam>> doSaveSetParam(@RequestBody TbSysJreportParam param) {
 		DefaultControllerJsonResultObj<TbSysJreportParam> result = this.initDefaultJsonResult();
@@ -235,15 +226,12 @@ public class PROG001D0005Controller extends CoreApiSupport {
 			this.saveParam(result, param);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0005D", check = true)
 	@Operation(summary = "CORE_PROG001D0005 - deleteSetParam", description = "刪除TB_SYS_TEMPLATE_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/deleteSetParam", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDeleteSetParam(@RequestBody TbSysJreportParam param) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -252,9 +240,7 @@ public class PROG001D0005Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	

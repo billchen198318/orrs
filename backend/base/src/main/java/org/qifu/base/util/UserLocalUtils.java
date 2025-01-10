@@ -29,7 +29,11 @@ import org.qifu.base.model.IUserInfoProvide;
  */
 public class UserLocalUtils {
 	
-	private static ThreadLocal<IUserInfoProvide> userInfoThreadLocal = new ThreadLocal<IUserInfoProvide>();	
+	private static ThreadLocal<IUserInfoProvide> userInfoThreadLocal = new ThreadLocal<>();	
+	
+	protected UserLocalUtils() {
+		throw new IllegalStateException("Utils class: UserLocalUtils");
+	}
 
 	public static IUserInfoProvide getUserInfo() {
 		return userInfoThreadLocal.get();

@@ -34,45 +34,39 @@ import org.qifu.base.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PleaseSelect {
-	private static final String _CONFIG = "please-select-label-name.json";
-	private static String _pleaseSelectDatas = " { } ";
-	private static Map<String, Object> _pleaseSelectMap;
+	private static String pleaseSelectDatas = " { } ";
+	private static Map<String, Object> pleaseSelectMap;
+	
+	protected PleaseSelect() {
+		throw new IllegalStateException("Utility class: PleaseSelect");
+	}
 	
 	static {
-		try {
-			InputStream is = Constants.class.getClassLoader().getResource( _CONFIG ).openStream();
-			_pleaseSelectDatas = IOUtils.toString(is, Constants.BASE_ENCODING);
-			is.close();
-			is = null;
-			_pleaseSelectMap = loadDatas();
+		try (InputStream is = Constants.class.getClassLoader().getResource( "please-select-label-name.json" ).openStream()) {
+			pleaseSelectDatas = IOUtils.toString(is, Constants.BASE_ENCODING);
+			pleaseSelectMap = loadDatas();	
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (null==_pleaseSelectMap) {
-				_pleaseSelectMap = new HashMap<String, Object>();
-			}
-		}		
+			if (null==pleaseSelectMap) {
+				pleaseSelectMap = new HashMap<>();
+			}	
+		}
 	}
 	
 	public static boolean isAllOption(String value) {
-		if (Constants.HTML_SELECT_NO_SELECT_ID.equals(value)) {
-			return true;
-		}
-		return false;
+		return Constants.HTML_SELECT_NO_SELECT_ID.equals(value) ? Boolean.TRUE : Boolean.FALSE;
 	}
 	
 	public static boolean noSelect(String value) {
-		if (StringUtils.isBlank(value) || Constants.HTML_SELECT_NO_SELECT_ID.equals(value)) {
-			return true;
-		}
-		return false;
+		return (StringUtils.isBlank(value) || Constants.HTML_SELECT_NO_SELECT_ID.equals(value)) ? Boolean.TRUE : Boolean.FALSE;
 	}	
 	
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> loadDatas() {
 		Map<String, Object> datas = null;
 		try {
-			datas = (Map<String, Object>)new ObjectMapper().readValue( _pleaseSelectDatas, LinkedHashMap.class );
+			datas = new ObjectMapper().readValue( pleaseSelectDatas, LinkedHashMap.class );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,16 +74,16 @@ public class PleaseSelect {
 	}
 	
 	public static Map<String, Object> getDataMap() {
-		return _pleaseSelectMap;
+		return pleaseSelectMap;
 	}		
 
 	public static String getLabel(String localeLang) {
-		String label = (String) _pleaseSelectMap.get(localeLang);
+		String label = (String) pleaseSelectMap.get(localeLang);
 		return (StringUtils.isBlank(label)) ? Constants.HTML_SELECT_NO_SELECT_NAME : label;
 	}
 	
 	public static Map<String, String> pageSelectMap(boolean pleaseSelect) {
-		Map<String, String> dataMap = new LinkedHashMap<String, String>();
+		Map<String, String> dataMap = new LinkedHashMap<>();
 		if (pleaseSelect) {
 			dataMap.put(Constants.HTML_SELECT_NO_SELECT_ID, Constants.HTML_SELECT_NO_SELECT_NAME);
 		}

@@ -30,8 +30,7 @@ public class QueryControllerJsonResultObj<T> extends DefaultControllerJsonResult
 	private int pageOfSize = 1;
 	
 	public static <T> QueryControllerJsonResultObj<T> build() {
-		QueryControllerJsonResultObj<T> obj = new QueryControllerJsonResultObj<T>();
-		return obj;
+		return new QueryControllerJsonResultObj<>();
 	}
 
 	public int getPageOfShowRow() {

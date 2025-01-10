@@ -35,7 +35,7 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.RolePermissionAttr;
 import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.UserRoleAndPermission;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbRolePermission;
 import org.qifu.core.entity.TbSysLoginLog;
 import org.qifu.core.entity.TbUserRole;
@@ -45,7 +45,6 @@ import org.qifu.core.service.IRolePermissionService;
 import org.qifu.core.service.ISysLoginLogService;
 import org.qifu.core.service.IUserRoleService;
 import org.qifu.util.ScriptExpressionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -62,45 +61,33 @@ public class BaseAuthenticationSuccessHandler implements AuthenticationSuccessHa
 	
 	private static String createUserDataLdapModeScript = "";
 	
-	@Autowired
-	ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService;
+	private final ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService;
 	
-    @Autowired
-    IUserRoleService<TbUserRole, String> userRoleService;
+	private final IUserRoleService<TbUserRole, String> userRoleService;
     
-    @Autowired
-    IRolePermissionService<TbRolePermission, String> rolePermissionService;	
+	private final IRolePermissionService<TbRolePermission, String> rolePermissionService;	
+    
+	public BaseAuthenticationSuccessHandler(ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService,
+			IUserRoleService<TbUserRole, String> userRoleService,
+			IRolePermissionService<TbRolePermission, String> rolePermissionService) {
+		super();
+		this.sysLoginLogService = sysLoginLogService;
+		this.userRoleService = userRoleService;
+		this.rolePermissionService = rolePermissionService;
+	}
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		UserDetails user = (UserDetails) authentication.getPrincipal();
 		try {
-			if (user instanceof User) {
+			if (user instanceof @SuppressWarnings("unused") User ux) {
 				User u = (User) user;
-				if (YesNo.YES.equals(u.getByLdap())) {
+				if (YesNoKeyProvide.YES.equals(u.getByLdap())) {
 					this.processLdapAccountData(u);
 				}
 				List<TbUserRole> userRoleList = this.findUserRoleList(user.getUsername());
-				List<UserRoleAndPermission> urapList = new ArrayList<UserRoleAndPermission>();
-				for (int i = 0; userRoleList != null && i < userRoleList.size(); i++) {
-					TbUserRole ur = userRoleList.get(i);
-					UserRoleAndPermission urap = new UserRoleAndPermission();
-					urap.setRole(ur.getRole());
-					List<TbRolePermission> rPermList = ur.getRolePermission();
-					if (urap.getRolePermission() == null) {
-						urap.setRolePermission(new ArrayList<RolePermissionAttr>());
-					}
-					for (int j = 0; rPermList != null && j < rPermList.size(); j++) {
-						if (!PermissionType.VIEW.name().equals(rPermList.get(j).getPermType())) {
-							continue;
-						}						
-						RolePermissionAttr rpa = new RolePermissionAttr();
-						rpa.setPermission(rPermList.get(j).getPermission());
-						rpa.setType(rPermList.get(j).getPermType());
-						urap.getRolePermission().add(rpa);
-					}
-					urapList.add(urap);
-				}
+				List<UserRoleAndPermission> urapList = new ArrayList<>();
+				this.fillOfOnAuthenticationSuccess(userRoleList, urapList);
 				u.setRoles(urapList);
 			}
 			TbSysLoginLog loginLog = new TbSysLoginLog();
@@ -112,14 +99,39 @@ public class BaseAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		response.sendRedirect("/index");
 	}
 	
+	private void fillOfOnAuthenticationSuccess(List<TbUserRole> userRoleList, List<UserRoleAndPermission> urapList) {
+		for (int i = 0; userRoleList != null && i < userRoleList.size(); i++) {
+			TbUserRole ur = userRoleList.get(i);
+			UserRoleAndPermission urap = new UserRoleAndPermission();
+			urap.setRole(ur.getRole());
+			List<TbRolePermission> rPermList = ur.getRolePermission();
+			if (urap.getRolePermission() == null) {
+				urap.setRolePermission(new ArrayList<>());
+			}
+			for (int j = 0; rPermList != null && j < rPermList.size(); j++) {
+				if (!PermissionType.VIEW.name().equals(rPermList.get(j).getPermType())) {
+					continue;
+				}						
+				RolePermissionAttr rpa = new RolePermissionAttr();
+				rpa.setPermission(rPermList.get(j).getPermission());
+				rpa.setType(rPermList.get(j).getPermType());
+				urap.getRolePermission().add(rpa);
+			}
+			urapList.add(urap);
+		}		
+	}
+	
     private List<TbUserRole> findUserRoleList(String username) {
-        Map<String, Object> paramMap = new HashMap<String, Object>();
+        Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("account", username);
         DefaultResult<List<TbUserRole>> result = null;
         try {
             result = userRoleService.selectListByParams(paramMap);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (null == result) {
+        	return new ArrayList<>();
         }
         List<TbUserRole> roleList = result.getValue();
         for (int i = 0; roleList != null && i < roleList.size(); i++) {
@@ -133,16 +145,15 @@ public class BaseAuthenticationSuccessHandler implements AuthenticationSuccessHa
 				e.printStackTrace();
 			}
         	if (userRole.getRolePermission() == null) {
-        		userRole.setRolePermission( new ArrayList<TbRolePermission>() );
+        		userRole.setRolePermission( new ArrayList<>() );
         	}
         }
         paramMap.clear();
-        paramMap = null;
         return roleList;
     }
     
     private void processLdapAccountData(User user) {
-    	Map<String, Object> paramMap = new HashMap<String, Object>();
+    	Map<String, Object> paramMap = new HashMap<>();
     	paramMap.put("user", user);
     	try {
 			ScriptExpressionUtils.execute(ScriptTypeCode.GROOVY, getCreateUserDataLdapModeScript(), null, paramMap);
@@ -150,26 +161,14 @@ public class BaseAuthenticationSuccessHandler implements AuthenticationSuccessHa
 			e.printStackTrace();
 		}
     	paramMap.clear();
-    	paramMap = null;
     }
     
-	public static String getCreateUserDataLdapModeScript() throws Exception {
+	public static String getCreateUserDataLdapModeScript() throws IOException {
 		if ( !StringUtils.isBlank(createUserDataLdapModeScript) ) {
 			return createUserDataLdapModeScript;
 		}
-		InputStream is = null;
-		try {
-			is = BaseAuthenticationSuccessHandler.class.getClassLoader().getResource( CREATE_USER_DATA_LDAP_MODE_SCRIPT ).openStream();
-			createUserDataLdapModeScript = IOUtils.toString(is, Constants.BASE_ENCODING);			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (is!=null) {
-				is.close();
-			}			
-			is = null;			
+		try (InputStream is = BaseAuthenticationSuccessHandler.class.getClassLoader().getResource( CREATE_USER_DATA_LDAP_MODE_SCRIPT ).openStream()) {
+			createUserDataLdapModeScript = IOUtils.toString(is, Constants.BASE_ENCODING);
 		}
 		return createUserDataLdapModeScript;
 	}    

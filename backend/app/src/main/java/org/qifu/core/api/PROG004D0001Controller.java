@@ -34,7 +34,6 @@ import org.qifu.base.model.SearchBody;
 import org.qifu.core.entity.TbSysEventLog;
 import org.qifu.core.service.ISysEventLogService;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,16 +49,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "CORE_PROG004D0001", description = "Event log.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG004D0001")
 public class PROG004D0001Controller extends CoreApiSupport {
 	private static final long serialVersionUID = 1711431436491423905L;
 	
-	@Autowired
-	ISysEventLogService<TbSysEventLog, String> sysEventLogService;
+	private final transient ISysEventLogService<TbSysEventLog, String> sysEventLogService;
+	
+	public PROG004D0001Controller(ISysEventLogService<TbSysEventLog, String> sysEventLogService) {
+		super();
+		this.sysEventLogService = sysEventLogService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG004D0001Q", check = true)
 	@Operation(summary = "CORE_PROG004D0001 - findPage", description = "查詢TB_SYS_EVENT_LOG資料")
-	@ResponseBody
 	@PostMapping(value = "/findPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysEventLog>>> findPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysEventLog>> result = this.initResult();
@@ -70,15 +73,12 @@ public class PROG004D0001Controller extends CoreApiSupport {
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG004D0001D", check = true)
 	@Operation(summary = "CORE_PROG004D0001 - delete", description = "刪除TB_SYS_EVENT_LOG資料")
-	@ResponseBody
 	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbSysEventLog log) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -87,15 +87,12 @@ public class PROG004D0001Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG004D0001D", check = true)
 	@Operation(summary = "CORE_PROG004D0001 - deleteAll", description = "刪除TB_SYS_EVENT_LOG所有資料")
-	@ResponseBody
 	@PostMapping(value = "/deleteAll", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDeleteAll() {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -105,9 +102,7 @@ public class PROG004D0001Controller extends CoreApiSupport {
 			result.setMessage( BaseSystemMessage.deleteSuccess() );
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	

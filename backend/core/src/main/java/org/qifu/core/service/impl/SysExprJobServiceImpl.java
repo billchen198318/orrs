@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysExprJob;
 import org.qifu.core.mapper.TbSysExprJobMapper;
 import org.qifu.core.service.ISysExprJobService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,9 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysExprJobServiceImpl extends BaseService<TbSysExprJob, String> implements ISysExprJobService<TbSysExprJob, String> {
 	
-	@Autowired
-	TbSysExprJobMapper tbSysExprJobMapper;
-
+	private final TbSysExprJobMapper tbSysExprJobMapper;
+	
+	public SysExprJobServiceImpl(TbSysExprJobMapper tbSysExprJobMapper) {
+		super();
+		this.tbSysExprJobMapper = tbSysExprJobMapper;
+	}
+	
 	@Override
 	protected IBaseMapper<TbSysExprJob, String> getBaseMapper() {
 		return this.tbSysExprJobMapper;

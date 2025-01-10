@@ -36,18 +36,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 	
-	private static final String[] _authPath = new String[] { 
+	private static final String[] AUTH_PATH = new String[] { 
 			"/api/client", "/api/auth", "/api/auth/signin", "/api/auth/validLogined", "/api/auth/refreshNewToken" 
 	};
 	
-	private static final String _eventLogPath = "/api/PROG004D0001/**";
+	private static final String EVENT_LOG_PATH = "/api/PROG004D0001/**";
 	
 	
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-        .addResourceHandler( CoreAppConstants.WebConfig_resource )
-        .addResourceLocations( CoreAppConstants.WebConfig_resourceLocations );
+        .addResourceHandler( CoreAppConstants.getWebconfigresource() )
+        .addResourceLocations( CoreAppConstants.getWebconfigresourcelocations() );
     }
     
     @Bean 
@@ -56,33 +56,33 @@ public class WebConfig implements WebMvcConfigurer {
     }     
     
     @Bean
-    MDC4UserBuildInterceptor MDCInterceptor() {
+    MDC4UserBuildInterceptor mdcInterceptor() {
     	return new MDC4UserBuildInterceptor();
     }
     
     @Bean
-    ControllerAuthorityCheckInterceptor ControllerAuthorityCheckInterceptor() {
+    ControllerAuthorityCheckInterceptor controllerAuthorityCheckInterceptor() {
     	return new ControllerAuthorityCheckInterceptor();
     }
     
     @Bean
-    UserBuilderInterceptor UserBuilderInterceptor() {
+    UserBuilderInterceptor userBuilderInterceptor() {
     	return new UserBuilderInterceptor();
     }
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(UserBuilderInterceptor())
+        registry.addInterceptor(userBuilderInterceptor())
         	.addPathPatterns("/api/*", "/api/**")
-        	.excludePathPatterns( _authPath );
+        	.excludePathPatterns( AUTH_PATH );
         
-        registry.addInterceptor(MDCInterceptor())
+        registry.addInterceptor(mdcInterceptor())
     		.addPathPatterns("/*", "/**")
-    		.excludePathPatterns( _authPath );        
+    		.excludePathPatterns( AUTH_PATH );        
         
-        registry.addInterceptor(ControllerAuthorityCheckInterceptor())
+        registry.addInterceptor(controllerAuthorityCheckInterceptor())
         	.addPathPatterns("/api/*", "/api/**")
-        	.excludePathPatterns( _authPath ).excludePathPatterns( _eventLogPath );
+        	.excludePathPatterns( AUTH_PATH ).excludePathPatterns( EVENT_LOG_PATH );
     }
     
     @Override

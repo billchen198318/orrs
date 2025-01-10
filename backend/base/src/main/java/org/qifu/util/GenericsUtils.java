@@ -26,6 +26,10 @@ import java.lang.reflect.Type;
 
 public class GenericsUtils {
 	
+	protected GenericsUtils() {
+		throw new IllegalStateException("Utils class: GenericsUtils");
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static Class getSuperClassGenricType(Class clazz) { 
         return getSuperClassGenricType(clazz, 0);  

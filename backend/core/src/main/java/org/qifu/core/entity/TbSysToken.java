@@ -24,13 +24,13 @@ public class TbSysToken implements java.io.Serializable {
     private Date cdate;
 
 	public String getExpiresDateString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.expiresDate);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.expiresDate);
 	}	
 	public String getRfExpiresDateString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.rfExpiresDate);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.rfExpiresDate);
 	}		
 	public String getCdateString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.cdate);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.cdate);
 	}	    
 	public String getTokenShort() {
 		if (StringUtils.defaultString(this.token).length() >= 30) {

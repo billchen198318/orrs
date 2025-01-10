@@ -36,7 +36,7 @@ import org.qifu.base.AppContext;
 import org.qifu.base.Constants;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbSysTemplate;
 import org.qifu.core.entity.TbSysTemplateParam;
 import org.qifu.core.model.TemplateResultObj;
@@ -46,7 +46,9 @@ import org.qifu.core.service.ISysTemplateService;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import ognl.Ognl;
+import ognl.OgnlException;
 
 public class TemplateUtils {
 	private static final String IS_TITLE = "title";
@@ -54,29 +56,33 @@ public class TemplateUtils {
 	private static ISysTemplateService<TbSysTemplate, String> sysTemplateService;
 	private static ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService;
 	
-	static {
-		sysTemplateService = AppContext.context.getBean(ISysTemplateService.class);
-		sysTemplateParamService = AppContext.context.getBean(ISysTemplateParamService.class);
+	protected TemplateUtils() {
+		throw new IllegalStateException("Utils class: TemplateUtils");
 	}
 	
-	private static TbSysTemplate loadSysTemplate(String templateId) throws ServiceException, Exception {
+	static {
+		sysTemplateService = AppContext.getContext().getBean(ISysTemplateService.class);
+		sysTemplateParamService = AppContext.getContext().getBean(ISysTemplateParamService.class);
+	}
+	
+	private static TbSysTemplate loadSysTemplate(String templateId) throws ServiceException {
 		TbSysTemplate sysTemplate = new TbSysTemplate();
 		sysTemplate.setTemplateId(templateId);
 		sysTemplate = sysTemplateService.selectByUniqueKey(sysTemplate).getValueEmptyThrowMessage();	
 		return sysTemplate;
 	}
 	
-	private static List<TbSysTemplateParam> loadSysTemplateParam(String templateId) throws ServiceException, Exception {
-		Map<String, Object> params = new HashMap<String, Object>();
+	private static List<TbSysTemplateParam> loadSysTemplateParam(String templateId) throws ServiceException {
+		Map<String, Object> params = new HashMap<>();
 		params.put("templateId", templateId);
 		List<TbSysTemplateParam> searchList = sysTemplateParamService.selectListByParams(params).getValue();
 		if (searchList==null) {
-			searchList = new ArrayList<TbSysTemplateParam>();
+			searchList = new ArrayList<>();
 		}
 		return searchList;
 	}
 	
-	private static String processTemplate(String resource, Map<String, Object> params) throws Exception {
+	private static String processTemplate(String resource, Map<String, Object> params) throws IOException, TemplateException {
 		StringTemplateLoader templateLoader = new StringTemplateLoader();
 		templateLoader.putTemplate("sysTemplate", resource);
 		Configuration cfg = new Configuration( Configuration.getVersion() );
@@ -88,15 +94,15 @@ public class TemplateUtils {
 	}
 	
 	private static Map<String, Object> getTemplateParamMap(String type, List<TbSysTemplateParam> sysTemplateParamList, 
-			Object dataObj) throws Exception {
-		Map<String, Object> params = new HashMap<String, Object>();
+			Object dataObj) throws OgnlException {
+		Map<String, Object> params = new HashMap<>();
 		for (TbSysTemplateParam sysTemplateParam : sysTemplateParamList) {
 			if (IS_TITLE.equals(type) ) {
-				if ( YesNo.YES.equals(sysTemplateParam.getIsTitle()) ) {
+				if ( YesNoKeyProvide.YES.equals(sysTemplateParam.getIsTitle()) ) {
 					params.put(sysTemplateParam.getTemplateVar(), Ognl.getValue(sysTemplateParam.getObjectVar(), dataObj) );
 				}
 			} else { // message
-				if ( !YesNo.YES.equals(sysTemplateParam.getIsTitle()) ) {
+				if ( !YesNoKeyProvide.YES.equals(sysTemplateParam.getIsTitle()) ) {
 					params.put(sysTemplateParam.getTemplateVar(), Ognl.getValue(sysTemplateParam.getObjectVar(), dataObj) );
 				}				
 			}
@@ -112,9 +118,11 @@ public class TemplateUtils {
 	 * @param dataObj		資料來源
 	 * @return
 	 * @throws ServiceException
-	 * @throws Exception
+	 * @throws OgnlException 
+	 * @throws TemplateException 
+	 * @throws IOException 
 	 */
-	public static TemplateResultObj getResult(String templateId, Object dataObj) throws ServiceException, Exception {
+	public static TemplateResultObj getResult(String templateId, Object dataObj) throws ServiceException, OgnlException, IOException, TemplateException {
 		if (StringUtils.isBlank(templateId) || null==dataObj) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -128,11 +136,11 @@ public class TemplateUtils {
 		return resultObj;
 	}
 	
-	public static String escapeHtml4TemplateHtmlContent(String strContent) throws Exception {
+	public static String escapeHtml4TemplateHtmlContent(String strContent) {
 		if (StringUtils.isBlank(strContent)) {
 			return "";
 		}
-		return StringEscapeUtils.escapeHtml4(strContent).replaceAll("\n", Constants.HTML_BR);
+		return StringUtils.replace(StringEscapeUtils.escapeHtml4(strContent), "\n", Constants.HTML_BR);
 	}
 	
 	/**
@@ -162,7 +170,7 @@ public class TemplateUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String processTemplate(String name, ClassLoader classLoader, String templateResource, Map<String, Object> parameter) throws Exception {
+	public static String processTemplate(ClassLoader classLoader, String templateResource, Map<String, Object> parameter) throws IOException, TemplateException {
 		StringTemplateLoader templateLoader = new StringTemplateLoader();
 		templateLoader.putTemplate("resourceTemplate", getResourceSrc(classLoader, templateResource) );
 		Configuration cfg = new Configuration( Configuration.getVersion() );

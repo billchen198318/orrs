@@ -27,7 +27,7 @@ import org.qifu.base.CoreAppConstants;
 import org.qifu.base.model.BaseUserInfo;
 import org.qifu.base.model.RolePermissionAttr;
 import org.qifu.base.model.UserRoleAndPermission;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,15 +38,13 @@ import java.util.List;
 public class User extends BaseUserInfo implements UserDetails {
 	private static final long serialVersionUID = 8145283038236989680L;
 	
-	//private String oid;
     private String username;
     private String password;
     private List<UserRoleAndPermission> roles;
     private String onJob;
-    private String byLdap = YesNo.NO;
+    private String byLdap = YesNoKeyProvide.NO;
 
-    public User(/*String oid,*/ String username, String password, String onJob, List<UserRoleAndPermission> roles) {
-    	//this.oid = oid;
+    public User(String username, String password, String onJob, List<UserRoleAndPermission> roles) {
         this.username = username;
         this.password = password;
         this.onJob = onJob;
@@ -54,8 +52,7 @@ public class User extends BaseUserInfo implements UserDetails {
         this.setUserId( this.username );
     }
     
-    public User(/*String oid,*/ String username, String password, String onJob) {
-    	//this.oid = oid;
+    public User(String username, String password, String onJob) {
         this.username = username;
         this.password = password;
         this.onJob = onJob;
@@ -64,7 +61,7 @@ public class User extends BaseUserInfo implements UserDetails {
     
     @Override
     public List<GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> auths = new ArrayList<>();
         if (CollectionUtils.isEmpty(this.roles)) {
         	auths.add( new SimpleGrantedAuthority("ROLE_" + CoreAppConstants.SYS_BLANK_ROLE) );
         	return auths;
@@ -101,7 +98,7 @@ public class User extends BaseUserInfo implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return (YesNo.YES.equals(this.onJob) ? true : false);
+        return (YesNoKeyProvide.YES.equals(this.onJob) ? Boolean.TRUE : Boolean.FALSE);
     }
 
     @Override
@@ -111,18 +108,8 @@ public class User extends BaseUserInfo implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return (YesNo.YES.equals(this.onJob) ? true : false);
+        return (YesNoKeyProvide.YES.equals(this.onJob) ? Boolean.TRUE : Boolean.FALSE);
     }
-    
-    /*
-	public String getOid() {
-		return oid;
-	}
-	
-	public void setOid(String oid) {
-		this.oid = oid;
-	}	
-	*/
 	
 	public List<UserRoleAndPermission> getRoles() {
 		return roles;

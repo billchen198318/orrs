@@ -24,6 +24,7 @@ package org.qifu.core.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.mapper.IBaseMapper;
 import org.qifu.base.model.PleaseSelect;
@@ -32,7 +33,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbAccount;
 import org.qifu.core.mapper.TbAccountMapper;
 import org.qifu.core.service.IAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,8 +43,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class AccountServiceImpl extends BaseService<TbAccount, String> implements IAccountService<TbAccount, String> {
 	
-	@Autowired
-	TbAccountMapper accountMapper;
+	private final TbAccountMapper accountMapper;
+
+	public AccountServiceImpl(TbAccountMapper accountMapper) {
+		super();
+		this.accountMapper = accountMapper;
+	}
 
 	@Override
 	protected IBaseMapper<TbAccount, String> getBaseMapper() {
@@ -55,10 +59,10 @@ public class AccountServiceImpl extends BaseService<TbAccount, String> implement
 	 * 下拉Select 要用
 	 */
 	@Override
-	public Map<String, String> findForAllMap(boolean pleaseSelect) throws ServiceException, Exception {
+	public Map<String, String> findForAllMap(boolean pleaseSelect) throws ServiceException {
 		List<TbAccount> searchList = this.selectList("ACCOUNT", SortType.ASC).getValue();
 		Map<String, String> dataMap = PleaseSelect.pageSelectMap(pleaseSelect);
-		if (searchList==null || searchList.size()<1) {
+		if (CollectionUtils.isEmpty(searchList)) {
 			return dataMap;
 		}
 		for (TbAccount account : searchList) {

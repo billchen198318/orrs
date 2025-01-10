@@ -29,7 +29,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysExprJobLog;
 import org.qifu.core.mapper.TbSysExprJobLogMapper;
 import org.qifu.core.service.ISysExprJobLogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -40,8 +39,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysExprJobLogServiceImpl extends BaseService<TbSysExprJobLog, String> implements ISysExprJobLogService<TbSysExprJobLog, String> {
 	
-	@Autowired
-	TbSysExprJobLogMapper tbSysExprJobLogMapper;
+	private final TbSysExprJobLogMapper tbSysExprJobLogMapper;
+	
+	public SysExprJobLogServiceImpl(TbSysExprJobLogMapper tbSysExprJobLogMapper) {
+		super();
+		this.tbSysExprJobLogMapper = tbSysExprJobLogMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysExprJobLog, String> getBaseMapper() {
@@ -53,7 +56,7 @@ public class SysExprJobLogServiceImpl extends BaseService<TbSysExprJobLog, Strin
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public Boolean deleteAll() throws ServiceException, Exception {
+	public Boolean deleteAll() throws ServiceException {
 		return this.tbSysExprJobLogMapper.deleteAll(null);
 	}
 	

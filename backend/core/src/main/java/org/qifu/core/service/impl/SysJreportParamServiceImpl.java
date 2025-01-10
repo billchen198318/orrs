@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysJreportParam;
 import org.qifu.core.mapper.TbSysJreportParamMapper;
 import org.qifu.core.service.ISysJreportParamService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysJreportParamServiceImpl extends BaseService<TbSysJreportParam, String> implements ISysJreportParamService<TbSysJreportParam, String> {
 	
-	@Autowired
-	TbSysJreportParamMapper sysJreportParamMapper;
+	private final TbSysJreportParamMapper sysJreportParamMapper;
+	
+	public SysJreportParamServiceImpl(TbSysJreportParamMapper sysJreportParamMapper) {
+		super();
+		this.sysJreportParamMapper = sysJreportParamMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysJreportParam, String> getBaseMapper() {

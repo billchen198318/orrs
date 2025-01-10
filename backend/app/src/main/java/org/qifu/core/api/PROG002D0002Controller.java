@@ -34,7 +34,6 @@ import org.qifu.core.entity.TbRole;
 import org.qifu.core.logic.IRoleLogicService;
 import org.qifu.core.service.IAccountService;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,19 +50,24 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "CORE_PROG002D0002", description = "Role of user.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG002D0002")
 public class PROG002D0002Controller extends CoreApiSupport {
 	private static final long serialVersionUID = 2856536977765326140L;
 	
-	@Autowired
-	IAccountService<TbAccount, String> accountService;
+	private final transient IAccountService<TbAccount, String> accountService;
 	
-	@Autowired
-	IRoleLogicService roleLogicService;
+	private final transient IRoleLogicService roleLogicService;
+	
+	public PROG002D0002Controller(IAccountService<TbAccount, String> accountService,
+			IRoleLogicService roleLogicService) {
+		super();
+		this.accountService = accountService;
+		this.roleLogicService = roleLogicService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0002Q", check = true)
 	@Operation(summary = "CORE_PROG002D0002 - loadUserList", description = "讀取TC_ACCOUNT資料")
-	@ResponseBody
 	@PostMapping(value = "/loadUserList", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<List<TbAccount>>> doLoadUserList() {
 		DefaultControllerJsonResultObj<List<TbAccount>> result = this.initDefaultJsonResult();
@@ -72,15 +76,12 @@ public class PROG002D0002Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0002Q", check = true)
 	@Operation(summary = "CORE_PROG002D0002 - findUserRoleListByAccountOid", description = "讀取使用者TB_ROLE資料")
-	@ResponseBody
 	@PostMapping(value = "/findUserRoleListByAccountOid", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Map<String, List<TbRole>>>> findUserRoleListByAccountOid(@RequestBody TbAccount account) {
 		DefaultControllerJsonResultObj<Map<String, List<TbRole>>> result = this.initDefaultJsonResult();
@@ -90,15 +91,12 @@ public class PROG002D0002Controller extends CoreApiSupport {
 			result.setSuccess( YES );
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0002U", check = true)
 	@Operation(summary = "CORE_PROG002D0002 - update user role - 1.", description = "更新使用者ROLE資料 - 1")
-	@ResponseBody
 	@RequestMapping(value = "/updateUserRole/{accountOid}", produces = MediaType.APPLICATION_JSON_VALUE)		
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> updateUserRole(@PathVariable String accountOid) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -107,15 +105,12 @@ public class PROG002D0002Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(result, uResult);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG002D0002U", check = true)
 	@Operation(summary = "CORE_PROG002D0002 - update user role - 2.", description = "更新使用者ROLE資料 - 2")
-	@ResponseBody
 	@RequestMapping(value = "/updateUserRole/{accountOid}/{roleAppendOid}", produces = MediaType.APPLICATION_JSON_VALUE)		
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> updateUserRole(@PathVariable String accountOid, @PathVariable String roleAppendOid) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -124,9 +119,7 @@ public class PROG002D0002Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(result, uResult);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	

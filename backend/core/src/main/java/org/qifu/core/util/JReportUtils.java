@@ -41,7 +41,7 @@ import org.qifu.base.AppContext;
 import org.qifu.base.Constants;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.JasperreportConfigProperties;
 import org.qifu.core.entity.TbSysJreport;
 import org.qifu.core.entity.TbSysJreportParam;
@@ -68,73 +68,63 @@ public class JReportUtils {
 	
 	protected static Logger logger = LoggerFactory.getLogger(JReportUtils.class);
 	
-	//private static DataSource dataSource;
-	
-	/*
-	@Autowired
-	@Resource(name = "datasourceOldCoreSystem")
-	DataSource datasourceOldCoreSystem;
-	*/
-	
 	private static JasperreportConfigProperties jasperreportConfigProperties;
 	
 	private static ISysJreportService<TbSysJreport, String> sysJreportService;
 	
 	private static ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService;
 	
+	private static final String JASPER_SUB_NAME = ".jasper";
+	private static final String JRXML_SUB_NAME = ".jrxml";
 	
-	static {
-		jasperreportConfigProperties = (JasperreportConfigProperties) AppContext.context.getBean(JasperreportConfigProperties.class);
-		
-		sysJreportService = (ISysJreportService<TbSysJreport, String>) AppContext.context.getBean(ISysJreportService.class);
-		
-		sysJreportParamService = (ISysJreportParamService<TbSysJreportParam, String>) AppContext.context.getBean(ISysJreportParamService.class);
+	protected JReportUtils() {
+		throw new IllegalStateException("Utils class: JReportUtils");
 	}
 	
-	private static String getDataSourceIdByReportId(String reportId) throws Exception {
+	
+	static {
+		jasperreportConfigProperties = AppContext.getContext().getBean(JasperreportConfigProperties.class);
+		
+		sysJreportService = AppContext.getContext().getBean(ISysJreportService.class);
+		
+		sysJreportParamService = AppContext.getContext().getBean(ISysJreportParamService.class);
+	}
+	
+	private static String getDataSourceIdByReportId(String reportId) {
+		if ("TEST".equals(reportId)) {
+			return "dataSourceTest"; // for TEST
+		}
 		return "dataSource";
 	}
 	
-	private static Connection getConnectionByReportId(String reportId) throws Exception {
-		/*
-		if ("PRPCMAIN".equals(reportId)) {
-			return dataSource.getConnection();
-		}
-		if ("CAR001".equals(reportId)) {
-			return datasourceOldCoreSystem.getConnection();
-		}
-		if ("CARTPNMAIN".equals(reportId)) {
-			return datasourceOldCoreSystem.getConnection();
-		}
-		return null;
-		*/
+	private static Connection getConnectionByReportId(String reportId) {
 		return DataUtils.getConnection( getDataSourceIdByReportId(reportId) );
 	}	
 	
-	public static void fillReportToResponse(String reportId, HttpServletRequest request, HttpServletResponse response) throws ServiceException, Exception {
+	public static void fillReportToResponse(String reportId, HttpServletRequest request, HttpServletResponse response) throws ServiceException, IOException {
 		Map<String, Object> paramMap = getParameter(reportId, request);
 		fillReportToResponse(reportId, paramMap, response);
 	}
 	
-	public static void fillReportToResponse(String reportId, Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
+	public static void fillReportToResponse(String reportId, Map<String, Object> paramMap, HttpServletResponse response) throws ServiceException, IOException {
 		if (StringUtils.isBlank(reportId)) {
 			throw new java.lang.IllegalArgumentException("error, reportId is blank");
 		}
 		response.setContentType("application/pdf");
-		String jasperFile = jasperreportConfigProperties.getSource() + "/" + reportId + "/" + reportId + ".jasper";
-		InputStream reportSource = new FileInputStream( jasperFile );
-		fillReport(reportId, reportSource, paramMap, response.getOutputStream());
-		jasperFile = null;
+		String jasperFile = jasperreportConfigProperties.getSource() + File.separator + reportId + File.separator + reportId + JASPER_SUB_NAME;
+		try (InputStream reportSource = new FileInputStream( jasperFile )) {
+			fillReport(reportId, reportSource, paramMap, response.getOutputStream());
+		}
 	}
 	
-	public static void fillReportToByteArray(String reportId, Map<String, Object> paramMap, ByteArrayOutputStream outputStream) throws Exception {
+	public static void fillReportToByteArray(String reportId, Map<String, Object> paramMap, ByteArrayOutputStream outputStream) throws ServiceException, IOException {
 		if (StringUtils.isBlank(reportId)) {
 			throw new java.lang.IllegalArgumentException("error, reportId is blank");
 		}
-		String jasperFile = jasperreportConfigProperties.getSource() + "/" + reportId + "/" + reportId + ".jasper";
-		InputStream reportSource = new FileInputStream( jasperFile );
-		fillReport(reportId, reportSource, paramMap, outputStream);
-		jasperFile = null;
+		String jasperFile = jasperreportConfigProperties.getSource() + File.separator + reportId + File.separator + reportId + JASPER_SUB_NAME;
+		try (InputStream reportSource = new FileInputStream( jasperFile )) {
+			fillReport(reportId, reportSource, paramMap, outputStream);
+		}
 	}
 	
 	private static void fillReport(String reportId, InputStream reportSource, Map<String, Object> paramMap, OutputStream outputStream) {
@@ -178,8 +168,8 @@ public class JReportUtils {
 		conn = null;
 	}
 	
-	public static void deployReport(TbSysJreport report) throws Exception {		
-		String reportDeployDirName = jasperreportConfigProperties.getSource() + "/";
+	public static void deployReport(TbSysJreport report) throws ServiceException, IOException {		
+		String reportDeployDirName = jasperreportConfigProperties.getSource() + File.separator;
 		File reportDeployDir = new File(reportDeployDirName);
 		try {
 			if (!reportDeployDir.exists()) {
@@ -188,57 +178,51 @@ public class JReportUtils {
 			}								
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.error(e.getMessage().toString());
+			logger.error(e.getMessage());
 		}
 		logger.info("REPORT-ID : {}", report.getReportId());
 		File reportFile = null;
 		File reportZipFile = null;			
-		OutputStream os = null;
 		try {
-			String reportFileFullPath = reportDeployDirName + report.getReportId() + "/" + report.getFile();				
+			String reportFileFullPath = reportDeployDirName + report.getReportId() + File.separator + report.getFile();				
 			String reportZipFileFullPath = reportDeployDirName + report.getReportId() + ".zip";		
 			reportZipFile = new File(reportZipFileFullPath);
 			if (reportZipFile.exists()) {
 				logger.warn("delete {}", reportZipFileFullPath);
 				FileUtils.forceDelete(reportZipFile);					
 			}
-			os = new FileOutputStream(reportZipFile);
-			IOUtils.write(report.getContent(), os);
-			os.flush();
-			ZipFile zipFile = new ZipFile( reportZipFileFullPath );
-			zipFile.extractAll( reportDeployDirName );
-			reportFile = new File( reportFileFullPath );
-			if (!reportFile.exists()) {
-				logger.warn("report file is missing : {}", reportFileFullPath);
-				return;
+			try (OutputStream os = new FileOutputStream(reportZipFile)) {
+				IOUtils.write(report.getContent(), os);
+				os.flush();
+				try (ZipFile zipFile = new ZipFile( reportZipFileFullPath )) {
+					zipFile.extractAll( reportDeployDirName );
+					reportFile = new File( reportFileFullPath );
+					if (!reportFile.exists()) {
+						logger.warn("report file is missing : {}", reportFileFullPath);
+						return;
+					}
+					if (YesNoKeyProvide.YES.equals(report.getIsCompile()) && report.getFile().endsWith(JRXML_SUB_NAME)) {
+						logger.info("compile report...");
+						File d = new File( reportDeployDirName + report.getReportId() );
+						String outJasper = compileReportToJasperFile(d.listFiles());
+						logger.info("out first : {}", outJasper);
+					}						
+				}			
 			}
-			if (YesNo.YES.equals(report.getIsCompile()) && report.getFile().endsWith("jrxml")) {
-				logger.info("compile report...");
-				File d = new File( reportDeployDirName + report.getReportId() );
-				String outJasper = compileReportToJasperFile(d.listFiles(), reportDeployDirName + report.getReportId() + "/");
-				logger.info("out first : {}", outJasper);
-			}
-		} catch (JRException re) {
+		} catch (JRException | IOException re) {
 			re.printStackTrace();
-			logger.error(re.getMessage().toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage().toString());
+			logger.error(re.getMessage());
 		} finally {
-			if (os!=null) {
-				os.close();
-			}
-			os = null;
 			reportFile = null;
 			reportZipFile = null;
 		}
 		reportDeployDir = null;		
 	}
 	
-	public static void deploy() throws ServiceException, Exception {
+	public static void deploy() throws ServiceException {
 		logger.info("begin deploy...");
 		DefaultResult<List<TbSysJreport>> reportResult = sysJreportService.selectList();
-		String reportDeployDirName = jasperreportConfigProperties.getSource() + "/";
+		String reportDeployDirName = jasperreportConfigProperties.getSource() + File.separator;
 		File reportDeployDir = new File(reportDeployDirName);
 		try {
 			if (reportDeployDir.exists()) {
@@ -252,9 +236,8 @@ public class JReportUtils {
 			}							
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.error(e.getMessage().toString());
-		}
-		reportDeployDir = null;			
+			logger.error(e.getMessage());
+		}	
 		logger.info("end deploy...");
 	}
 	
@@ -262,20 +245,17 @@ public class JReportUtils {
 	 * jasperreport compile jrxml 成 jasper
 	 * 
 	 * @param sourceFile		如: File[]
-	 * @param destDir			如: C:/report/     產生一個 test.jasper 到 C:/report/ 中
 	 * @return
 	 * @throws JRException
 	 */
-	public static String compileReportToJasperFile(File sourceFile[], String destDir) throws JRException {
+	public static String compileReportToJasperFile(File[] sourceFile) throws JRException {
 		String jasperFirst = "";
 		for (int ix=0; sourceFile!=null && ix<sourceFile.length; ix++) {
 			File srcFile = sourceFile[ix];
-			if (!srcFile.exists() || srcFile.getName().indexOf(".jrxml")==-1) {
-				srcFile=null;
+			if (!srcFile.exists() || srcFile.getName().indexOf(JRXML_SUB_NAME)==-1) {
 				continue;
 			}
-			//String destFileName=srcFile.getName().replaceAll(".jrxml", ".jasper");
-			String destFileName=srcFile.getPath().replaceAll(".jrxml", ".jasper");
+			String destFileName=srcFile.getPath().replaceAll(JRXML_SUB_NAME, JASPER_SUB_NAME);
 			if ("".equals(jasperFirst)) {
 				jasperFirst = destFileName;
 			}
@@ -289,20 +269,17 @@ public class JReportUtils {
 	 * jasperreport compile jrxml 成 jasper
 	 * 
 	 * @param sourceFileName	如: new String[]{ "C:/report-source/test.jrxml" }
-	 * @param destDir			如: C:/report/     產生一個 test.jasper 到 C:/report/ 中
 	 * @return
 	 * @throws JRException
 	 */
-	public static String compileReportToJasperFile(String sourceFileName[], String destDir) throws JRException {
+	public static String compileReportToJasperFile(String[] sourceFileName) throws JRException {
 		String jasperFirst = "";
 		for (int ix=0; sourceFileName!=null && ix<sourceFileName.length; ix++) {
 			File srcFile = new File(sourceFileName[ix]);
-			if (!srcFile.exists() || srcFile.getName().indexOf(".jrxml")==-1) {
-				srcFile=null;
+			if (!srcFile.exists() || srcFile.getName().indexOf(JRXML_SUB_NAME)==-1) {
 				continue;
 			}
-			//String destFileName=srcFile.getName().replaceAll(".jrxml", ".jasper");
-			String destFileName=srcFile.getPath().replaceAll(".jrxml", ".jasper");
+			String destFileName=srcFile.getPath().replaceAll(JRXML_SUB_NAME, JASPER_SUB_NAME);
 			if ("".equals(jasperFirst)) {
 				jasperFirst = destFileName;
 			}
@@ -312,22 +289,17 @@ public class JReportUtils {
 		return jasperFirst;
 	}
 	
-	public static String selfTestDecompress4Upload(String uploadOid) throws ServiceException, IOException, Exception {
-		String extractDir = Constants.getWorkTmpDir() + "/" + JReportUtils.class.getSimpleName() + "/" + SimpleUtils.getUUIDStr() + "/";
+	public static String selfTestDecompress4Upload(String uploadOid) throws ServiceException, IOException{
+		String extractDir = Constants.getWorkTmpDir() + File.separator + JReportUtils.class.getSimpleName() + File.separator + SimpleUtils.getUUIDStr() + "/";
 		File realFile = UploadSupportUtils.getRealFile(uploadOid);
-		try {
-			ZipFile zipFile = new ZipFile(realFile);
+		try (ZipFile zipFile = new ZipFile(realFile)) {
 			zipFile.extractAll( extractDir );
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			realFile = null;
-		}		
+		} 	
 		return extractDir;
 	}
 	
-	public static Map<String, Object> getParameter(String reportId, HttpServletRequest request) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+	public static Map<String, Object> getParameter(String reportId, HttpServletRequest request) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
 		if (StringUtils.isBlank(reportId)) {
 			return paramMap;
 		}

@@ -21,7 +21,7 @@
  */
 package org.qifu.base.properties;
 
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -42,10 +42,7 @@ public class SpringMailSessionConfigProperties {
 	}
 	
 	public boolean enableDebug() {
-		if ( YesNo.YES.contentEquals(this.debug) ) {
-			return true;
-		}
-		return false;
+		return YesNoKeyProvide.YES.equals(this.debug);
 	}
 	
 }

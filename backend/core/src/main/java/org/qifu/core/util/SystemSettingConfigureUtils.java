@@ -31,14 +31,18 @@ import org.qifu.core.service.ISysCodeService;
 public class SystemSettingConfigureUtils {
 	
 	private static final String CODE_TYPE = "CNF";
-	private static final String _MAIL_DEFAULT_FROM_MAIL_CODE = "CNF_CONF001";
-	private static final String _MAIL_ENABLE_CODE = "CNF_CONF002";
-	private static final String _FIRST_LOAD_JAVASCRIPT_CODE = "CNF_CONF003";
+	private static final String MAIL_DEFAULT_FROM_MAIL_CODE = "CNF_CONF001";
+	private static final String MAIL_ENABLE_CODE = "CNF_CONF002";
+	private static final String FIRST_LOAD_JAVASCRIPT_CODE = "CNF_CONF003";
 	
 	private static ISysCodeService<TbSysCode, String> sysCodeService;
 	
+	protected SystemSettingConfigureUtils() {
+		throw new IllegalStateException("Utils class: SystemSettingConfigureUtils");
+	}
+	
 	static {
-		sysCodeService = (ISysCodeService<TbSysCode, String>) AppContext.context.getBean(ISysCodeService.class);
+		sysCodeService = AppContext.getContext().getBean(ISysCodeService.class);
 	}
 	
 	public static TbSysCode getCode(String code) {
@@ -52,13 +56,11 @@ public class SystemSettingConfigureUtils {
 			}
 		} catch (ServiceException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} 
 		return sysCode;
 	}	
 	
-	public static void updateParam1(String code, String value) throws ServiceException, Exception {
+	public static void updateParam1(String code, String value) throws ServiceException {
 		TbSysCode sysCode = new TbSysCode();
 		sysCode.setType(CODE_TYPE);
 		sysCode.setCode(code);
@@ -75,7 +77,7 @@ public class SystemSettingConfigureUtils {
 	}	
 	
 	public static TbSysCode getMailDefaultFrom() {
-		return getCode(_MAIL_DEFAULT_FROM_MAIL_CODE);
+		return getCode(MAIL_DEFAULT_FROM_MAIL_CODE);
 	}
 	
 	public static String getMailDefaultFromValue() {
@@ -83,12 +85,12 @@ public class SystemSettingConfigureUtils {
 		return StringUtils.defaultString(sysCode.getParam1());
 	}	
 	
-	public static void updateMailDefaultFromValue(String value) throws ServiceException, Exception {
-		updateParam1(_MAIL_DEFAULT_FROM_MAIL_CODE, value);
+	public static void updateMailDefaultFromValue(String value) throws ServiceException {
+		updateParam1(MAIL_DEFAULT_FROM_MAIL_CODE, value);
 	}	
 	
 	public static TbSysCode getMailEnable() {
-		return getCode(_MAIL_ENABLE_CODE);
+		return getCode(MAIL_ENABLE_CODE);
 	}
 	
 	public static String getMailEnableValue() {
@@ -96,12 +98,12 @@ public class SystemSettingConfigureUtils {
 		return StringUtils.defaultString(sysCode.getParam1()).trim();
 	}	
 	
-	public static void updateMailEnableValue(String value) throws ServiceException, Exception {
-		updateParam1(_MAIL_ENABLE_CODE, value);
+	public static void updateMailEnableValue(String value) throws ServiceException {
+		updateParam1(MAIL_ENABLE_CODE, value);
 	}
 	
 	public static TbSysCode getFirstLoadJavascript() {
-		return getCode(_FIRST_LOAD_JAVASCRIPT_CODE);
+		return getCode(FIRST_LOAD_JAVASCRIPT_CODE);
 	}	
 	
 	public static String getFirstLoadJavascriptValue() {

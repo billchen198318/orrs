@@ -35,7 +35,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-
 /**
  * http://127.0.0.1:8088/swagger-ui/
  * http://127.0.0.1:8088/swagger-ui/index.html
@@ -44,7 +43,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @OpenAPIDefinition
 public class SwaggerConfig {
 	
-	private final String securitySchemeName = "bearerAuth";
+	private static final String SECURITY_SCHEME_NAME = "bearerAuth";
 	
 	@Bean
 	public OpenAPI customOpenAPI() {
@@ -52,10 +51,10 @@ public class SwaggerConfig {
 		License license = new License().name("Apache 2.0").url("http://www.apache.org/licenses/LICENSE-2.0");
 		Info info = new Info().title("QiFu4").description("backend interface.").version("0.4").contact(contact).license(license);
 		Components component = new Components().addSecuritySchemes(
-				securitySchemeName, 
+				SECURITY_SCHEME_NAME, 
 				new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme(Constants.TOKEN_PREFIX).bearerFormat("JWT")
 		);
-		SecurityRequirement securityReq = new SecurityRequirement().addList(securitySchemeName);
+		SecurityRequirement securityReq = new SecurityRequirement().addList(SECURITY_SCHEME_NAME);
 		return new OpenAPI().components(component).security(List.of(securityReq)).info(info);
 	}
 	

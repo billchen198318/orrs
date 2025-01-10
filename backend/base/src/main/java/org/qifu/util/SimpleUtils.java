@@ -69,29 +69,37 @@ public class SimpleUtils {
 	public static final int IS_YEAR=1;
 	public static final int IS_MONTH=2;
 	public static final int IS_DAY=3;	
-	private final static Random rnd=new Random();		
-	private final static String sourceStr="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	private final static char sourceStrArray[]=sourceStr.toCharArray();
-	private static DateFormat dateFormat_yyyyMMdd_HHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final Random rnd=new Random();		
+	private static final String SOURCE_STR="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final char[] SOURCE_STR_ARRAY=SOURCE_STR.toCharArray();
+	private static DateFormat dateFormatOfyyyyMMddHHmmss = null;
 	
-	public static boolean checkBeTrueOf_azAZ09(
+	static {
+		dateFormatOfyyyyMMddHHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	}
+	
+	protected SimpleUtils() {
+		throw new IllegalStateException("Utils class: SimpleUtils");
+	}
+	
+	public static boolean checkBeTrueOfAZaz09(
 			final int minLength, final int maxLength, final String sourceValue) {
 		boolean accept=true;
 		if (sourceValue==null || sourceValue.length()<minLength || sourceValue.length()>maxLength || minLength<0 ) {
 			accept=false;
 			return accept;
 		}
-		accept=SimpleUtils.checkBeTrueOf_azAZ09(sourceValue);
+		accept=checkBeTrueOfAZaz09(sourceValue);
 		return accept;
 	}
 	
-	public static boolean checkBeTrueOf_09(final String sourceValue) {
+	public static boolean checkBeTrueOf09(final String sourceValue) {
 		boolean isNormal=true;
 		if (sourceValue!=null && sourceValue.length()>0) {
 			int val=0;
-			char tmp[]=sourceValue.toCharArray();
+			char[] tmp=sourceValue.toCharArray();
 			for (int ix=0; ix<tmp.length && isNormal; ix++) {
-				val=(int)tmp[ix];
+				val=tmp[ix];
 				if (! (val>=48 && val<=57) )
 					isNormal=false;
 			}
@@ -101,13 +109,13 @@ public class SimpleUtils {
 		return isNormal;
 	}	
 	
-	public static boolean checkBeTrueOf_azAZ09(final String sourceValue) {
+	public static boolean checkBeTrueOfAZaz09(final String sourceValue) {
 		boolean isNormal=true;
 		if (sourceValue!=null && sourceValue.length()>0) {
 			int val=0;
-			char tmp[]=sourceValue.toCharArray();
+			char[] tmp=sourceValue.toCharArray();
 			for (int ix=0; ix<tmp.length && isNormal; ix++) {
-				val=(int)tmp[ix];
+				val=tmp[ix];
 				if (!( (val>=48 && val<=57) || (val>=65 && val<=90) || (val>=97 && val<=122) ) )
 					isNormal=false;
 			}
@@ -126,16 +134,16 @@ public class SimpleUtils {
 	 * @param sourceValue
 	 * @return
 	 */
-	public static boolean checkBeTrueOf_azAZ09Id(final String sourceValue) {
+	public static boolean checkBeTrueOfAZaz09Id(final String sourceValue) {
 		boolean isNormal=true;
-		String str = StringUtils.defaultString(sourceValue).replaceAll("-", "");
-		str = StringUtils.defaultString(str).replaceAll("_", "");
-		str = StringUtils.defaultString(str).replaceAll("[.]", "");
+		String str = StringUtils.replace(StringUtils.defaultString(sourceValue), "-", "");
+		str = StringUtils.replace(str, "_", "");
+		str = StringUtils.replace(str, "[.]", "");
 		if (str!=null && str.length()>0) {
 			int val=0;
-			char tmp[]=str.toCharArray();
+			char[] tmp=str.toCharArray();
 			for (int ix=0; ix<tmp.length && isNormal; ix++) {
-				val=(int)tmp[ix];
+				val=tmp[ix];
 				if (!( (val>=48 && val<=57) || (val>=65 && val<=90) || (val>=97 && val<=122) ) )
 					isNormal=false;
 			}
@@ -153,19 +161,15 @@ public class SimpleUtils {
 		if (length<1)
 			return "";
 		
-		StringBuffer retValue=new StringBuffer();
+		StringBuilder retValue=new StringBuilder();
 		for (int ix=0; ix<length; ix++) {
-			retValue.append(SimpleUtils.sourceStrArray[SimpleUtils.rnd.nextInt(SimpleUtils.sourceStrArray.length)] );
+			retValue.append(SOURCE_STR_ARRAY[SimpleUtils.rnd.nextInt(SOURCE_STR_ARRAY.length)] );
 		}
 		return retValue.toString();
 	}
 	
-	public static String getStr(String value) {
-		return getStr(value, "");
-	}
-	
-	public static String getStr(final String value, final String defaultValue) {		
-		return org.apache.commons.lang3.StringUtils.defaultString(value, defaultValue);
+	public static String getStr(String value) {		
+		return org.apache.commons.lang3.StringUtils.defaultString(value);
 	}
 	
 	public static int getInt(final String value, final int defaultValue) { 
@@ -214,39 +218,35 @@ public class SimpleUtils {
 		int m=0;
 		int d=0;
 		if (yyyymmdd.indexOf("/")>-1 ) {
-			String tmp[]=yyyymmdd.split("/");
+			String[] tmp=yyyymmdd.split("/");
 			if (tmp.length==3 ) {
 				y=SimpleUtils.getInt(tmp[0], 0 );
 				m=SimpleUtils.getInt(tmp[1], 0 );
 				d=SimpleUtils.getInt(tmp[2], 0 );
 			}
-			tmp=null;
 		}
 		if (yyyymmdd.indexOf("-")>-1 ) {
-			String tmp[]=yyyymmdd.split("-");
+			String[] tmp=yyyymmdd.split("-");
 			if (tmp.length==3 ) {
 				y=SimpleUtils.getInt(tmp[0], 0 );
 				m=SimpleUtils.getInt(tmp[1], 0 );
 				d=SimpleUtils.getInt(tmp[2], 0 );
 			}
-			tmp=null;
 		}		
 		if (yyyymmdd.length()==8 ) {
 			y=SimpleUtils.getInt(yyyymmdd.substring(0, 4), 0 );
 			m=SimpleUtils.getInt(yyyymmdd.substring(4, 6), 0 );
 			d=SimpleUtils.getInt(yyyymmdd.substring(6, 8), 0 );
 		}
-		if (y!=0 && m!=0 && d!=0 && y>=1900 && y<=9999 && m>=1 && m<=12 && d>=1) {
-			if (d<=SimpleUtils.getMaxDayOfMonth(y, m) ) {
-				accept=true;
-			}
+		if (y!=0 && m!=0 && d!=0 && y>=1900 && y<=9999 && m>=1 && m<=12 && d>=1 &&  (d<=SimpleUtils.getMaxDayOfMonth(y, m) )) {
+			accept=true;
 		}
 		return accept;
 	}
 	
 	public static int getDaysBetween(String startDate, String endDate) {
-		DateTime s = new DateTime( getStrYMD(startDate.replaceAll("/", "-"), "-") );
-		DateTime e = new DateTime( getStrYMD(endDate.replaceAll("/", "-"), "-") );
+		DateTime s = new DateTime( getStrYMD(StringUtils.replace(startDate, "/", "-"), "-") );
+		DateTime e = new DateTime( getStrYMD(StringUtils.replace(endDate, "/", "-"), "-") );
 		return Days.daysBetween(s, e).getDays();
 	}
 	
@@ -255,8 +255,8 @@ public class SimpleUtils {
 	}
 	
 	public static int getYearsBetween(String startDate, String endDate) {
-		DateTime s = new DateTime( startDate.length()==4 ? startDate + "-01-01" : getStrYMD(startDate.replaceAll("/", "-"), "-") ); 
-		DateTime e = new DateTime( endDate.length()==4 ? endDate + "-01-01" : getStrYMD(endDate.replaceAll("/", "-"), "-") );		
+		DateTime s = new DateTime( startDate.length()==4 ? startDate + "-01-01" : getStrYMD(StringUtils.replace(startDate, "/", "-"), "-") ); 
+		DateTime e = new DateTime( endDate.length()==4 ? endDate + "-01-01" : getStrYMD(StringUtils.replace(endDate, "/", "-"), "-") );		
 		return Years.yearsBetween(s, e).getYears();
 	}	
 	
@@ -264,9 +264,9 @@ public class SimpleUtils {
 		return getYearsBetween( getStrYMD(startDate, "").substring(0, 4), getStrYMD(endDate, "").substring(0, 4) );
 	}
 	
-	public static int getMonthsBetween(String startDate, String endDate) {		
-		DateTime s = new DateTime( getStrYMD(startDate.replaceAll("/", "-"), "-") ); 
-		DateTime e = new DateTime( getStrYMD(endDate.replaceAll("/", "-"), "-") );		
+	public static int getMonthsBetween(String startDate, String endDate) {	
+		DateTime s = new DateTime( getStrYMD(StringUtils.replace(startDate, "/", "-"), "-") ); 
+		DateTime e = new DateTime( getStrYMD(StringUtils.replace(endDate, "/", "-"), "-") );		
 		return Months.monthsBetween(s, e).getMonths();
 	}		
 	
@@ -301,8 +301,7 @@ public class SimpleUtils {
 		return yyyymmdd.substring(0, 4) + splitStr + yyyymmdd.substring(4, 6) + splitStr + yyyymmdd.substring(6, 8);
 	}
 	
-	public static int getMaxDayOfMonth(final int year, final int month) {
-		int max=28;		
+	public static int getMaxDayOfMonth(final int year, final int month) {		
 		Calendar calendar=Calendar.getInstance();		
 		if (year>=1900 && year<=3000) {
 			calendar.set(Calendar.YEAR, year);
@@ -315,12 +314,10 @@ public class SimpleUtils {
 			calendar.set(Calendar.MONTH, 0 );		
 		}
 		calendar.set(Calendar.DATE, 1);
-		max=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-		return max;
+		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 	}
 	
-	public static int getDayOfWeek(final int year, final int month) {
-		int dayofweek=28;		
+	public static int getDayOfWeek(final int year, final int month) {	
 		Calendar calendar=Calendar.getInstance();		
 		if (year>=1900 && year<=3000) {
 			calendar.set(Calendar.YEAR, year);
@@ -333,8 +330,7 @@ public class SimpleUtils {
 			calendar.set(Calendar.MONTH, 0 );		
 		}
 		calendar.set(Calendar.DATE, 1);
-		dayofweek=calendar.get(Calendar.DAY_OF_WEEK);
-		return dayofweek;
+		return calendar.get(Calendar.DAY_OF_WEEK);
 	}	
 	
 	/**
@@ -346,14 +342,15 @@ public class SimpleUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, String> getQuarterlyStartEnd(String yyyyMMdd) throws Exception {
-		Map<String, String> dateMap=new HashMap<String, String>();
+	public static Map<String, String> getQuarterlyStartEnd(String yyyyMMdd) throws IllegalArgumentException {
+		String e = "parameter error.";
+		Map<String, String> dateMap=new HashMap<>();
 		if (yyyyMMdd==null) {
-			throw new java.lang.IllegalArgumentException("yyyyMMdd error.");
+			throw new java.lang.IllegalArgumentException(e);
 		}
-		yyyyMMdd=yyyyMMdd.replaceAll("/", "");
+		yyyyMMdd = StringUtils.replace(yyyyMMdd, "/", "");
 		if (yyyyMMdd.length()!=8 || !org.apache.commons.lang3.math.NumberUtils.isCreatable(yyyyMMdd)) {
-			throw new java.lang.IllegalArgumentException("yyyyMMdd error.");
+			throw new java.lang.IllegalArgumentException(e);
 		}
 		int yyyy=Integer.parseInt(yyyyMMdd.substring(0, 4));
 		int mm = Integer.parseInt(yyyyMMdd.substring(4, 6));
@@ -376,7 +373,7 @@ public class SimpleUtils {
 			end=yyyy+"/12/" + getMaxDayOfMonth(yyyy, 12);			
 		}		
 		if ("".equals(start) || "".equals(end)) {
-			throw new java.lang.IllegalArgumentException("yyyyMMdd error.");
+			throw new java.lang.IllegalArgumentException(e);
 		}
 		dateMap.put("date1", start);
 		dateMap.put("date2", end);
@@ -386,14 +383,14 @@ public class SimpleUtils {
 	
 	public static String toHex(final String sourceValue) {
 		String value="";
-		value=org.apache.commons.codec.binary.Hex.encodeHexString(SimpleUtils.getStr(sourceValue, "").getBytes() );
+		value=org.apache.commons.codec.binary.Hex.encodeHexString(SimpleUtils.getStr(sourceValue).getBytes() );
 		return value;
 	}
 	
 	public static String deHex(final String sourceValue) {
 		String value="";
 		try {
-			value=new String(org.apache.commons.codec.binary.Hex.decodeHex( SimpleUtils.getStr(sourceValue, "").toCharArray() ) );
+			value=new String(org.apache.commons.codec.binary.Hex.decodeHex( SimpleUtils.getStr(sourceValue).toCharArray() ) );
 		} catch (DecoderException e) {
 			e.printStackTrace();
 		}
@@ -402,13 +399,13 @@ public class SimpleUtils {
 	
 	public static String toB64(final String sourceValue) {		
 		String value="";
-		value=org.apache.commons.codec.binary.Base64.encodeBase64String(SimpleUtils.getStr(sourceValue, "").getBytes() );	
+		value=org.apache.commons.codec.binary.Base64.encodeBase64String(SimpleUtils.getStr(sourceValue).getBytes() );	
 		return value;
 	}
 	
 	public static String deB64(final String sourceValue) {
 		String value="";
-		value=new String(org.apache.commons.codec.binary.Base64.decodeBase64(SimpleUtils.getStr(sourceValue, "") ) );
+		value=new String(org.apache.commons.codec.binary.Base64.decodeBase64(SimpleUtils.getStr(sourceValue) ) );
 		return value;
 	}
 	
@@ -421,11 +418,11 @@ public class SimpleUtils {
 	}	
 	
 	public static byte[] toMD5(final String sourceValue) {
-		return org.apache.commons.codec.digest.DigestUtils.md5(SimpleUtils.getStr(sourceValue, "") );
+		return org.apache.commons.codec.digest.DigestUtils.md5(SimpleUtils.getStr(sourceValue) );
 	}
 	
 	public static String toMD5Hex(final String sourceValue) {
-		return org.apache.commons.codec.digest.DigestUtils.md5Hex(SimpleUtils.getStr(sourceValue, "") );
+		return org.apache.commons.codec.digest.DigestUtils.md5Hex(SimpleUtils.getStr(sourceValue) );
 	}
 	
 	public static String joinString(Object... values) {
@@ -446,18 +443,18 @@ public class SimpleUtils {
 			return "";
 		}
 		StringBuilder sb=new StringBuilder();
-		char chr[]=strValue.toCharArray();
+		char[] chr=strValue.toCharArray();
 		for (int ix=0; ix<chr.length; ix++ ) {
 			sb.append("&#").append(((int)chr[ix]) ).append(";");
 		}
 		return sb.toString();
 	}
 	
-	public static <T extends java.io.Serializable> List<T> getListHashSet(List<T> list) throws Exception {
+	public static <T extends java.io.Serializable> List<T> getListHashSet(List<T> list) {
 		if (list==null) {
 			return list;
 		}
-		return new ArrayList<T>(new HashSet<T>(list));
+		return new ArrayList<>(new HashSet<>(list));
 	}
 	
     /**
@@ -497,9 +494,8 @@ public class SimpleUtils {
         return imageString;
     }
     
-    public static String getPNGBase64Content(String imgStr) throws Exception {
+    public static String getPNGBase64Content(String imgStr) throws IOException {
     	if (!isPNGBase64Content(imgStr)) {
-    		//imgStr = IOUtils.toString(SimpleUtils.class.getClassLoader().getResource("META-INF/resource/nofound-icon.html").openStream());
     		imgStr = new String( IOUtils.toByteArray(SimpleUtils.class.getClassLoader().getResource("resource/nofound-icon.html").openStream()) );
     	}
     	imgStr = org.apache.commons.lang3.StringUtils.replaceOnce(imgStr, "<img src=\"data:image/png;base64,", "");
@@ -508,14 +504,11 @@ public class SimpleUtils {
     	return imgStr;
     }		
     
-    public static boolean isPNGBase64Content(String imgStr) throws Exception {
+    public static boolean isPNGBase64Content(String imgStr) {
     	if (imgStr==null || imgStr.indexOf("image/png;base64,")==-1 ) {
     		return false;
     	}
-    	if (imgStr.length()<35) {
-    		return false;
-    	}
-    	return true;
+    	return (imgStr.length()<35) ? Boolean.FALSE : Boolean.TRUE;
     }
     
     /**
@@ -540,8 +533,8 @@ public class SimpleUtils {
     	throw new IllegalArgumentException("Your InputStream was neither an OLE2 stream, nor an OOXML stream");
     }    
     
-	public static void setCellPicture(XSSFWorkbook wb, XSSFSheet sh, byte[] iconBytes, int row, int col) throws Exception {
-        int myPictureId = wb.addPicture(iconBytes, XSSFWorkbook.PICTURE_TYPE_PNG);
+	public static void setCellPicture(XSSFWorkbook wb, XSSFSheet sh, byte[] iconBytes, int row, int col) {
+        int myPictureId = wb.addPicture(iconBytes, Workbook.PICTURE_TYPE_PNG);
         
         XSSFDrawing drawing = sh.createDrawingPatriarch();
         XSSFClientAnchor myAnchor = new XSSFClientAnchor();
@@ -553,7 +546,7 @@ public class SimpleUtils {
         myPicture.resize();
 	}
 	
-	public static byte[] getColorRGB(String rgb) throws Exception {
+	public static byte[] getColorRGB(String rgb) {
 		if (StringUtils.isEmpty(rgb) || rgb.length()!=6) {
 			return new byte[]{ (byte)00, (byte)00, (byte)00 };
 		}
@@ -563,7 +556,7 @@ public class SimpleUtils {
 		return new byte[]{ (byte)red, (byte)green, (byte)blue };
 	}
 	
-	public static byte[] getColorRGB4POIColor(String srcRGB) throws Exception {
+	public static byte[] getColorRGB4POIColor(String srcRGB) {
 		if (StringUtils.isEmpty(srcRGB) || (srcRGB.length()!=6 && srcRGB.length()!=7) ) {
 			return new byte[]{ (byte)-1, (byte)00, (byte)00, (byte)00 };
 		}
@@ -577,7 +570,7 @@ public class SimpleUtils {
 		return new byte[]{ (byte)-1, (byte)red, (byte)green, (byte)blue };
 	}		
 	
-	public static int[] getColorRGB2(String color) throws Exception {
+	public static int[] getColorRGB2(String color) {
 		if (StringUtils.isEmpty(color) || color.length()!=7) {
 			return new int[] {0, 0, 0};
 		}
@@ -601,46 +594,6 @@ public class SimpleUtils {
     	return url.toString();
     }	
 	
-    /*
-	public static String escapeCsv(String str) throws Exception {
-		if ( null == str ) {
-			return str;
-		}		
-		str = str.replaceAll("\r\n", "#GS_NRNL#");
-		str = str.replaceAll("\r", "#GS_NR#");
-		str = str.replaceAll("\n", "#GS_NL#");
-		str = str.replaceAll("\t", "#GS_TAB#");
-		str = str.replaceAll(";", "#GS_SEMICOLON#");
-		str = str.replaceAll(",", "#GS_COMMA#");
-		return str;
-	}
-	
-	public static String unEscapeCsv(String str) throws Exception {
-		if ( null == str ) {
-			return str;
-		}		
-		str = str.replaceAll("#GS_NRNL#", "\r\n");
-		str = str.replaceAll("#GS_NR#", "\r");
-		str = str.replaceAll("#GS_NL#", "\n");
-		str = str.replaceAll("#GS_TAB#", "\t");
-		str = str.replaceAll("#GS_SEMICOLON#", ";");
-		str = str.replaceAll("#GS_COMMA#", ",");
-		return str;		
-	}    
-    
-	public static String unEscapeCsv2(String str) throws Exception {
-		if ( null == str ) {
-			return str;
-		}
-		str = unEscapeCsv(str);
-		if (str.startsWith("\"") && str.endsWith("\"")) {
-			str = str.substring(1, str.length());
-			str = str.substring(0, str.length()-1);				
-		}
-		return str;		
-	}  	
-	*/
-	
 	public static int getAvailableProcessors(int maxSize) {
 		int processors = Runtime.getRuntime().availableProcessors() - 1;
 		if (processors > maxSize) {
@@ -652,11 +605,11 @@ public class SimpleUtils {
 		return processors;
 	}
 	
-	public static String getDateFormat_yyyyMMddHHmmss(Date date) {
+	public static String getDateFormatOfyyyyMMddHHmmss(Date date) {
 		if (null == date) {
 			return "";
 		}
-		return dateFormat_yyyyMMdd_HHmmss.format(date);
+		return dateFormatOfyyyyMMddHHmmss.format(date);
 	}
 	
 	public static <T extends Comparable<T>> boolean isBetween(T value, T start, T end) {

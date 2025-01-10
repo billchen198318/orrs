@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.mapper.IBaseMapper;
@@ -35,7 +36,6 @@ import org.qifu.core.entity.TbSysMailHelper;
 import org.qifu.core.mapper.TbSysMailHelperMapper;
 import org.qifu.core.service.ISysMailHelperService;
 import org.qifu.util.SimpleUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,8 +46,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysMailHelperServiceImpl extends BaseService<TbSysMailHelper, String> implements ISysMailHelperService<TbSysMailHelper, String> {
 	
-	@Autowired
-	TbSysMailHelperMapper tbSysMailHelperMapper;
+	private static final String MAILID_VAR = "mailid";
+	
+	private final TbSysMailHelperMapper tbSysMailHelperMapper;
+	
+	public SysMailHelperServiceImpl(TbSysMailHelperMapper tbSysMailHelperMapper) {
+		super();
+		this.tbSysMailHelperMapper = tbSysMailHelperMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysMailHelper, String> getBaseMapper() {
@@ -55,19 +61,19 @@ public class SysMailHelperServiceImpl extends BaseService<TbSysMailHelper, Strin
 	}
 	
 	@Override
-	public DefaultResult<List<TbSysMailHelper>> findForJobList(String mailId) throws ServiceException, Exception {
+	public DefaultResult<List<TbSysMailHelper>> findForJobList(String mailId) throws ServiceException {
 		if ( StringUtils.isBlank(mailId) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		if (mailId.endsWith("%")) {
-			paramMap.put("mailId", mailId);
+			paramMap.put(MAILID_VAR, mailId);
 		} else {
-			paramMap.put("mailId", mailId+"%");
+			paramMap.put(MAILID_VAR, mailId+"%");
 		}
-		DefaultResult<List<TbSysMailHelper>> result = new DefaultResult<List<TbSysMailHelper>>();
+		DefaultResult<List<TbSysMailHelper>> result = new DefaultResult<>();
 		List<TbSysMailHelper> searchList = this.tbSysMailHelperMapper.findForJobList(paramMap);
-		if (searchList!=null && searchList.size()>0) {
+		if (!CollectionUtils.isEmpty(searchList)) {
 			result.setValue(searchList);
 		} else {
 			result.setMessage( BaseSystemMessage.searchNoData() );
@@ -76,21 +82,21 @@ public class SysMailHelperServiceImpl extends BaseService<TbSysMailHelper, Strin
 	}
 	
 	@Override
-	public String findForMaxMailId(String mailId) throws ServiceException, Exception {
+	public String findForMaxMailId(String mailId) throws ServiceException {
 		if (StringUtils.isBlank(mailId)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		if (mailId.endsWith("%")) {
-			paramMap.put("mailId", mailId);
+			paramMap.put(MAILID_VAR, mailId);
 		} else {
-			paramMap.put("mailId", mailId+"%");
+			paramMap.put(MAILID_VAR, mailId+"%");
 		}
 		return this.tbSysMailHelperMapper.findForMaxMailId(paramMap);
 	}	
 	
 	@Override
-	public String findForMaxMailIdComplete(String mailId) throws ServiceException, Exception {
+	public String findForMaxMailIdComplete(String mailId) throws ServiceException {
 		if (StringUtils.isBlank(mailId) || !SimpleUtils.isDate(mailId)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}

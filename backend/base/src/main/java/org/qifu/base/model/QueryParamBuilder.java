@@ -37,7 +37,7 @@ import ognl.OgnlException;
 
 public class QueryParamBuilder {
 	
-	private Map<String, Object> paramMap = new HashMap<String, Object>();
+	private Map<String, Object> paramMap = new HashMap<>();
 	
 	private SearchBody searchBody = null;
 	
@@ -48,8 +48,7 @@ public class QueryParamBuilder {
 	}
 	
 	public static QueryParamBuilder build() {
-		QueryParamBuilder paramBuilder = new QueryParamBuilder();
-		return paramBuilder;
+		return new QueryParamBuilder();
 	}	
 	
 	private Object doExpression(String expression) {
@@ -184,7 +183,7 @@ public class QueryParamBuilder {
 	public QueryParamBuilder addField(String paramName, String expression) {
 		Object obj = this.doExpression(expression);
 		boolean test = false;
-		if (obj != null && obj instanceof Boolean) {
+		if (obj != null && obj instanceof @SuppressWarnings("unused") Boolean bl) {
 			test = (Boolean) obj;
 		}
 		if (test) {
@@ -216,7 +215,7 @@ public class QueryParamBuilder {
 	}
 	
 	public String asString(String paramName) {
-		return (String) this.searchBody.getField().get(paramName);
+		return this.searchBody.getField().get(paramName);
 	}
 	
 	public BigDecimal asDecimal(String paramName) {
@@ -228,24 +227,24 @@ public class QueryParamBuilder {
 	}
 	
 	public long asLong(String paramName) {
-		return NumberUtils.toLong((String) this.searchBody.getField().get(paramName), -1);
+		return NumberUtils.toLong(this.searchBody.getField().get(paramName), -1);
 	}
 	
 	public int asInt(String paramName) {
-		return NumberUtils.toInt((String) this.searchBody.getField().get(paramName), -1);
+		return NumberUtils.toInt(this.searchBody.getField().get(paramName), -1);
 	}
 	
 	public String[] asDefaultSplitDelimiter(String paramName) {
 		if (null == this.searchBody || null == this.searchBody.getField()) {
-			return null;
+			return new String[0];
 		}
 		return StringUtils.defaultString(this.searchBody.getField().get(paramName)).split(Constants.DEFAULT_SPLIT_DELIMITER);
 	}
 	
 	public List<String> asDefaultSplitDelimiterList(String paramName) {
-		String value[] = this.asDefaultSplitDelimiter(paramName);
+		String[] value = this.asDefaultSplitDelimiter(paramName);
 		if (null == value) {
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
 		return Arrays.asList(value);
 	}

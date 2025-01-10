@@ -24,9 +24,11 @@ package org.qifu.util;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.qifu.base.Constants;
 
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
@@ -43,8 +45,7 @@ public class PdfOwnerUserBuilder {
 	private String watermarkText = "";
 	
 	public static PdfOwnerUserBuilder build() {
-		PdfOwnerUserBuilder pdfOwnerUserBuilder = new PdfOwnerUserBuilder();
-		return pdfOwnerUserBuilder;
+		return new PdfOwnerUserBuilder();
 	}
 	
 	public PdfOwnerUserBuilder watermarkText(String watermarkText) {
@@ -74,60 +75,42 @@ public class PdfOwnerUserBuilder {
 	}
 	
 	public PdfOwnerUserBuilder destFileToTmpdir() {
-		String fullPath = System.getProperty("java.io.tmpdir") + "/" + PdfOwnerUserBuilder.class.getSimpleName() + "/" + System.currentTimeMillis() + "/" + System.currentTimeMillis()+".pdf";
+		String fullPath = System.getProperty("java.io.tmpdir") + Constants.FORWARD_SLASH + PdfOwnerUserBuilder.class.getSimpleName() + Constants.FORWARD_SLASH + System.currentTimeMillis() + Constants.FORWARD_SLASH + System.currentTimeMillis()+".pdf";
 		this.destFile(fullPath);
 		return this;
 	}
 	
-	public PdfOwnerUserBuilder sourceFile(String fullPath) throws Exception {
+	public PdfOwnerUserBuilder sourceFile(String fullPath) throws IOException {
 		File f = new File(fullPath);
 		if (!f.exists()) {
-			f = null;
-			throw new Exception("no exists file : " + fullPath);
+			throw new IOException("no exists file : " + fullPath);
 		}
-		f = null;
 		this.pdfFileFullPath = fullPath;
 		return this;
 	}
 	
-	public PdfOwnerUserBuilder process() throws Exception {
+	public PdfOwnerUserBuilder process() throws IOException {
 		if (StringUtils.isBlank(this.destEncryptionPdfPath) || StringUtils.isBlank(this.pdfFileFullPath)) {
-			throw new Exception("no exists dest file : " + destEncryptionPdfPath + " or source file : " + this.pdfFileFullPath);
+			throw new IOException("no exists dest file : " + destEncryptionPdfPath + " or source file : " + this.pdfFileFullPath);
 		}
 		File destEncryptionPdfFile = new File(this.destEncryptionPdfPath);
 		if (!destEncryptionPdfFile.getParentFile().exists()) {
 			FileUtils.forceMkdir(destEncryptionPdfFile.getParentFile());
 		}
 		destEncryptionPdfFile = null;
-		FileOutputStream destEncryptionPdfFileOs = new FileOutputStream(this.destEncryptionPdfPath);
-		PdfReader reader = null;
-		PdfStamper stamper = null;
-		try {
-			reader = new PdfReader(this.pdfFileFullPath);
-			stamper = new PdfStamper(reader, destEncryptionPdfFileOs);
-			stamper.setEncryption(
-					this.user.getBytes(), 
-					this.owner.getBytes(), 
-					PdfWriter.ALLOW_PRINTING, 
-					PdfWriter.ENCRYPTION_AES_128);
-			if (!StringUtils.isBlank(this.watermarkText)) {
-				Font font = FontFactory.getFont("fonts/fireflysung.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-				PdfWatermarkUtils.addWatermark(stamper, font.getBaseFont(), Color.RED, this.watermarkText);
-			}
-			stamper.close();
-			reader.close();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			if (stamper != null) {
-				stamper = null;
-			}
-			if (reader != null) {
-				reader = null;
-			}
-			if (destEncryptionPdfFileOs != null) {
-				destEncryptionPdfFileOs.close();
-				destEncryptionPdfFileOs = null;
+		try (FileOutputStream destEncryptionPdfFileOs = new FileOutputStream(this.destEncryptionPdfPath)) {
+			try (PdfReader reader = new PdfReader(this.pdfFileFullPath)) {
+				PdfStamper stamper = new PdfStamper(reader, destEncryptionPdfFileOs);
+				stamper.setEncryption(
+						this.user.getBytes(), 
+						this.owner.getBytes(), 
+						PdfWriter.ALLOW_PRINTING, 
+						PdfWriter.ENCRYPTION_AES_128);
+				if (!StringUtils.isBlank(this.watermarkText)) {
+					Font font = FontFactory.getFont("fonts/fireflysung.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+					PdfWatermarkUtils.addWatermark(stamper, font.getBaseFont(), Color.RED, this.watermarkText);
+				}
+				stamper.close();				
 			}
 		}
 		return this;
@@ -137,17 +120,5 @@ public class PdfOwnerUserBuilder {
 		return this.destEncryptionPdfPath;
 	}	
 	
-	/*
-	public static void main(String args[]) throws Exception {
-		String path = PdfOwnerUserBuilder.build()
-			.user("password123")
-			.owner("password123")
-			.sourceFile("/Pilot_Learn_English_Now_Eng.pdf")
-			.destFileToTmpdir()
-			.watermarkText("This is a TEST!")
-			.process().destFileFullPath();
-		System.out.println(path);
-	}	
-	*/
 	
 }

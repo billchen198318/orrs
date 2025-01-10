@@ -23,7 +23,7 @@ package org.qifu.core.support;
 
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.AppContext;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbSysEventLog;
 import org.qifu.core.service.ISysEventLogService;
 import org.slf4j.Logger;
@@ -34,8 +34,12 @@ public class SysEventLogSupport {
 	
 	private static ISysEventLogService<TbSysEventLog, String> sysEventLogService;
 	
+	protected SysEventLogSupport() {
+		throw new IllegalStateException("Support static class: SysEventLogSupport");
+	}
+	
 	static {
-		sysEventLogService = AppContext.context.getBean(ISysEventLogService.class);
+		sysEventLogService = AppContext.getContext().getBean(ISysEventLogService.class);
 	}
 	
 	public static void log(String userId, String sysId, String executeEventId, boolean permit) {
@@ -47,12 +51,12 @@ public class SysEventLogSupport {
 		eventLog.setUser(userId);
 		eventLog.setSysId(sysId);
 		eventLog.setExecuteEvent(executeEventId.length()>255 ? executeEventId.substring(0, 255) : executeEventId);
-		eventLog.setIsPermit( permit ? YesNo.YES : YesNo.NO );
+		eventLog.setIsPermit( permit ? YesNoKeyProvide.YES : YesNoKeyProvide.NO );
 		try {
 			sysEventLogService.insert(eventLog);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error( e.getMessage().toString() );
+			log.error( e.getMessage() );
 		}
 	}
 	

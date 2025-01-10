@@ -30,7 +30,7 @@ import org.qifu.base.Constants;
 import org.qifu.base.model.BaseUserInfo;
 import org.qifu.base.model.RolePermissionAttr;
 import org.qifu.base.model.UserRoleAndPermission;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.util.UserLocalUtils;
 import org.qifu.core.model.PermissionType;
 import org.qifu.core.model.User;
@@ -39,9 +39,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserUtils {
 	
-	private static List<UserRoleAndPermission> backgroundRoleList = new ArrayList<UserRoleAndPermission>(); 
+	private static List<UserRoleAndPermission> backgroundRoleList = new ArrayList<>(); 
 	
 	private static User backgroundUser = null;
+	
+	protected UserUtils() {
+		throw new IllegalStateException("Utils class: UserUtils");
+	}
 	
 	static {
 		UserRoleAndPermission backgroundUserRole1 = new UserRoleAndPermission();
@@ -50,8 +54,7 @@ public class UserUtils {
 		backgroundUserRole2.setRole(Constants.SUPER_ROLE_ALL);
 		backgroundRoleList.add(backgroundUserRole1);
 		backgroundRoleList.add(backgroundUserRole2);
-		//backgroundUser = new User(ZeroKeyProvide.OID_KEY, Constants.SYSTEM_BACKGROUND_USER, "", YesNo.YES, backgroundRoleList);
-		backgroundUser = new User(Constants.SYSTEM_BACKGROUND_USER, "", YesNo.YES, backgroundRoleList);
+		backgroundUser = new User(Constants.SYSTEM_BACKGROUND_USER, "", YesNoKeyProvide.YES, backgroundRoleList);
 	}
 	
 	public static User setUserInfoForUserLocalUtils() {
@@ -63,19 +66,17 @@ public class UserUtils {
 	}
 	
 	public static User setUserInfoForUserLocalUtils(String accountId) {
-		//User userInfo = new User(ZeroKeyProvide.OID_KEY , accountId , "" , YesNo.YES);
-		User userInfo = new User(accountId , "" , YesNo.YES);
+		User userInfo = new User(accountId , "" , YesNoKeyProvide.YES);
 		userInfo.setUserId(accountId);
 		UserLocalUtils.setUserInfo(userInfo);
 		return userInfo;
 	}	
 	
 	public static User setUserInfoForUserLocalUtils(String accountId, List<String> roleIds) {
-		//User userInfo = new User(ZeroKeyProvide.OID_KEY , accountId , "" , YesNo.YES);
-		User userInfo = new User(accountId , "" , YesNo.YES);
+		User userInfo = new User(accountId , "" , YesNoKeyProvide.YES);
 		userInfo.setUserId(accountId);
 		if (userInfo.getRoles() == null) {
-			userInfo.setRoles(new ArrayList<UserRoleAndPermission>());
+			userInfo.setRoles(new ArrayList<>());
 		}
 		for (int r = 0; roleIds != null && r < roleIds.size(); r++) {
 			if (StringUtils.isBlank(roleIds.get(r))) {
@@ -112,52 +113,24 @@ public class UserUtils {
 	}
 	
 	public static User getCurrentUser() {
-		// 2021-08-26 rem , for META-INF/resource/create-user-data-ldap-mode.groovy and some background job.
-		/*
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && auth.getPrincipal() != null && (auth.getPrincipal() instanceof User)) {
-			return (User) auth.getPrincipal();
-		}
-		*/
 		if ( UserLocalUtils.getUserInfo() != null && Constants.SYSTEM_BACKGROUND_USER.equals(UserLocalUtils.getUserInfo().getUserId()) ) {
 			if (backgroundUser != null) {
 				return backgroundUser;
 			}
-			//return new User(ZeroKeyProvide.OID_KEY, Constants.SYSTEM_BACKGROUND_USER, "", YesNo.YES, backgroundRoleList);
-			return new User(Constants.SYSTEM_BACKGROUND_USER, "", YesNo.YES, backgroundRoleList);
+			return new User(Constants.SYSTEM_BACKGROUND_USER, "", YesNoKeyProvide.YES, backgroundRoleList);
 		}
-		// 2021-08-26 move , for META-INF/resource/create-user-data-ldap-mode.groovy and some background job.
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && auth.getPrincipal() != null && (auth.getPrincipal() instanceof User)) {
+		if (auth != null && auth.getPrincipal() != null && (auth.getPrincipal() instanceof @SuppressWarnings("unused") User ux)) {
 			return (User) auth.getPrincipal();
 		}		
-		
-		// 2021-10-31 add , for JWT token USER_ID info
 		if ( UserLocalUtils.getUserInfo() != null ) {
-			if ( UserLocalUtils.getUserInfo() instanceof User ) {
+			if ( UserLocalUtils.getUserInfo() instanceof @SuppressWarnings("unused") User ux) {
 				return (User) UserLocalUtils.getUserInfo();
 			}
-			if ( UserLocalUtils.getUserInfo() instanceof BaseUserInfo ) {
+			if ( UserLocalUtils.getUserInfo() instanceof @SuppressWarnings("unused") BaseUserInfo bui) {
 				BaseUserInfo userInfo = (BaseUserInfo) UserLocalUtils.getUserInfo();
-				
-				//String roles[] = StringUtils.defaultString( userInfo.getRoleIds() ).split(Constants.DEFAULT_SPLIT_DELIMITER);
-				List<UserRoleAndPermission> currentRoleList = new ArrayList<UserRoleAndPermission>();
-				String isAdmin = YesNo.NO;
-				
-				/*
-				for (int i = 0; roles != null && i < roles.length; i++) {
-					if (Constants.SUPER_ROLE_ADMIN.equals(roles[i]) || Constants.SUPER_ROLE_ALL.equals(roles[i])) {
-						isAdmin = YesNo.YES;
-					}
-					TbUserRole ur = new TbUserRole();
-					ur.setOid(ZeroKeyProvide.OID_KEY);
-					ur.setAccount( userInfo.getUserId() );
-					ur.setRole( roles[i] );
-					ur.setDescription("");
-					currentRoleList.add(ur);
-				}
-				*/
-				//return new User(ZeroKeyProvide.OID_KEY, userInfo.getUserId(), "", isAdmin, currentRoleList);
+				List<UserRoleAndPermission> currentRoleList = new ArrayList<>();
+				String isAdmin = YesNoKeyProvide.NO;
 				return new User(userInfo.getUserId(), "", isAdmin, currentRoleList);
 			}
 		}
@@ -211,22 +184,24 @@ public class UserUtils {
 			return false;
 		}
 		User user = getCurrentUser();
+		return (user != null && user.getRoles() != null) ? checkPermitted(user, perm, permissionType) : Boolean.FALSE;
+	}
+	
+	private static boolean checkPermitted(User user, String perm, String permissionType) {
 		boolean isPrem = false;
-		if (user != null && user.getRoles() != null) {
-			for (int i = 0; i < user.getRoles().size() && !isPrem; i++) {
-				UserRoleAndPermission userRole = user.getRoles().get(i);
-				if (userRole.getRolePermission() != null) {
-					for (RolePermissionAttr rp : userRole.getRolePermission()) {
-						if (!rp.getType().equals(permissionType)) {
-							continue;
-						}
-						if (perm.equals(rp.getPermission())) {
-							isPrem = true;
-						}
+		for (int i = 0; i < user.getRoles().size() && !isPrem; i++) {
+			UserRoleAndPermission userRole = user.getRoles().get(i);
+			if (userRole.getRolePermission() != null) {
+				for (RolePermissionAttr rp : userRole.getRolePermission()) {
+					if (!rp.getType().equals(permissionType)) {
+						continue;
+					}
+					if (perm.equals(rp.getPermission())) {
+						isPrem = true;
 					}
 				}
 			}
-		}
+		}		
 		return isPrem;
 	}
 	

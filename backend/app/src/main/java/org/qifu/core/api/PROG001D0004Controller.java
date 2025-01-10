@@ -37,7 +37,6 @@ import org.qifu.core.logic.ISystemTemplateLogicService;
 import org.qifu.core.service.ISysTemplateParamService;
 import org.qifu.core.service.ISysTemplateService;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -53,41 +52,46 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "CORE_PROG001D0004", description = "Freemarker樣板 management.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG001D0004")
 public class PROG001D0004Controller extends CoreApiSupport {
 	private static final long serialVersionUID = 1558945973473225107L;
 	
-	@Autowired
-	ISysTemplateService<TbSysTemplate, String> sysTemplateService;
+	private static final String TEMPLATE_ID_VAR = "templateId";
 	
-	@Autowired
-	ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService;
+	private final transient ISysTemplateService<TbSysTemplate, String> sysTemplateService;
 	
-	@Autowired
-	ISystemTemplateLogicService systemTemplateLogicService;
+	private final transient ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService;
+	
+	private final transient ISystemTemplateLogicService systemTemplateLogicService;
+	
+	public PROG001D0004Controller(ISysTemplateService<TbSysTemplate, String> sysTemplateService,
+			ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService,
+			ISystemTemplateLogicService systemTemplateLogicService) {
+		super();
+		this.sysTemplateService = sysTemplateService;
+		this.sysTemplateParamService = sysTemplateParamService;
+		this.systemTemplateLogicService = systemTemplateLogicService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004Q", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - findPage", description = "查詢TB_SYS_TEMPLATE資料")
-	@ResponseBody
 	@PostMapping(value = "/findPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysTemplate>>> findPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysTemplate>> result = this.initResult();
 		try {
 			QueryResult<List<TbSysTemplate>> queryResult = this.sysTemplateService.findPage(
-					this.queryParameter(searchBody).fullEquals("templateId").fullLink("titleLike").value(), 
+					this.queryParameter(searchBody).fullEquals(TEMPLATE_ID_VAR).fullLink("titleLike").value(), 
 					searchBody.getPageOf().orderBy("TEMPLATE_ID").sortTypeAsc());
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004D", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - delete", description = "刪除TB_SYS_TEMPLATE資料")
-	@ResponseBody
 	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbSysTemplate sysTemplate) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -96,30 +100,28 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
-	private void handlerCheck(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException, Exception {
+	private void handlerCheck(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException {
 		CheckControllerFieldHandler<TbSysTemplate> chk = this.getCheckControllerFieldHandler(result);
 		chk
-		.testField("templateId", sysTemplate, "@org.apache.commons.lang3.StringUtils@isBlank(templateId)", "請輸入樣板編號")
+		.testField(TEMPLATE_ID_VAR, sysTemplate, "@org.apache.commons.lang3.StringUtils@isBlank(templateId)", "請輸入樣板編號")
 		.testField("title", sysTemplate, "@org.apache.commons.lang3.StringUtils@isBlank(title)", "請輸入樣板標題")		
 		.testField("message", sysTemplate, "@org.apache.commons.lang3.StringUtils@isBlank(message)", "請輸入樣板內容")		
 		.throwHtmlMessage();
 		
-		chk.testField("templateId", sysTemplate, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(templateId)", "樣板編號只允許輸入0-9,a-z,A-Z正常字元");		
+		chk.testField(TEMPLATE_ID_VAR, sysTemplate, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(templateId)", "樣板編號只允許輸入0-9,a-z,A-Z正常字元");		
 	}	
 	
-	private void save(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException, Exception {
+	private void save(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException {
 		this.handlerCheck(result, sysTemplate);
 		DefaultResult<TbSysTemplate> cResult = this.systemTemplateLogicService.create(sysTemplate);
 		this.setDefaultResponseJsonResult(cResult, result);
 	}	
 	
-	private void update(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException, Exception {
+	private void update(DefaultControllerJsonResultObj<TbSysTemplate> result, TbSysTemplate sysTemplate) throws ControllerException, ServiceException {
 		this.handlerCheck(result, sysTemplate);
 		DefaultResult<TbSysTemplate> uResult = this.systemTemplateLogicService.update(sysTemplate);
 		this.setDefaultResponseJsonResult(uResult, result);		
@@ -127,7 +129,6 @@ public class PROG001D0004Controller extends CoreApiSupport {
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004C", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - save", description = "新增TB_SYS_TEMPLATE資料")
-	@ResponseBody
 	@PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysTemplate>> doSave(@RequestBody TbSysTemplate sysTemplate) {
 		DefaultControllerJsonResultObj<TbSysTemplate> result = this.initDefaultJsonResult();
@@ -135,15 +136,12 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.save(result, sysTemplate);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004E", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - load", description = "讀取TB_SYS_TEMPLATE資料")
-	@ResponseBody
 	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysTemplate>> doLoad(@RequestBody TbSysTemplate sysTemplate) {
 		DefaultControllerJsonResultObj<TbSysTemplate> result = this.initDefaultJsonResult();
@@ -152,15 +150,12 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004U", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - update", description = "更新TB_SYS_TEMPLATE資料")
-	@ResponseBody
 	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysTemplate>> doUpdate(@RequestBody TbSysTemplate sysTemplate) {
 		DefaultControllerJsonResultObj<TbSysTemplate> result = this.initDefaultJsonResult();
@@ -168,44 +163,39 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.update(result, sysTemplate);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004Q", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - findSetParamPage", description = "查詢TB_SYS_TEMPLATE_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/findSetParamPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysTemplateParam>>> findSetParamPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysTemplateParam>> result = this.initResult();
 		try {
 			QueryResult<List<TbSysTemplateParam>> queryResult = this.sysTemplateParamService.findPage(
-					this.queryParameter(searchBody).fullEquals("templateId").value(), 
+					this.queryParameter(searchBody).fullEquals(TEMPLATE_ID_VAR).value(), 
 					searchBody.getPageOf().orderBy("TEMPLATE_VAR").sortTypeAsc());
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
-	private void handlerCheckParam(DefaultControllerJsonResultObj<TbSysTemplateParam> result, TbSysTemplateParam param) throws ControllerException, ServiceException, Exception {
+	private void handlerCheckParam(DefaultControllerJsonResultObj<TbSysTemplateParam> result, TbSysTemplateParam param) throws ControllerException, ServiceException {
 		CheckControllerFieldHandler<TbSysTemplateParam> chk = this.getCheckControllerFieldHandler(result);
 		chk
-		.testField("templateId", param, "@org.apache.commons.lang3.StringUtils@isBlank(templateId)", "請輸入樣板編號")
+		.testField(TEMPLATE_ID_VAR, param, "@org.apache.commons.lang3.StringUtils@isBlank(templateId)", "請輸入樣板編號")
 		.testField("isTitle", param, "@org.apache.commons.lang3.StringUtils@isBlank(isTitle)", "請輸入樣板是否標題")
 		.testField("templateVar", param, "@org.apache.commons.lang3.StringUtils@isBlank(templateVar)", "請輸入樣板變數")
 		.testField("objectVar", param, "@org.apache.commons.lang3.StringUtils@isBlank(objectVar)", "請輸入物件變數")		
 		.throwHtmlMessage();
 		
-		chk.testField("templateId", param, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(templateId)", "樣板編號只允許輸入0-9,a-z,A-Z正常字元");		
+		chk.testField(TEMPLATE_ID_VAR, param, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(templateId)", "樣板編號只允許輸入0-9,a-z,A-Z正常字元");		
 	}	
 	
-	private void saveParam(DefaultControllerJsonResultObj<TbSysTemplateParam> result, TbSysTemplateParam param) throws ControllerException, ServiceException, Exception {
+	private void saveParam(DefaultControllerJsonResultObj<TbSysTemplateParam> result, TbSysTemplateParam param) throws ControllerException, ServiceException {
 		this.handlerCheckParam(result, param);
 		DefaultResult<TbSysTemplateParam> cResult = this.sysTemplateParamService.insert(param);
 		this.setDefaultResponseJsonResult(cResult, result);
@@ -213,7 +203,6 @@ public class PROG001D0004Controller extends CoreApiSupport {
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004U", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - saveSetParam", description = "新增TB_SYS_TEMPLATE_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/saveSetParam", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysTemplateParam>> doSaveSetParam(@RequestBody TbSysTemplateParam param) {
 		DefaultControllerJsonResultObj<TbSysTemplateParam> result = this.initDefaultJsonResult();
@@ -221,15 +210,12 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.saveParam(result, param);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0004D", check = true)
 	@Operation(summary = "CORE_PROG001D0004 - deleteSetParam", description = "刪除TB_SYS_TEMPLATE_PARAM資料")
-	@ResponseBody
 	@PostMapping(value = "/deleteSetParam", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDeleteSetParam(@RequestBody TbSysTemplateParam param) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -238,9 +224,7 @@ public class PROG001D0004Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	

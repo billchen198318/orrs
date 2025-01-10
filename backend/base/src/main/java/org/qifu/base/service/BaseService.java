@@ -21,7 +21,6 @@
  */
 package org.qifu.base.service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +39,7 @@ import org.qifu.base.model.PageOf;
 import org.qifu.base.model.QueryResult;
 import org.qifu.base.model.SortType;
 import org.qifu.base.model.UpdateField;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.util.EntityParameterGenerateUtil;
 import org.qifu.base.util.UserLocalUtils;
 import org.qifu.util.SimpleUtils;
@@ -49,8 +48,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import ognl.Ognl;
 import ognl.OgnlContext;
@@ -66,12 +63,9 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 	
 	protected abstract IBaseMapper<T, K> getBaseMapper();
 	
-	// 自訂義主鍵值生成abstract , 移動到 IBaseServiceCustomPrimaryKeyProvide
-	//protected abstract K generateCustomPrimaryKey();
-	
 	private boolean foundCustomPrimaryKeyProvide = false;
 	
-	public BaseService() {
+	protected BaseService() {
 		super();
 		if ( this instanceof IBaseServiceCustomPrimaryKeyProvide ) { // check實作類是否有 implements IBaseServiceCustomPrimaryKeyProvide, 自定義 PK生成method.
 			foundCustomPrimaryKeyProvide = true;
@@ -80,8 +74,11 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 	
 	public String getAccountId() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && (auth.getPrincipal() instanceof UserDetails)) {
-			return ( (UserDetails) auth.getPrincipal() ).getUsername();
+		if (auth != null) {
+			Object o = auth.getPrincipal();
+			if (o instanceof @SuppressWarnings("unused") UserDetails ud) {
+				return ( (UserDetails) o ).getUsername();
+			}
 		}
 		if (UserLocalUtils.getUserInfo() != null) { // for JOB service
 			return UserLocalUtils.getUserInfo().getUserId();
@@ -98,9 +95,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		Object value = null;
 		if (primaryKeyField.autoUUID()) {
 			value = SimpleUtils.getUUIDStr();
-		} /* else {
-			value = this.generateCustomPrimaryKey();
-		} */
+		} 
 		if (foundCustomPrimaryKeyProvide) {
 			value = ( (IBaseServiceCustomPrimaryKeyProvide<T, K>) this ).generateCustomPrimaryKey();
 		}
@@ -160,12 +155,11 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return StringUtils.defaultString(source);
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)		
-	public DefaultResult<T> selectByPrimaryKey(K pk) throws ServiceException, Exception {
+	public DefaultResult<T> selectByPrimaryKey(K pk) throws ServiceException {
 		if (null == pk || StringUtils.isBlank(String.valueOf(pk))) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		DefaultResult<T> result = new DefaultResult<T>();
+		DefaultResult<T> result = new DefaultResult<>();
 		T value = this.getBaseMapper().selectByPrimaryKey(pk);
 		if (value != null) {
 			result.setValue(value);
@@ -175,18 +169,20 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return result;
 	}
 	
-	public DefaultResult<T> selectByEntityPrimaryKey(T mapperObj) throws ServiceException, Exception {
+	public DefaultResult<T> selectByEntityPrimaryKey(T mapperObj) throws ServiceException {
 		Map<String, Object> paramMap = EntityParameterGenerateUtil.getPKParameter(mapperObj);
 		if (MapUtils.isEmpty(paramMap)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		return this.selectByPrimaryKey( (K) paramMap.get( paramMap.keySet().stream().findFirst().get() ) );
+		String key = paramMap.keySet().stream()
+			    .findFirst()
+			    .orElse(null); 
+		return this.selectByPrimaryKey( (K) paramMap.get(key) );
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public DefaultResult<List<T>> selectList() throws ServiceException, Exception {
-		DefaultResult<List<T>> result = new DefaultResult<List<T>>();
-		List<T> value = (List<T>) this.getBaseMapper().selectListByParams(null);
+	public DefaultResult<List<T>> selectList() throws ServiceException {
+		DefaultResult<List<T>> result = new DefaultResult<>();
+		List<T> value = this.getBaseMapper().selectListByParams(null);
 		if (value != null) {
 			result.setValue(value);
 		} else {
@@ -195,13 +191,12 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return result;		
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap) throws ServiceException, Exception {
+	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap) throws ServiceException {
 		if (MapUtils.isEmpty(paramMap)) {
 			throw new ServiceException(BaseSystemMessage.parameterIncorrect());
 		}
-		DefaultResult<List<T>> result = new DefaultResult<List<T>>();
-		List<T> value = (List<T>) this.getBaseMapper().selectListByParams(paramMap);
+		DefaultResult<List<T>> result = new DefaultResult<>();
+		List<T> value = this.getBaseMapper().selectListByParams(paramMap);
 		if (value != null) {
 			result.setValue(value);
 		} else {
@@ -210,31 +205,29 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return result;
 	}
 	
-	private void setReservedParamOrderBy(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException, Exception {
+	private void setReservedParamOrderBy(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException {
 		if (!StringUtils.isBlank(sortType) && !StringUtils.isBlank(orderBy)) {
 			if (!SortType.isAllow(sortType)) {
 				throw new ServiceException( BaseSystemMessage.parameterIncorrect() + " sort type error!");
 			}			
-			if (paramMap.get(Constants._RESERVED_PARAM_NAME_QUERY_ORDER_BY) != null) {
-				logger.warn("has found orderBy value: {} , replace to: {}", paramMap.get(Constants._RESERVED_PARAM_NAME_QUERY_ORDER_BY), orderBy);
+			if (paramMap.get(Constants.RESERVED_PARAM_NAME_QUERY_ORDER_BY) != null) {
+				logger.warn("has found orderBy value: {} , replace to: {}", paramMap.get(Constants.RESERVED_PARAM_NAME_QUERY_ORDER_BY), orderBy);
 			}
-			if (paramMap.get(Constants._RESERVED_PARAM_NAME_QUERY_SORT_TYPE) != null) {
-				logger.warn("has found sortType value: {} , replace to: {}", paramMap.get(Constants._RESERVED_PARAM_NAME_QUERY_SORT_TYPE), sortType);
+			if (paramMap.get(Constants.RESERVED_PARAM_NAME_QUERY_SORT_TYPE) != null) {
+				logger.warn("has found sortType value: {} , replace to: {}", paramMap.get(Constants.RESERVED_PARAM_NAME_QUERY_SORT_TYPE), sortType);
 			}
-			paramMap.put(Constants._RESERVED_PARAM_NAME_QUERY_ORDER_BY, orderBy);
-			paramMap.put(Constants._RESERVED_PARAM_NAME_QUERY_SORT_TYPE, sortType);
+			paramMap.put(Constants.RESERVED_PARAM_NAME_QUERY_ORDER_BY, orderBy);
+			paramMap.put(Constants.RESERVED_PARAM_NAME_QUERY_SORT_TYPE, sortType);
 		}		
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public DefaultResult<List<T>> selectList(String orderBy, String sortType) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+	public DefaultResult<List<T>> selectList(String orderBy, String sortType) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
 		this.setReservedParamOrderBy(paramMap, orderBy, sortType);
 		return this.selectListByParams(paramMap);
 	}	
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException, Exception {
+	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException {
 		if (MapUtils.isEmpty(paramMap)) {
 			throw new ServiceException(BaseSystemMessage.parameterIncorrect());
 		}
@@ -242,8 +235,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return this.selectListByParams(paramMap);
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public DefaultResult<T> selectByUniqueKey(T mapperObj) throws ServiceException, Exception {
+	public DefaultResult<T> selectByUniqueKey(T mapperObj) throws ServiceException {
 		if (null == mapperObj) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
@@ -251,7 +243,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		if (MapUtils.isEmpty(paramMap)) {
 			throw new ServiceException(BaseSystemMessage.parameterIncorrect() + " , please set @EntityUK.");
 		}
-		List<T> searchList = (List<T>) this.getBaseMapper().selectListByParams(paramMap);
+		List<T> searchList = this.getBaseMapper().selectListByParams(paramMap);
 		if (null != searchList && searchList.size() > 1) {
 			throw new ServiceException(BaseSystemMessage.dataErrors());
 		}
@@ -259,7 +251,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		if (searchList != null && searchList.size() == 1) {
 			value = searchList.get(0);
 		}
-		DefaultResult<T> result = new DefaultResult<T>();
+		DefaultResult<T> result = new DefaultResult<>();
 		if (value != null) {
 			result.setValue(value);
 		} else {
@@ -268,82 +260,46 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return result;
 	}
 	
-	@Transactional(
-			propagation=Propagation.REQUIRED, 
-			readOnly=false,
-			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
-	public DefaultResult<T> insert(T mapperObj) throws ServiceException, Exception {
+	public DefaultResult<T> insert(T mapperObj) throws ServiceException {
 		if (null == mapperObj) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
-		DefaultResult<T> result = new DefaultResult<T>();
-		if (EntityParameterGenerateUtil.foundUniqueKey(mapperObj)) {
-			if (this.countByUK(mapperObj) > 0) {
-				throw new ServiceException(BaseSystemMessage.dataIsExist());
-			}			
+		DefaultResult<T> result = new DefaultResult<>();
+		if (EntityParameterGenerateUtil.foundUniqueKey(mapperObj) && (this.countByUK(mapperObj) > 0)) {
+			throw new ServiceException(BaseSystemMessage.dataIsExist());
 		}
 		this.setEntityPrimaryKey(mapperObj);
 		this.setEntityCreateUserField(mapperObj);
 		if (this.getBaseMapper().insert(mapperObj) < 1) {
 			throw new ServiceException(BaseSystemMessage.insertFail());
 		}
-		result.setSuccess( YesNo.YES );
+		result.setSuccess( YesNoKeyProvide.YES );
 		result.setValue(mapperObj);
 		result.setMessage(BaseSystemMessage.insertSuccess());
 		return result;
 	}
 	
-	// 不需要, 改 insert method 內容, 自己判別是否有Unique Key欄位, 有的話要去count檢查
-	/*
-	@Transactional(
-			propagation=Propagation.REQUIRED, 
-			readOnly=false,
-			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
-	public DefaultResult<T> insertIgnoreUK(T mapperObj) throws ServiceException, Exception {
+	public DefaultResult<T> update(T mapperObj) throws ServiceException {
 		if (null == mapperObj) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
-		DefaultResult<T> result = new DefaultResult<T>();
-		this.setEntityPrimaryKey(mapperObj);
-		this.setEntityCreateUserField(mapperObj);
-		if (this.getBaseMapper().insert(mapperObj) < 1) {
-			throw new ServiceException(BaseSystemMessage.insertFail());
-		}
-		result.setValue(mapperObj);
-		result.setMessage(BaseSystemMessage.insertSuccess());
-		return result;
-	}
-	*/	
-	
-	@Transactional(
-			propagation=Propagation.REQUIRED, 
-			readOnly=false,
-			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
-	public DefaultResult<T> update(T mapperObj) throws ServiceException, Exception {
-		if (null == mapperObj) {
-			throw new ServiceException(BaseSystemMessage.objectNull());
-		}
-		DefaultResult<T> result = new DefaultResult<T>();
+		DefaultResult<T> result = new DefaultResult<>();
 		this.setEntityUpdateField(mapperObj);
 		if (this.getBaseMapper().update(mapperObj) < 1) {
 			throw new ServiceException(BaseSystemMessage.updateFail());
 		}
-		result.setSuccess( YesNo.YES );
+		result.setSuccess( YesNoKeyProvide.YES );
 		result.setValue(mapperObj);
 		result.setMessage(BaseSystemMessage.updateSuccess());
 		return result;
 	}
 	
-	@Transactional(
-			propagation=Propagation.REQUIRED, 
-			readOnly=false,
-			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
-	public DefaultResult<Boolean> delete(T mapperObj) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(T mapperObj) throws ServiceException {
 		if (null == mapperObj) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
-		if (!this.getBaseMapper().delete(mapperObj)) {
+		DefaultResult<Boolean> result = new DefaultResult<>();
+		if (Boolean.FALSE.equals(this.getBaseMapper().delete(mapperObj))) {
 			throw new ServiceException(BaseSystemMessage.deleteFail());
 		}
 		result.setValue(true);
@@ -351,11 +307,11 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return result;
 	}
 	
-	public Long count(Map<String, Object> paramMap) throws ServiceException, Exception {
+	public Long count(Map<String, Object> paramMap) throws ServiceException {
 		return this.getBaseMapper().count(paramMap);
 	}
 	
-	public Long countByUK(T mapperObj) throws ServiceException, Exception {
+	public Long countByUK(T mapperObj) throws ServiceException {
 		if (null == mapperObj) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
@@ -366,18 +322,16 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		return this.getBaseMapper().count(paramMap);
 	}	
 	
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public <VO> QueryResult<List<VO>> findPage(Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, Exception {
+	public <V> QueryResult<List<V>> findPage(Map<String, Object> paramMap, PageOf pageOf) throws ServiceException {
 		if (null == paramMap || null == pageOf) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
 		pageOf.setQueryOrderSortParameter(paramMap);
-		QueryResult<List<VO>> result = new QueryResult<List<VO>>();
+		QueryResult<List<V>> result = new QueryResult<>();
 		Long countSize = this.getBaseMapper().count(paramMap);
 		if (countSize > 0) {
 			this.fillPageOfAndfindPageParam(paramMap, pageOf, countSize);
-			@SuppressWarnings("unchecked")
-			List<VO> searchList = (List<VO>) this.getBaseMapper().findPage(paramMap);
+			List<V> searchList = (List<V>) this.getBaseMapper().findPage(paramMap);
 			result.setValue(searchList);
 		} else {
 			result.setMessage(BaseSystemMessage.searchNoData());
@@ -386,27 +340,26 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
-	public <VO> QueryResult<List<VO>> findPage(String mapperCountMethodName, String mapperQueryMethodName, Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, Exception {
+	public <V> QueryResult<List<V>> findPage(String mapperCountMethodName, String mapperQueryMethodName, Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, OgnlException {
 		if (null == paramMap || null == pageOf) {
 			throw new ServiceException(BaseSystemMessage.objectNull());
 		}
 		pageOf.setQueryOrderSortParameter(paramMap);	
-		QueryResult<List<VO>> result = new QueryResult<List<VO>>();
+		QueryResult<List<V>> result = new QueryResult<>();
 		OgnlContext ognlContext = Ognl.createDefaultContext(null);
 		ognlContext.put("paramMap", paramMap);
 		Object countSizeObj = Ognl.getValue(mapperCountMethodName+"(#paramMap)", ognlContext, this.getBaseMapper());
 		if (!(countSizeObj instanceof Long)) {
-			throw new Exception("count method:" + mapperCountMethodName + " return value not accept!");
+			throw new ServiceException("count method:" + mapperCountMethodName + " return value not accept!");
 		}
 		Long countSize = Long.parseLong( String.valueOf(countSizeObj) );
 		if (countSize > 0) {
 			this.fillPageOfAndfindPageParam(paramMap, pageOf, countSize);
 			Object searchListObj = Ognl.getValue(mapperQueryMethodName+"(#paramMap)", ognlContext, this.getBaseMapper());
 			if (!(searchListObj instanceof List)) {
-				throw new Exception("findPage method:" + mapperQueryMethodName + " return value not accept!");
+				throw new IllegalArgumentException("findPage method:" + mapperQueryMethodName + " return value not accept!");
 			}
-			result.setValue( (List<VO>) searchListObj );
+			result.setValue( (List<V>) searchListObj );
 		} else {
 			result.setMessage(BaseSystemMessage.searchNoData());
 		}
@@ -414,8 +367,8 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 	}	
 	
 	private void fillPageOfAndfindPageParam(Map<String, Object> paramMap, PageOf pageOf, Long countSize) {
-		long startRow = (pageOf.getIntegerValue( pageOf.getSelect() )-1) * pageOf.getIntegerValue( pageOf.getShowRow() );
-		long endRow = pageOf.getIntegerValue( pageOf.getSelect() ) * pageOf.getIntegerValue( pageOf.getShowRow() );
+		long startRow = (pageOf.getIntegerValue( pageOf.getSelect() )-1) * pageOf.getLongValue( pageOf.getShowRow() );
+		long endRow = pageOf.getIntegerValue( pageOf.getSelect() ) * pageOf.getLongValue( pageOf.getShowRow() );
 		long offset = startRow;
 		long showRow = pageOf.getIntegerValue( pageOf.getShowRow() );
 		if (startRow < 0) {
@@ -429,9 +382,9 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		}
 		if (startRow > countSize) {
 			startRow = 0;
-			endRow = 1 * pageOf.getIntegerValue( pageOf.getShowRow() );
+			endRow = 1L * pageOf.getLongValue( pageOf.getShowRow() );
 			offset = 0;
-			showRow = 1 * pageOf.getIntegerValue( pageOf.getShowRow() );;
+			showRow = 1L * pageOf.getLongValue( pageOf.getShowRow() );
 		}			
 		if (endRow > countSize) {
 			endRow = countSize;
@@ -442,8 +395,7 @@ public abstract class BaseService<T extends java.io.Serializable, K extends java
 		paramMap.put("showRow", showRow); // for MySQL or MariaDB
 		
 		pageOf.setCountSize(String.valueOf(countSize));
-		//pageOf.toCalculateSize(); // 2019-09-10
-		pageOf.toCalculateSize((int)startRow); // 2019-09-10
+		pageOf.toCalculateSize((int)startRow);
 	}
 	
 }

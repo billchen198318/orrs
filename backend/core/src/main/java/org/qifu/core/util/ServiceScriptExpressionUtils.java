@@ -27,17 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.qifu.base.AppContext;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.SortType;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbSysBeanHelp;
 import org.qifu.core.entity.TbSysBeanHelpExpr;
 import org.qifu.core.entity.TbSysBeanHelpExprMap;
 import org.qifu.core.entity.TbSysExpression;
-import org.qifu.core.model.ScriptExpressionRunType;
 import org.qifu.core.service.ISysBeanHelpExprMapService;
 import org.qifu.core.service.ISysBeanHelpExprService;
 import org.qifu.core.service.ISysBeanHelpService;
@@ -54,17 +54,21 @@ public class ServiceScriptExpressionUtils {
 	
 	private static ISysExpressionService<TbSysExpression, String> sysExpressionService;
 	
-	static {
-		sysBeanHelpService = (ISysBeanHelpService<TbSysBeanHelp, String>) AppContext.context.getBean(ISysBeanHelpService.class);
-		
-		sysBeanHelpExprService = (ISysBeanHelpExprService<TbSysBeanHelpExpr, String>) AppContext.context.getBean(ISysBeanHelpExprService.class);
-		
-		sysBeanHelpExprMapService = (ISysBeanHelpExprMapService<TbSysBeanHelpExprMap, String>) AppContext.context.getBean(ISysBeanHelpExprMapService.class);
-		
-		sysExpressionService = (ISysExpressionService<TbSysExpression, String>) AppContext.context.getBean(ISysExpressionService.class);
+	protected ServiceScriptExpressionUtils() {
+		throw new IllegalStateException("Utils class: ServiceScriptExpressionUtils");
 	}
 	
-	public static boolean needProcess(String beanId, String methodName, String system) throws ServiceException, Exception {
+	static {
+		sysBeanHelpService = AppContext.getContext().getBean(ISysBeanHelpService.class);
+		
+		sysBeanHelpExprService = AppContext.getContext().getBean(ISysBeanHelpExprService.class);
+		
+		sysBeanHelpExprMapService = AppContext.getContext().getBean(ISysBeanHelpExprMapService.class);
+		
+		sysExpressionService = AppContext.getContext().getBean(ISysExpressionService.class);
+	}
+	
+	public static boolean needProcess(String beanId, String methodName, String system) throws ServiceException {
 		boolean f = false;
 		TbSysBeanHelp beanHelp = new TbSysBeanHelp();
 		beanHelp.setBeanId(beanId);
@@ -73,19 +77,18 @@ public class ServiceScriptExpressionUtils {
 		if (sysBeanHelpService.countByUK(beanHelp)>0) {
 			f = true;
 		}
-		beanHelp = null;
 		return f;
 	}
 	
-	public static void processBefore(String beanId, Method method, String system, ProceedingJoinPoint pjp) throws ServiceException, Exception {
-		process(ScriptExpressionRunType.IS_BEFORE, beanId, method, system, null, pjp);
+	public static void processBefore(String beanId, Method method, String system, ProceedingJoinPoint pjp) throws ServiceException {
+		process(beanId, method, system, null, pjp);
 	}
 	
-	public static void processAfter(String beanId, Method method, String system, Object resultObj, ProceedingJoinPoint pjp) throws ServiceException, Exception {
-		process(ScriptExpressionRunType.IS_AFTER, beanId, method, system, resultObj, pjp);
+	public static void processAfter(String beanId, Method method, String system, Object resultObj, ProceedingJoinPoint pjp) throws ServiceException {
+		process(beanId, method, system, resultObj, pjp);
 	}
 	
-	private static TbSysBeanHelp loadSysBeanHelperData(String beanId, String methodName, String system) throws ServiceException, Exception {
+	private static TbSysBeanHelp loadSysBeanHelperData(String beanId, String methodName, String system) throws ServiceException {
 		TbSysBeanHelp beanHelp = new TbSysBeanHelp();
 		beanHelp.setBeanId(beanId);
 		beanHelp.setMethod(methodName);
@@ -94,38 +97,36 @@ public class ServiceScriptExpressionUtils {
 		return beanHelp;
 	}
 	
-	private static List<TbSysBeanHelpExpr> loadSysBeanHelpExprsData(TbSysBeanHelp beanHelp) throws ServiceException, Exception {
+	private static List<TbSysBeanHelpExpr> loadSysBeanHelpExprsData(TbSysBeanHelp beanHelp) throws ServiceException {
 		List<TbSysBeanHelpExpr> exprs = null;
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("helpOid", beanHelp.getOid());
 		exprs = sysBeanHelpExprService.selectListByParams(params, "EXPR_SEQ", SortType.ASC).getValue();
 		if (exprs == null) {
-			exprs = new ArrayList<TbSysBeanHelpExpr>();
+			exprs = new ArrayList<>();
 		}
 		params.clear();
-		params = null;
 		return exprs;		
 	}
 	
-	private static List<TbSysBeanHelpExprMap> loadSysBeanHelpExprMapsData(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException, Exception {
+	private static List<TbSysBeanHelpExprMap> loadSysBeanHelpExprMapsData(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException {
 		List<TbSysBeanHelpExprMap> exprMaps = null;
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("helpExprOid", beanHelpExpr.getOid());
 		exprMaps = sysBeanHelpExprMapService.selectListByParams(params).getValue();
 		if (exprMaps == null) {
-			exprMaps = new ArrayList<TbSysBeanHelpExprMap>();
+			exprMaps = new ArrayList<>();
 		}
 		params.clear();
-		params = null;
 		return exprMaps;		
 	}
 	
-	private static Map<String, Object> getParameters(TbSysBeanHelpExpr beanHelpExpr, List<TbSysBeanHelpExprMap> beanHelpExprMaps, Object resultObj, ProceedingJoinPoint pjp) {
+	private static Map<String, Object> getParameters(List<TbSysBeanHelpExprMap> beanHelpExprMaps, Object resultObj, ProceedingJoinPoint pjp) {
 		Object[] args = pjp.getArgs();
-		Map<String, Object> dataMap = new HashMap<String, Object>();
+		Map<String, Object> dataMap = new HashMap<>();
 		for (TbSysBeanHelpExprMap map : beanHelpExprMaps) {
 			Object value = null;
-			if (YesNo.YES.equals(map.getMethodResultFlag())) {
+			if (YesNoKeyProvide.YES.equals(map.getMethodResultFlag())) {
 				value = resultObj;
 			} else {
 				for (int i=0; args!=null && i<args.length; i++) {
@@ -141,13 +142,13 @@ public class ServiceScriptExpressionUtils {
 		return dataMap;
 	}	
 	
-	private static void process(String runType, String beanId, Method method, String system, Object resultObj, ProceedingJoinPoint pjp) throws ServiceException, Exception {
+	private static void process(String beanId, Method method, String system, Object resultObj, ProceedingJoinPoint pjp) throws ServiceException {
 		TbSysBeanHelp beanHelp = loadSysBeanHelperData(beanId, method.getName(), system);
-		if (!YesNo.YES.equals(beanHelp.getEnableFlag()) ) {
+		if (!YesNoKeyProvide.YES.equals(beanHelp.getEnableFlag()) ) {
 			return;
 		}
 		List<TbSysBeanHelpExpr> beanHelpExprs = loadSysBeanHelpExprsData(beanHelp);
-		if (beanHelpExprs==null || beanHelpExprs.size()<1) {
+		if (CollectionUtils.isEmpty(beanHelpExprs)) {
 			return;
 		}
 		for (TbSysBeanHelpExpr helpExpr : beanHelpExprs) {
@@ -159,23 +160,11 @@ public class ServiceScriptExpressionUtils {
 			}
 			expression = eResult.getValue();
 			List<TbSysBeanHelpExprMap> exprMaps = loadSysBeanHelpExprMapsData(helpExpr);
-			/* 2015-04-14 rem
-			try {
-				ScriptExpressionUtils.execute(
-						expression.getType(), 
-						expression.getContent(), 
-						null, 
-						getParameters(helpExpr, exprMaps, resultObj, pjp));						
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
-			*/
-			// 不要 try catch 包起來, 讓外面也能接到 Exception 
 			ScriptExpressionUtils.execute(
 					expression.getType(), 
 					expression.getContent(), 
 					null, 
-					getParameters(helpExpr, exprMaps, resultObj, pjp));					
+					getParameters(exprMaps, resultObj, pjp));					
 		}
 	}
 	

@@ -24,6 +24,7 @@ package org.qifu.core.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.mapper.IBaseMapper;
 import org.qifu.base.model.DefaultResult;
@@ -32,7 +33,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSys;
 import org.qifu.core.mapper.TbSysMapper;
 import org.qifu.core.service.ISysService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,19 +43,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysServiceImpl extends BaseService<TbSys, String> implements ISysService<TbSys, String> {
 	
-	@Autowired
-	TbSysMapper tbSysMapper;
+	private final TbSysMapper tbSysMapper;
 	
+	public SysServiceImpl(TbSysMapper tbSysMapper) {
+		super();
+		this.tbSysMapper = tbSysMapper;
+	}
+
 	@Override
 	protected IBaseMapper<TbSys, String> getBaseMapper() {
 		return this.tbSysMapper;
 	}
 
 	@Override
-	public Map<String, String> findSysMap(boolean pleaseSelect) throws ServiceException, Exception {
+	public Map<String, String> findSysMap(boolean pleaseSelect) throws ServiceException {
 		Map<String, String> sysMap = PleaseSelect.pageSelectMap(pleaseSelect);
 		DefaultResult<List<TbSys>> searchResult = this.selectList();
-		if (searchResult.getValue()==null || searchResult.getValue().size()<1) {
+		if (searchResult == null || CollectionUtils.isEmpty(searchResult.getValue())) {
 			return sysMap;
 		}
 		for (TbSys sys : searchResult.getValue()) {

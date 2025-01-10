@@ -38,7 +38,7 @@ public interface TbSysJreportMapper extends IBaseMapper<TbSysJreport, String> {
 	 * @return
 	 * @throws Exception
 	 */
-	public TbSysJreport selectByPrimaryKeySimple(String oid) throws Exception;
+	public TbSysJreport selectByPrimaryKeySimple(String oid);
 	
 	/**
 	 * no CONTENT field for query , because sometime no need use this field, maybe field byte is big
@@ -47,7 +47,7 @@ public interface TbSysJreportMapper extends IBaseMapper<TbSysJreport, String> {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TbSysJreport> selectListByParamsSimple(Map<String, Object> paramMap) throws Exception;
+	public List<TbSysJreport> selectListByParamsSimple(Map<String, Object> paramMap);
 	
 	/**
 	 * no CONTENT field for query , because sometime no need use this field, maybe field byte is big

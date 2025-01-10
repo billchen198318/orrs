@@ -26,13 +26,13 @@ public class QueryResult<T> implements java.io.Serializable {
 	
 	private PageOf pageOf;
 	
-	private String isAuth = YesNo.NO;
+	private String isAuth = YesNoKeyProvide.NO;
 	
-	private String success = YesNo.NO;
+	private String success = YesNoKeyProvide.NO;
 	
 	private String message = "";
 	
-	private T value;
+	private transient T value = null;
 
 	public String getIsAuth() {
 		return isAuth;

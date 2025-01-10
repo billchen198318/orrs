@@ -33,7 +33,7 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.ServiceAuthority;
 import org.qifu.base.model.ServiceMethodAuthority;
 import org.qifu.base.model.ServiceMethodType;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.service.BaseLogicService;
 import org.qifu.core.entity.TbSysJreport;
 import org.qifu.core.entity.TbSysJreportParam;
@@ -42,7 +42,6 @@ import org.qifu.core.service.ISysJreportParamService;
 import org.qifu.core.service.ISysJreportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,27 +51,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, readOnly=true)
 public class SystemJreportLogicServiceImpl extends BaseLogicService implements ISystemJreportLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(SystemJreportLogicServiceImpl.class);
-	private final static int MAX_DESCRIPTION_LENGTH = 500;
-	private final static String SUB_FILE_NAME_JRXML = ".jrxml";
-	private final static String SUB_FILE_NANME_JASPER = ".jasper";
+	private static final int MAX_DESCRIPTION_LENGTH = 500;
+	private static final String SUB_FILE_NAME_JRXML = ".jrxml";
+	private static final String SUB_FILE_NANME_JASPER = ".jasper";
 	
-	@Autowired
-	ISysJreportService<TbSysJreport, String> sysJreportService;
+	private final ISysJreportService<TbSysJreport, String> sysJreportService;
 	
-	@Autowired
-	ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService;
+	private final ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService;
 	
-	public SystemJreportLogicServiceImpl() {
+	public SystemJreportLogicServiceImpl(ISysJreportService<TbSysJreport, String> sysJreportService,
+			ISysJreportParamService<TbSysJreportParam, String> sysJreportParamService) {
 		super();
+		this.sysJreportService = sysJreportService;
+		this.sysJreportParamService = sysJreportParamService;
 	}
-	
+
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysJreport> create(TbSysJreport report) throws ServiceException, Exception {
+	public DefaultResult<TbSysJreport> create(TbSysJreport report) throws ServiceException {
 		if (report==null) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -80,7 +80,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			report.setContent( Base64.decodeBase64(report.getUploadBase64()) );
 		}
 		this.setStringValueMaxLength(report, "description", MAX_DESCRIPTION_LENGTH);
-		if (YesNo.YES.equals(report.getIsCompile())) {
+		if (YesNoKeyProvide.YES.equals(report.getIsCompile())) {
 			report.setFile( report.getReportId() + SUB_FILE_NAME_JRXML);
 		} else {
 			report.setFile( report.getReportId() + SUB_FILE_NANME_JASPER);
@@ -94,7 +94,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysJreport> update(TbSysJreport report) throws ServiceException, Exception {
+	public DefaultResult<TbSysJreport> update(TbSysJreport report) throws ServiceException {
 		if (report==null || super.isBlank(report.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -111,7 +111,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 		if (report.getContent()==null) { // 沒有上傳新的jasper,jrxml檔案
 			report.setContent( content );			
 		}		
-		if (YesNo.YES.equals(report.getIsCompile())) {
+		if (YesNoKeyProvide.YES.equals(report.getIsCompile())) {
 			report.setFile( report.getReportId() + SUB_FILE_NAME_JRXML);
 		} else {
 			report.setFile( report.getReportId() + SUB_FILE_NANME_JASPER);
@@ -125,7 +125,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> delete(TbSysJreport report) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSysJreport report) throws ServiceException {
 		if (report==null || super.isBlank(report.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
@@ -134,7 +134,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			throw new ServiceException(mResult.getMessage());
 		}
 		report = mResult.getValue();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("reportId", report.getReportId());
 		DefaultResult<List<TbSysJreportParam>> searchListResult = this.sysJreportParamService.selectListByParams(paramMap);
 		for (int i=0; searchListResult.getValue() !=null && i < searchListResult.getValue().size(); i++) {
@@ -150,7 +150,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
 	@Override
 	public DefaultResult<TbSysJreportParam> createParam(TbSysJreportParam reportParam, String reportOid)
-			throws ServiceException, Exception {
+			throws ServiceException {
 		if (reportParam==null || super.isBlank(reportOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -169,7 +169,7 @@ public class SystemJreportLogicServiceImpl extends BaseLogicService implements I
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> deleteParam(TbSysJreportParam reportParam) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteParam(TbSysJreportParam reportParam) throws ServiceException {
 		if (reportParam==null || super.isBlank(reportParam.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}

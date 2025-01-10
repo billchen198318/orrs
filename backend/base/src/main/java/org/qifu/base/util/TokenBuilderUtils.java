@@ -22,6 +22,7 @@
 package org.qifu.base.util;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,10 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 public class TokenBuilderUtils {
 	
+	protected TokenBuilderUtils() {
+		throw new IllegalStateException("Utils class: TokenBuilderUtils");
+	}
+	
 	public static boolean existsInfo(Map<String, Claim> claims) {
 		if (null == claims) {
 			return false;
@@ -55,13 +60,12 @@ public class TokenBuilderUtils {
 	
 	public static Map<String, Claim> verifyToken(String token, TokenStoreValidate storeValidate ) {
 		if (StringUtils.isBlank(token)) {
-			return null;
+			return Collections.emptyMap();
 		}
 		DecodedJWT jwt = null;
 		try {
 			if (!storeValidate.accessValidate(token)) {
-				//throw new Exception("access token no validate of store!");
-				return null;
+				return Collections.emptyMap();
 			}
 			JWTVerifier verifier = JWT.require(Algorithm.HMAC256(Constants.TOKEN_SECRET)).withIssuer(Constants.TOKEN_ISSUER).build();
 			jwt = verifier.verify(token);
@@ -85,7 +89,7 @@ public class TokenBuilderUtils {
 	    Date expiresDate2 = setTime2.getTime();	    
 	    
 	    // Header Message
-	    Map<String, Object> headerMap = new HashMap<String, Object>();
+	    Map<String, Object> headerMap = new HashMap<>();
 	    headerMap.put("alg", "HS256");
 	    headerMap.put("typ", "JWT");
 	    

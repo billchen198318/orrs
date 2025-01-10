@@ -33,7 +33,7 @@ public class SearchBody implements java.io.Serializable {
 	
 	public SearchBody() {
 		this.pageOf = new PageOf();
-		this.field = new HashMap<String, String>();
+		this.field = new HashMap<>();
 	}
 	
 	public SearchBody(Map<String, String> field) {

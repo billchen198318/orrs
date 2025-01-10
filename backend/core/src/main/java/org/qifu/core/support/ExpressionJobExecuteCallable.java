@@ -31,7 +31,7 @@ import org.qifu.base.AppContext;
 import org.qifu.base.Constants;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbSysExprJob;
 import org.qifu.core.entity.TbSysExprJobLog;
 import org.qifu.core.entity.TbSysMailHelper;
@@ -72,9 +72,9 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 		String logStatus = "";
 		boolean setUserInfoBackgroundMode = false;
 		
-		ISysExprJobService<TbSysExprJob, String> sysExprJobService = AppContext.context.getBean(ISysExprJobService.class);
+		ISysExprJobService<TbSysExprJob, String> sysExprJobService = AppContext.getContext().getBean(ISysExprJobService.class);
 		
-		ISysExprJobLogService<TbSysExprJobLog, String> sysExprJobLogService = AppContext.context.getBean(ISysExprJobLogService.class);
+		ISysExprJobLogService<TbSysExprJobLog, String> sysExprJobLogService = AppContext.getContext().getBean(ISysExprJobLogService.class);
 		
 		try {
 			
@@ -91,7 +91,7 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 				logStatus = ExpressionJobConstants.LOGSTATUS_NO_EXECUTE;
 				return this.jobObj;
 			}
-			if (YesNo.YES.equals(this.jobObj.getSysExprJob().getCheckFault()) 
+			if (YesNoKeyProvide.YES.equals(this.jobObj.getSysExprJob().getCheckFault()) 
 					&& ExpressionJobConstants.RUNSTATUS_FAULT.equals(this.jobObj.getSysExprJob().getRunStatus())) {
 				faultMsg = "Before proccess fault, cannot execute expression job!";
 				runStatus = ExpressionJobConstants.RUNSTATUS_FAULT;
@@ -102,7 +102,7 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 			this.jobObj.getSysExprJob().setRunStatus(ExpressionJobConstants.RUNSTATUS_PROCESS_NOW);
 			sysExprJobService.update( this.jobObj.getSysExprJob() );
 			
-			Map<String, Object> paramMap = new HashMap<String, Object>();
+			Map<String, Object> paramMap = new HashMap<>();
 			paramMap.put("jobObj", this.jobObj);
 			ScriptExpressionUtils.execute(
 					jobObj.getSysExpression().getType(), 
@@ -112,16 +112,16 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 			runStatus = ExpressionJobConstants.RUNSTATUS_SUCCESS;
 			logStatus = ExpressionJobConstants.LOGSTATUS_SUCCESS;			
 		} catch (ServiceException se) {
-			faultMsg = se.getMessage().toString();
+			faultMsg = se.getMessage();
 			runStatus = ExpressionJobConstants.RUNSTATUS_FAULT;
 			logStatus = ExpressionJobConstants.LOGSTATUS_FAULT;				
-			logger.error( se.getMessage().toString() );
+			logger.error( se.getMessage() );
 		} catch (Exception e) {
-			faultMsg = e.getMessage().toString();
+			faultMsg = e.getMessage();
 			if (e.getMessage()==null) { 
 				faultMsg=e.toString();
 			} else {
-				faultMsg=e.getMessage().toString();
+				faultMsg=e.getMessage();
 			}			
 			runStatus = ExpressionJobConstants.RUNSTATUS_FAULT;
 			logStatus = ExpressionJobConstants.LOGSTATUS_FAULT;			
@@ -183,7 +183,7 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 				content += this.jobObj.getSysExprJobLog().getFaultMsg();
 			}
 			
-			ISysMailHelperService<TbSysMailHelper, String> sysMailHelperService = AppContext.context.getBean(ISysMailHelperService.class);
+			ISysMailHelperService<TbSysMailHelper, String> sysMailHelperService = AppContext.getContext().getBean(ISysMailHelperService.class);
 			
 			String mailId = SimpleUtils.getStrYMD("");
 			TbSysMailHelper mailHelper = new TbSysMailHelper();
@@ -192,8 +192,8 @@ public class ExpressionJobExecuteCallable implements Callable<ExpressionJobObj> 
 			mailHelper.setMailTo( contact );
 			mailHelper.setSubject( subject );
 			mailHelper.setText( content.getBytes(Constants.BASE_ENCODING) );
-			mailHelper.setRetainFlag(YesNo.NO);
-			mailHelper.setSuccessFlag(YesNo.NO);
+			mailHelper.setRetainFlag(YesNoKeyProvide.NO);
+			mailHelper.setSuccessFlag(YesNoKeyProvide.NO);
 			sysMailHelperService.insert(mailHelper);
 		} catch (Exception e) {
 			e.printStackTrace();

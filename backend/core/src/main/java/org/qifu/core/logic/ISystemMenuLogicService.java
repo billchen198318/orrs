@@ -43,7 +43,7 @@ public interface ISystemMenuLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public Map<String, List<TbSysProg>> findForMenuSettingsEnableAndAll(String folderProgramOid) throws ServiceException, Exception;
+	public Map<String, List<TbSysProg>> findForMenuSettingsEnableAndAll(String folderProgramOid) throws ServiceException;
 	
 	/**
 	 * 更新或是新增 TB_SYS_MENU 資料
@@ -54,6 +54,6 @@ public interface ISystemMenuLogicService {
 	 * @throws ServiceException
 	 * @throws Exception
 	 */
-	public DefaultResult<Boolean> createOrUpdate(String folderProgramOid, List<String> childProgramOidList) throws ServiceException, Exception;
+	public DefaultResult<Boolean> createOrUpdate(String folderProgramOid, List<String> childProgramOidList) throws ServiceException;
 	
 }

@@ -27,10 +27,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.util.SimpleUtils;
 
 public class Constants {
+	
+	private Constants() {
+		throw new IllegalStateException("Constants");
+	}
 	
 	/**
 	 * 不要更改這個設定
@@ -38,26 +42,14 @@ public class Constants {
 	public static final String BASE_ENCODING = StandardCharsets.UTF_8.name();
 	
 	/**
-	 * EncryptorUtils 要用的 key1
+	 * 保留查詢參數名稱 for PageOf , BaseDAO
 	 */
-	@Deprecated
-	public static final String ENCRYPTOR_KEY1 = "pOk%$ewQaIUyBvCS@Oj!~%O$kW1p2Rh9";
-	
-	/**
-	 * EncryptorUtils 要用的 key2
-	 */
-	@Deprecated
-	public static final String ENCRYPTOR_KEY2 = "7913670289654325";		
+	public static final String RESERVED_PARAM_NAME_QUERY_SORT_TYPE = "sortType";
 	
 	/**
 	 * 保留查詢參數名稱 for PageOf , BaseDAO
 	 */
-	public static final String _RESERVED_PARAM_NAME_QUERY_SORT_TYPE = "sortType";
-	
-	/**
-	 * 保留查詢參數名稱 for PageOf , BaseDAO
-	 */
-	public static final String _RESERVED_PARAM_NAME_QUERY_ORDER_BY = "orderBy";	
+	public static final String RESERVED_PARAM_NAME_QUERY_ORDER_BY = "orderBy";	
 	
 	public static final String QUERY_TYPE_OF_SELECT="select"; // BaseService 查詢 grid 要用
 	public static final String QUERY_TYPE_OF_COUNT="count"; // BaseService 查詢 grid 要用	
@@ -82,11 +74,11 @@ public class Constants {
 	/**
 	 * GreenStepBaseFormAuthenticationFilter 要用的
 	 */
-	public static final String NO_LOGIN_JSON_DATA = "{ \"success\":\"" + YesNo.NO + "\",\"message\":\"Please login!\",\"login\":\"" + YesNo.NO + "\",\"isAuthorize\":\"" + YesNo.NO + "\" }";
+	public static final String NO_LOGIN_JSON_DATA = "{ \"success\":\"" + YesNoKeyProvide.NO + "\",\"message\":\"Please login!\",\"login\":\"" + YesNoKeyProvide.NO + "\",\"isAuthorize\":\"" + YesNoKeyProvide.NO + "\" }";
 	/**
 	 * GreenStepBaseFormAuthenticationFilter 要用的
 	 */	
-	public static final String NO_AUTHZ_JSON_DATA = "{ \"success\":\"" + YesNo.NO + "\",\"message\":\"no authorize!\",\"login\":\"" + YesNo.YES + "\",\"isAuthorize\":\"" + YesNo.NO + "\" }";
+	public static final String NO_AUTHZ_JSON_DATA = "{ \"success\":\"" + YesNoKeyProvide.NO + "\",\"message\":\"no authorize!\",\"login\":\"" + YesNoKeyProvide.YES + "\",\"isAuthorize\":\"" + YesNoKeyProvide.NO + "\" }";
 	
 	public static final String PAGE_MESSAGE="pageMessage";
 	
@@ -103,12 +95,14 @@ public class Constants {
 	
 	public static final String HTML_BR = "<br>";
 	
+	public static final String FORWARD_SLASH = "/";
+	
 	public static String getTmpDir() {
 		return System.getProperty("java.io.tmpdir");
 	}
 	
 	public static String getWorkTmpDir() {
-		String dirPath = getTmpDir() + "/" + TMP_SUB_DIR_NAME + "/";
+		String dirPath = getTmpDir() + FORWARD_SLASH + TMP_SUB_DIR_NAME + FORWARD_SLASH;
 		File file = new File(dirPath);
 		if (!file.exists() || !file.isDirectory()) {
 			try {
@@ -117,7 +111,6 @@ public class Constants {
 				e.printStackTrace();
 			}
 		}
-		file = null;
 		return dirPath;
 	}
 	
@@ -129,11 +122,11 @@ public class Constants {
 	public static final String TOKEN_USER_PARAM_NAME = "USER_ID";
 	public static final String TOKEN_ISSUER = "QIFU4Application";
 	public static final String TOKEN_SECRET = "QIFU4@" + UUID.randomUUID().toString();
-	public static final String TOKEN_CHECK_URL_PATH = "/api/";
-	public static final String TOKEN_Authorization = "Authorization";
+	public static final String TOKEN_CHECK_URL_PATH = FORWARD_SLASH + "api" + FORWARD_SLASH;
+	public static final String TOKEN_AUTH = "Authorization";
 	public static final String TOKEN_PREFIX = "Bearer";
 	
-	public static final String HTTP_REQUEST_PASSWORD_AuthLogin = "_qifu4_userLoginPassword_" + SimpleUtils.createRandomString(5);
+	public static final String HTTP_REQUEST_PASSWORD_AUTH = "_qifu4_userLoginPassword_" + SimpleUtils.createRandomString(5);
 	public static final String SYSCODE_TOKEN_CODE = "TOKEN";
 	public static final String SYSCODE_TOKEN_TYPE = "AUTH";
 	

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
@@ -45,7 +46,7 @@ import org.qifu.base.Constants;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.message.BaseSystemMessage;
 import org.qifu.base.model.DefaultResult;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.BaseInfoConfigProperties;
 import org.qifu.core.entity.TbSysUpload;
 import org.qifu.core.model.UploadTypes;
@@ -58,26 +59,26 @@ public class UploadSupportUtils {
 	protected static Logger logger = LoggerFactory.getLogger(UploadSupportUtils.class);
 	public static final String HELP_EXPRESSION_VARIABLE = "datas";
 	private static final long DEFAULT_UPLOAD_MAX_SIZE = 8388608; // default max 8MB 
-	private static long UPLOAD_MAX_SIZE = DEFAULT_UPLOAD_MAX_SIZE;
+	private static long uploadMaxSize = DEFAULT_UPLOAD_MAX_SIZE;
 	private static Properties props = new Properties();
-	private static String VIEW_MODE_FILE_EXTENSION[] = null;	
+	private static String[] viewModeFileExtension = null;	
 	
 	private static BaseInfoConfigProperties baseInfoConfigProperties;
 	
 	private static ISysUploadService<TbSysUpload, String> sysUploadService;
 	
 	static {
-		baseInfoConfigProperties = AppContext.context.getBean( BaseInfoConfigProperties.class );
-		sysUploadService = (ISysUploadService<TbSysUpload, String>) AppContext.context.getBean( ISysUploadService.class );
+		baseInfoConfigProperties = AppContext.getContext().getBean( BaseInfoConfigProperties.class );
+		sysUploadService = AppContext.getContext().getBean( ISysUploadService.class );
 		try {
 			props.load(UploadSupportUtils.class.getClassLoader().getResource("upload-support-utils.properties").openStream());
-			VIEW_MODE_FILE_EXTENSION = SimpleUtils.getStr(props.getProperty("FILE_EXTENSION")).trim().split(",");
-			UPLOAD_MAX_SIZE = NumberUtils.toLong(props.getProperty("UPLOAD_MAX_SIZE"), 0);
-			if (UPLOAD_MAX_SIZE < 1048576) { // 1MB binary byte = 1048576
-				UPLOAD_MAX_SIZE = 1048576;
+			viewModeFileExtension = SimpleUtils.getStr(props.getProperty("FILE_EXTENSION")).trim().split(",");
+			uploadMaxSize = NumberUtils.toLong(props.getProperty("UPLOAD_MAX_SIZE"), 0);
+			if (uploadMaxSize < 1048576) { // 1MB binary byte = 1048576
+				uploadMaxSize = 1048576;
 			}
-			if (UPLOAD_MAX_SIZE > DEFAULT_UPLOAD_MAX_SIZE) {
-				UPLOAD_MAX_SIZE = DEFAULT_UPLOAD_MAX_SIZE;
+			if (uploadMaxSize > DEFAULT_UPLOAD_MAX_SIZE) {
+				uploadMaxSize = DEFAULT_UPLOAD_MAX_SIZE;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -85,15 +86,15 @@ public class UploadSupportUtils {
 	}
 	
 	public static long getUploadMaxSize() {
-		return UPLOAD_MAX_SIZE;
+		return uploadMaxSize;
 	}
 	
-	public static String getViewMode(String fileShowName) throws Exception {
-		String viewMode = YesNo.NO;
+	public static String getViewMode(String fileShowName) {
+		String viewMode = YesNoKeyProvide.NO;
 		String fileExtensionName = StringUtils.defaultString( getFileExtensionName(fileShowName) ).trim().toLowerCase();
-		for (int i=0; VIEW_MODE_FILE_EXTENSION!=null && i<VIEW_MODE_FILE_EXTENSION.length; i++) {
-			if (VIEW_MODE_FILE_EXTENSION[i].toLowerCase().equals(fileExtensionName)) {
-				viewMode = YesNo.YES;
+		for (int i=0; viewModeFileExtension!=null && i<viewModeFileExtension.length; i++) {
+			if (viewModeFileExtension[i].toLowerCase().equals(fileExtensionName)) {
+				viewMode = YesNoKeyProvide.YES;
 			}
 		}
 		return viewMode;
@@ -106,9 +107,10 @@ public class UploadSupportUtils {
 	 * @param classesToBeBound
 	 * @return
 	 * @throws ServiceException
-	 * @throws Exception
+	 * @throws IOException 
+	 * @throws JAXBException 
 	 */
-	public Object getTransformObjectData(String uploadOid, Class<?> classesToBeBound) throws ServiceException, Exception {
+	public Object getTransformObjectData(String uploadOid, Class<?> classesToBeBound) throws ServiceException, IOException, JAXBException {
 		Object result = null;
 		byte[] xmlBytes = getDataBytes(uploadOid);
 		JAXBContext jaxbContext = JAXBContext.newInstance(classesToBeBound);
@@ -117,14 +119,14 @@ public class UploadSupportUtils {
 		return result;
 	}
 	
-	public static void cleanTempUpload() throws ServiceException, Exception {		
+	public static void cleanTempUpload() throws ServiceException {		
 		cleanTempUpload( baseInfoConfigProperties.getSystem() );
 	}
 	
-	public static void cleanTempUpload(String system) throws ServiceException, Exception {
+	public static void cleanTempUpload(String system) throws ServiceException {
 		logger.info("clean upload({}) temp begin...", system);
 		//sysUploadService.deleteTmpContentBySystem(system); // 2020-06-27 rem
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("system", system);
 		paramMap.put("type", UploadTypes.IS_TEMP);
 		//paramMap.put("isFile", YesNo.YES); // 2021-05-20 rem
@@ -144,18 +146,17 @@ public class UploadSupportUtils {
 				logger.warn("upload temp file no over remove check time(hour-{}, min-{}), cannot remove, upload oid: {}", duration.getStandardHours(), duration.getStandardMinutes(), entity.getOid());
 				continue;
 			}
-			if (!YesNo.YES.equals(entity.getIsFile())) {
+			if (!YesNoKeyProvide.YES.equals(entity.getIsFile())) {
 				logger.warn("delete upload not real file type, upload oid : {} , show-name: {}", entity.getOid(), entity.getShowName());
 				sysUploadService.delete(entity);
 				continue;
 			}
 			// --------------------------------------------------------------------
 			String dir = getUploadFileDir(entity.getSystem(), entity.getSubDir(), entity.getType());
-			String fileFullPath = dir + "/" + entity.getFileName();
+			String fileFullPath = dir + File.separator + entity.getFileName();
 			File file = new File(fileFullPath);
 			if (!file.exists()) {
 				logger.warn("upload temp file no exists, upload oid: {}", entity.getOid());
-				file = null;
 				continue;
 			}
 			try {
@@ -184,11 +185,11 @@ public class UploadSupportUtils {
 		return baseInfoConfigProperties.getUploadDir() + "/" + system + "/" + type + "/" + subDir + "/";
 	}	
 	
-	public static File mkdirUploadFileDir(String system, String type) throws IOException, Exception {
+	public static File mkdirUploadFileDir(String system, String type) throws IOException {
 		return mkdirUploadFileDir(system, getSubDir(), type);
 	}
 	
-	public static File mkdirUploadFileDir(String system, String subDir, String type) throws IOException, Exception {
+	public static File mkdirUploadFileDir(String system, String subDir, String type) throws IOException {
 		String uploadDir = getUploadFileDir(system, subDir, type);
 		File dir = new File(uploadDir);
 		if (dir.exists() && dir.isDirectory()) {
@@ -219,69 +220,58 @@ public class UploadSupportUtils {
 		return generateRealFileName( file.getName() );
 	}
 	
-	public static File getRealFile(String uploadOid) throws ServiceException, IOException, Exception {
+	public static File getRealFile(String uploadOid) throws ServiceException, IOException {
 		if (StringUtils.isBlank(uploadOid)) {
-			throw new Exception("parameter is blank!");
+			throw new IllegalArgumentException(BaseSystemMessage.parameterBlank());
 		}
 		TbSysUpload uploadObj = findUpload(uploadOid);
 		File packageFile = null;
-		if (!YesNo.YES.equals(uploadObj.getIsFile())) {
-			File dir = new File( Constants.getWorkTmpDir() + "/" + UploadSupportUtils.class.getSimpleName() );
+		if (!YesNoKeyProvide.YES.equals(uploadObj.getIsFile())) {
+			File dir = new File( Constants.getWorkTmpDir() + File.separator + UploadSupportUtils.class.getSimpleName() );
 			if (!dir.exists() || !dir.isDirectory()) {
 				FileUtils.forceMkdir(dir);
 			}			
-			String tmpFileName = dir.getPath() + "/" + SimpleUtils.getUUIDStr() + "." + getFileExtensionName(uploadObj.getShowName());
-			dir = null;
-			OutputStream fos = null;
-			try {
-				packageFile = new File( tmpFileName );
-				fos = new FileOutputStream(packageFile);
+			String tmpFileName = dir.getPath() + File.separator + SimpleUtils.getUUIDStr() + "." + getFileExtensionName(uploadObj.getShowName());
+			packageFile = new File( tmpFileName );
+			try (OutputStream fos = new FileOutputStream(packageFile)) {
 				IOUtils.write(uploadObj.getContent(), fos);		
-				fos.flush();
-			} catch (IOException e) {
-				throw e;
-			} finally {
-				if (fos!=null) {
-					fos.close();
-				}
-				fos = null;
+				fos.flush();				
 			}			
 		} else {
 			String uploadDir = getUploadFileDir(uploadObj.getSystem(), uploadObj.getSubDir(), uploadObj.getType());
-			packageFile = new File( uploadDir + "/" + uploadObj.getFileName() );			
+			packageFile = new File( uploadDir + File.separator + uploadObj.getFileName() );			
 		}		
 		if (!packageFile.exists()) {
-			throw new Exception("File is missing: " + uploadObj.getFileName() );
+			throw new IOException("File is missing: " + uploadObj.getFileName() );
 		}
 		return packageFile;
 	}
 	
-	public static byte[] getDataBytes(String uploadOid) throws ServiceException, IOException, Exception {
+	public static byte[] getDataBytes(String uploadOid) throws ServiceException, IOException {
 		if (StringUtils.isBlank(uploadOid)) {
-			throw new Exception("parameter is blank!");
+			throw new IllegalArgumentException(BaseSystemMessage.parameterBlank());
 		}
-		byte datas[] = null;
+		byte[] datas = null;
 		TbSysUpload uploadObj = findUpload(uploadOid);
 		datas = uploadObj.getContent();
-		if (YesNo.YES.equals(uploadObj.getIsFile())) {
+		if (YesNoKeyProvide.YES.equals(uploadObj.getIsFile())) {
 			String uploadDir = getUploadFileDir(uploadObj.getSystem(), uploadObj.getSubDir(), uploadObj.getType());
-			File file = new File( uploadDir + "/" + uploadObj.getFileName() );
+			File file = new File( uploadDir + File.separator + uploadObj.getFileName() );
 			datas = FileUtils.readFileToByteArray(file);
-			file = null;
 		}
 		return datas;
 	}
 	
-	public static DefaultResult<Boolean> updateType(String oid, String type) throws ServiceException, IOException, Exception {
+	public static DefaultResult<Boolean> updateType(String oid, String type) throws ServiceException, IOException {
 		DefaultResult<TbSysUpload> uploadResult = sysUploadService.selectByPrimaryKeySimple(oid);
 		if (uploadResult.getValue()==null) {
 			throw new ServiceException(uploadResult.getMessage());
 		}
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		DefaultResult<Boolean> result = new DefaultResult<>();
 		result.setValue( false );
 		result.setMessage( BaseSystemMessage.updateFail() );
 		TbSysUpload upload = uploadResult.getValue();
-		if (!YesNo.YES.equals(upload.getIsFile())) {
+		if (!YesNoKeyProvide.YES.equals(upload.getIsFile())) {
 			upload.setType(type);
 			uploadResult = sysUploadService.update(upload);			
 			if (uploadResult.getValue() != null) {
@@ -296,39 +286,27 @@ public class UploadSupportUtils {
 		String newFullPath = getUploadFileDir(upload.getSystem(), upload.getSubDir(), type) + upload.getFileName();
 		File newFile = new File(newFullPath);
 		if (newFile.isFile() && newFile.exists()) {
-			newFile = null;
-			throw new Exception("error. file exists, cannot operate!");
+			throw new IllegalArgumentException("error. file exists, cannot operate!");
 		}
-		//newFile = null;
 		File oldFile = new File(oldFullPath);
 		if (!oldFile.exists()) {
-			oldFile = null;
-			throw new Exception("error. file no exists: " + oldFullPath);
+			throw new IllegalArgumentException("error. file no exists: " + oldFullPath);
 		}
-		
-		try {
-			FileUtils.moveFile(oldFile, newFile);
-			
-			upload.setType(type);
-			uploadResult = sysUploadService.update(upload);
-			
-		} catch (Exception e) {
-			newFile = null;
-			oldFile = null;
-			throw e;
-		}
+		FileUtils.moveFile(oldFile, newFile);
+		upload.setType(type);
+		sysUploadService.update(upload);
 		return result;
 	}
 	
-	public static String create(String system, String type, boolean isFile, File file, String showName) throws ServiceException, IOException, Exception {
+	public static String create(String system, String type, boolean isFile, File file, String showName) throws ServiceException, IOException {
 		if (StringUtils.isBlank(type) || null == file || StringUtils.isBlank(showName)) {
-			throw new Exception("parameter is blank!");
+			throw new IllegalArgumentException(BaseSystemMessage.parameterBlank());
 		}				
 		if (!file.exists()) {
-			throw new Exception("file no exists!");
+			throw new IllegalArgumentException("file no exists!");
 		}
 		TbSysUpload upload = new TbSysUpload();		
-		upload.setIsFile( ( isFile ? YesNo.YES : YesNo.NO ) );
+		upload.setIsFile( ( isFile ? YesNoKeyProvide.YES : YesNoKeyProvide.NO ) );
 		upload.setShowName(showName);
 		upload.setSystem(system);
 		upload.setType(type);
@@ -337,7 +315,7 @@ public class UploadSupportUtils {
 			String uploadDir = getUploadFileDir(system, type);
 			String uploadFileName = generateRealFileName(file);
 			mkdirUploadFileDir(system, type);
-			FileUtils.copyFile(file, new File(uploadDir + "/" + uploadFileName) );
+			FileUtils.copyFile(file, new File(uploadDir + File.separator + uploadFileName) );
 			upload.setFileName( uploadFileName );			
 		} else {
 			upload.setContent( FileUtils.readFileToByteArray(file) );
@@ -350,12 +328,12 @@ public class UploadSupportUtils {
 		return result.getValue().getOid();
 	}
 	
-	public static String create(String system, String type, boolean isFile, byte[] datas, String showName) throws ServiceException, IOException, Exception {
+	public static String create(String system, String type, boolean isFile, byte[] datas, String showName) throws ServiceException, IOException {
 		if (StringUtils.isBlank(type) || null == datas || StringUtils.isBlank(showName)) {
-			throw new Exception("parameter is blank!");
+			throw new IllegalArgumentException(BaseSystemMessage.parameterBlank());
 		}				
 		TbSysUpload upload = new TbSysUpload();		
-		upload.setIsFile( ( isFile ? YesNo.YES : YesNo.NO ) );
+		upload.setIsFile( ( isFile ? YesNoKeyProvide.YES : YesNoKeyProvide.NO ) );
 		upload.setShowName(showName);
 		upload.setSystem(system);
 		upload.setType(type);
@@ -364,15 +342,8 @@ public class UploadSupportUtils {
 			String uploadDir = getUploadFileDir(system, type);
 			String uploadFileName = generateRealFileName(showName);
 			mkdirUploadFileDir(system, type);
-			File file = null;
-			try {
-				file = new File( uploadDir + "/" + uploadFileName );
-				FileUtils.writeByteArrayToFile(file, datas);
-			} catch (Exception e) {
-				throw e;
-			} finally {
-				file = null;
-			}
+			File file = new File( uploadDir + File.separator + uploadFileName );
+			FileUtils.writeByteArrayToFile(file, datas); 
 			upload.setFileName( uploadFileName );			
 		} else {
 			upload.setContent( datas );
@@ -397,9 +368,9 @@ public class UploadSupportUtils {
 		return extension;
 	}
 	
-	public static TbSysUpload findUpload(String uploadOid) throws ServiceException, Exception {
+	public static TbSysUpload findUpload(String uploadOid) throws ServiceException {
 		if (StringUtils.isBlank(uploadOid)) {
-			throw new Exception("Upload OID parameter is blank!");
+			throw new IllegalArgumentException("Upload OID parameter is blank!");
 		}		
 		DefaultResult<TbSysUpload> result = sysUploadService.selectByPrimaryKey(uploadOid);
 		if (result.getValue()==null) {
@@ -408,9 +379,9 @@ public class UploadSupportUtils {
 		return result.getValue();
 	}
 	
-	public static TbSysUpload findUploadNoByteContent(String uploadOid) throws ServiceException, Exception {
+	public static TbSysUpload findUploadNoByteContent(String uploadOid) throws ServiceException {
 		if (StringUtils.isBlank(uploadOid)) {
-			throw new Exception("Upload OID parameter is blank!");
+			throw new IllegalArgumentException("Upload OID parameter is blank!");
 		}		
 		DefaultResult<TbSysUpload> result = sysUploadService.selectByPrimaryKeySimple(uploadOid);
 		if (result.getValue()==null) {

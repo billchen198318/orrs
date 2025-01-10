@@ -28,14 +28,14 @@ import org.qifu.core.entity.TbSysJreportParam;
 
 public interface ISystemJreportLogicService {
 	
-	public DefaultResult<TbSysJreport> create(TbSysJreport report) throws ServiceException, Exception; 
+	public DefaultResult<TbSysJreport> create(TbSysJreport report) throws ServiceException; 
 	
-	public DefaultResult<TbSysJreport> update(TbSysJreport report) throws ServiceException, Exception;
+	public DefaultResult<TbSysJreport> update(TbSysJreport report) throws ServiceException;
 	
-	public DefaultResult<Boolean> delete(TbSysJreport report) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(TbSysJreport report) throws ServiceException;
 	
-	public DefaultResult<TbSysJreportParam> createParam(TbSysJreportParam reportParam, String reportOid) throws ServiceException, Exception;
+	public DefaultResult<TbSysJreportParam> createParam(TbSysJreportParam reportParam, String reportOid) throws ServiceException;
 	
-	public DefaultResult<Boolean> deleteParam(TbSysJreportParam reportParam) throws ServiceException, Exception;
+	public DefaultResult<Boolean> deleteParam(TbSysJreportParam reportParam) throws ServiceException;
 	
 }

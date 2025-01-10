@@ -29,6 +29,6 @@ import org.qifu.core.entity.TbSys;
 
 public interface ISysService<T, E> extends IBaseService<TbSys, String> {
 	
-	public Map<String, String> findSysMap(boolean pleaseSelect) throws ServiceException, Exception;
+	public Map<String, String> findSysMap(boolean pleaseSelect) throws ServiceException;
 	
 }

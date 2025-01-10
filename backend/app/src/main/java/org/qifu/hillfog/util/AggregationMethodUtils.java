@@ -71,7 +71,7 @@ public class AggregationMethodUtils {
 	private static ThreadLocal<Map<String, HfAggregationMethod>> aggrMethodThreadLocal = new ThreadLocal<Map<String, HfAggregationMethod>>();
 	
 	static {
-		aggregationMethodService = AppContext.context.getBean(IAggregationMethodService.class);	
+		aggregationMethodService = AppContext.getContext().getBean(IAggregationMethodService.class);	
 	}
 	
 	public static void clearThreadLocal() {

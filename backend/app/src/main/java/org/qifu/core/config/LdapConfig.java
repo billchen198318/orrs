@@ -25,9 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.base.properties.LdapLoginConfigProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
@@ -36,14 +35,18 @@ import org.springframework.ldap.core.support.LdapContextSource;
 @Configuration
 public class LdapConfig {
 	
-	@Autowired
-	LdapLoginConfigProperties ldapLoginConfigProperties;
+	private final LdapLoginConfigProperties ldapLoginConfigProperties;
 	
-    @Bean
+    public LdapConfig(LdapLoginConfigProperties ldapLoginConfigProperties) {
+		super();
+		this.ldapLoginConfigProperties = ldapLoginConfigProperties;
+	}
+
+	@Bean
     public LdapContextSource contextSource() {
     	LdapContextSource contextSource = new LdapContextSource();
     	if ( !StringUtils.isBlank(ldapLoginConfigProperties.getJavaNamingReferral()) ) {
-        	Map<String, Object> p = new HashMap<String, Object>();
+        	Map<String, Object> p = new HashMap<>();
         	p.put("java.naming.referral", StringUtils.deleteWhitespace(ldapLoginConfigProperties.getJavaNamingReferral()));    	
         	contextSource.setBaseEnvironmentProperties(p);    		
     	}
@@ -51,7 +54,7 @@ public class LdapConfig {
     	contextSource.setBase( ldapLoginConfigProperties.getContextBase() );
     	contextSource.setUserDn( ldapLoginConfigProperties.getContextUserDn() );
     	contextSource.setPassword( ldapLoginConfigProperties.getContextPassword() );
-    	if (YesNo.YES.equals( ldapLoginConfigProperties.getPooled() )) {
+    	if (YesNoKeyProvide.YES.equals( ldapLoginConfigProperties.getPooled() )) {
     		contextSource.setPooled(true);
     	}
     	return contextSource;
@@ -60,7 +63,7 @@ public class LdapConfig {
     @Bean
     public LdapTemplate ldapTemplate() {
     	LdapTemplate template = new LdapTemplate(contextSource());
-    	if (YesNo.YES.equals( ldapLoginConfigProperties.getIgnorePartialResultException() )) {
+    	if (YesNoKeyProvide.YES.equals( ldapLoginConfigProperties.getIgnorePartialResultException() )) {
     		template.setIgnorePartialResultException(true);
     	}    	
     	return template;

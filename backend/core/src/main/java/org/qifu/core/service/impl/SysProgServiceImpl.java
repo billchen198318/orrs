@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.mapper.IBaseMapper;
@@ -37,7 +38,6 @@ import org.qifu.core.entity.TbSysProg;
 import org.qifu.core.mapper.TbSysProgMapper;
 import org.qifu.core.model.MenuItemType;
 import org.qifu.core.service.ISysProgService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,25 +48,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysProgServiceImpl extends BaseService<TbSysProg, String> implements ISysProgService<TbSysProg, String> {
 	
-	@Autowired
-	TbSysProgMapper tbSysProgMapper;
+	private static final String PROG_SYSTEM_VAR = "progSystem";
+	private static final String ITEM_TYPE_VAR = "itemType";
 	
+	private final TbSysProgMapper tbSysProgMapper;
+	
+	public SysProgServiceImpl(TbSysProgMapper tbSysProgMapper) {
+		super();
+		this.tbSysProgMapper = tbSysProgMapper;
+	}
+
 	@Override
 	protected IBaseMapper<TbSysProg, String> getBaseMapper() {
 		return this.tbSysProgMapper;
 	}
 
 	@Override
-	public Map<String, String> findSysProgFolderMap(String basePath, String progSystem, String itemType, boolean pleaseSelect) throws ServiceException, Exception {
+	public Map<String, String> findSysProgFolderMap(String basePath, String progSystem, String itemType, boolean pleaseSelect) throws ServiceException {
 		if (StringUtils.isBlank(progSystem)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		Map<String, String> dataMap = PleaseSelect.pageSelectMap(pleaseSelect);
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("progSystem", progSystem);
-		params.put("itemType", itemType);
+		Map<String, Object> params = new HashMap<>();
+		params.put(PROG_SYSTEM_VAR, progSystem);
+		params.put(ITEM_TYPE_VAR, itemType);
 		DefaultResult<List<TbSysProg>> searchResult = this.selectListByParams(params);
-		if (null == searchResult.getValue() || searchResult.getValue().size()<1) {
+		if (null == searchResult || CollectionUtils.isEmpty(searchResult.getValue())) {
 			return dataMap;
 		}
 		for (TbSysProg sysProg : searchResult.getValue()) {
@@ -76,39 +83,39 @@ public class SysProgServiceImpl extends BaseService<TbSysProg, String> implement
 	}
 
 	@Override
-	public List<TbSysProg> findForInTheFolderMenuItems(String progSystem, String menuParentOid, String itemType) throws ServiceException, Exception {
+	public List<TbSysProg> findForInTheFolderMenuItems(String progSystem, String menuParentOid, String itemType) throws ServiceException {
 		if (StringUtils.isBlank(progSystem)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("progSystem", progSystem);
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put(PROG_SYSTEM_VAR, progSystem);
 		if (!StringUtils.isBlank(menuParentOid)) {
 			paramMap.put("menuParentOid", menuParentOid);
 		}
 		if (!StringUtils.isBlank(itemType)) {
-			paramMap.put("itemType", itemType);
+			paramMap.put(ITEM_TYPE_VAR, itemType);
 		}
 		return this.tbSysProgMapper.findForInTheFolderMenuItems(paramMap);
 	}
 	
 	@Override
-	public List<TbSysProg> findForSystemItems(String progSystem) throws ServiceException, Exception {
+	public List<TbSysProg> findForSystemItems(String progSystem) throws ServiceException {
 		if (StringUtils.isBlank(progSystem)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("progSystem", progSystem);
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put(PROG_SYSTEM_VAR, progSystem);
 		DefaultResult<List<TbSysProg>> result = this.selectListByParams(paramMap, "PROG_ID", SortType.ASC);
 		return result.getValue();
 	}
 
 	@Override
-	public List<TbSysProg> findForInThePermRoleOfUserId(String accountId) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+	public List<TbSysProg> findForInThePermRoleOfUserId(String accountId) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
 		if (!StringUtils.isBlank(accountId)) {
 			paramMap.put("account", accountId);
 		}
-		paramMap.put("itemType", MenuItemType.ITEM);
+		paramMap.put(ITEM_TYPE_VAR, MenuItemType.ITEM);
 		return this.tbSysProgMapper.findForInThePermRoleOfUserId(paramMap);
 	}
 	

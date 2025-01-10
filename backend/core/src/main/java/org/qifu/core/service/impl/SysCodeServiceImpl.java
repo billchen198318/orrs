@@ -26,7 +26,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysCode;
 import org.qifu.core.mapper.TbSysCodeMapper;
 import org.qifu.core.service.ISysCodeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysCodeServiceImpl extends BaseService<TbSysCode, String> implements ISysCodeService<TbSysCode, String> {
 	
-	@Autowired
-	TbSysCodeMapper sysCodeMapper;
+	private final TbSysCodeMapper sysCodeMapper;
+	
+	public SysCodeServiceImpl(TbSysCodeMapper sysCodeMapper) {
+		super();
+		this.sysCodeMapper = sysCodeMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysCode, String> getBaseMapper() {

@@ -132,7 +132,7 @@ public class ORRS001D0004Controller extends CoreApiSupport {
 		.testField("tplVariable", doc, "@org.apache.commons.lang3.StringUtils@isBlank(tplVariable)", "請輸入template variable name")
 		.throwHtmlMessage();
 		
-		chk.testField("docId", doc, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(docId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
+		chk.testField("docId", doc, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(docId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
 		.testField("docId", doc, "docId.length() > 10", "編號長度超過限制")
 		.throwHtmlMessage();		
 	}

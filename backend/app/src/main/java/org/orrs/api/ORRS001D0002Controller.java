@@ -94,7 +94,7 @@ public class ORRS001D0002Controller extends CoreApiSupport {
 		.throwHtmlMessage();
 		
 		chk.testField("cronExpr", task, "!@org.springframework.scheduling.support.CronExpression@isValidExpression(cronExpr)", "cron不符合規範")
-		.testField("taskId", task, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(taskId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
+		.testField("taskId", task, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(taskId)", "編號只允許輸入0-9,a-z,A-Z正常字元")
 		.testField("taskId", task, "taskId.length() > 10", "編號長度超過限制")
 		.testField("cmds", task, "!@org.apache.commons.collections.CollectionUtils@isEmpty(cmds) && cmds.size > @org.orrs.OrrsConstants@MAX_COMMAND_RECORD", "最多" + org.orrs.OrrsConstants.MAX_COMMAND_RECORD + "筆命令")
 		.throwHtmlMessage();

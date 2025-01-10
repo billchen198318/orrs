@@ -30,10 +30,10 @@ import org.qifu.core.entity.TbSysMailHelper;
 
 public interface ISysMailHelperService<T, E> extends IBaseService<TbSysMailHelper, String> {
 	
-	public DefaultResult<List<TbSysMailHelper>> findForJobList(String mailId) throws ServiceException, Exception;
+	public DefaultResult<List<TbSysMailHelper>> findForJobList(String mailId) throws ServiceException;
 	
-	public String findForMaxMailId(String mailId) throws ServiceException, Exception;
+	public String findForMaxMailId(String mailId) throws ServiceException;
 	
-	public String findForMaxMailIdComplete(String mailId) throws ServiceException, Exception;
+	public String findForMaxMailIdComplete(String mailId) throws ServiceException;
 	
 }

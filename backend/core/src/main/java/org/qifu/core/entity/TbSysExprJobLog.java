@@ -25,12 +25,12 @@ public class TbSysExprJobLog implements java.io.Serializable {
 	
 	/* for query Grid show */
 	public String getBeginDatetimeString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.beginDatetime);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.beginDatetime);
 	}	
 	
 	/* for query Grid show */
 	public String getEndDatetimeString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.endDatetime);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.endDatetime);
 	}	
 	
 	@EntityPK(name = "oid", autoUUID = true)

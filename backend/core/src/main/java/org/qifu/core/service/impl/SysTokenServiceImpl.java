@@ -13,7 +13,6 @@ import org.qifu.core.entity.TbSysToken;
 import org.qifu.core.mapper.TbSysTokenMapper;
 import org.qifu.core.service.ISysTokenService;
 import org.qifu.core.vo.BoardDemo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,8 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysTokenServiceImpl extends BaseService<TbSysToken, String> implements ISysTokenService<TbSysToken, String> {
 	
-	@Autowired
-	TbSysTokenMapper sysTokenMapper;
+	private final TbSysTokenMapper sysTokenMapper;
+	
+	public SysTokenServiceImpl(TbSysTokenMapper sysTokenMapper) {
+		super();
+		this.sysTokenMapper = sysTokenMapper;
+	}
 	
 	@Override
 	protected IBaseMapper<TbSysToken, String> getBaseMapper() {
@@ -33,22 +36,22 @@ public class SysTokenServiceImpl extends BaseService<TbSysToken, String> impleme
 	}
 
 	@Override
-	public List<BoardDemo> findCountSizeByDatePerUser(Date date1, Date date2) throws ServiceException, Exception {
+	public List<BoardDemo> findCountSizeByDatePerUser(Date date1, Date date2) throws ServiceException {
 		if (null == date1 || null == date2) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("date1", date1);
 		paramMap.put("date2", date2);
 		return sysTokenMapper.findCountSizeByDatePerUser(paramMap);
 	}
 
 	@Override
-	public Long countSizeByDate(Date date1, Date date2) throws ServiceException, Exception {
+	public Long countSizeByDate(Date date1, Date date2) throws ServiceException {
 		if (null == date1 || null == date2) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("date1", date1);
 		paramMap.put("date2", date2);		
 		return sysTokenMapper.countSizeByDate(paramMap);

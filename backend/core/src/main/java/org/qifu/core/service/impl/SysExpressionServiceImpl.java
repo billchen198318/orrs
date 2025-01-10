@@ -31,7 +31,6 @@ import org.qifu.base.service.BaseService;
 import org.qifu.core.entity.TbSysExpression;
 import org.qifu.core.mapper.TbSysExpressionMapper;
 import org.qifu.core.service.ISysExpressionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,16 +41,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, timeout=300, readOnly=true)
 public class SysExpressionServiceImpl extends BaseService<TbSysExpression, String> implements ISysExpressionService<TbSysExpression, String> {
 	
-	@Autowired
-	TbSysExpressionMapper sysExpressionMapper;
+	private final TbSysExpressionMapper sysExpressionMapper;
 	
+	public SysExpressionServiceImpl(TbSysExpressionMapper sysExpressionMapper) {
+		super();
+		this.sysExpressionMapper = sysExpressionMapper;
+	}
+
 	@Override
 	protected IBaseMapper<TbSysExpression, String> getBaseMapper() {
 		return this.sysExpressionMapper;
 	}
 	
 	@Override
-	public Map<String, String> findExpressionMap(boolean pleaseSelect) throws ServiceException, Exception {
+	public Map<String, String> findExpressionMap(boolean pleaseSelect) throws ServiceException {
 		Map<String, String> dataMap = PleaseSelect.pageSelectMap(pleaseSelect);
 		List<TbSysExpression> searchList = this.sysExpressionMapper.selectListByParamsSimple(null);
 		for (int i=0; searchList!=null && i<searchList.size(); i++) {

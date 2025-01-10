@@ -21,6 +21,8 @@
  */
 package org.qifu.core.scheduled;
 
+import java.util.concurrent.ExecutionException;
+
 import org.qifu.base.exception.ServiceException;
 import org.qifu.base.scheduled.BaseScheduledTasksProvide;
 import org.qifu.core.util.SystemExpressionJobUtils;
@@ -38,14 +40,21 @@ public class SysExpressionJob extends BaseScheduledTasksProvide {
 	public void execute() {
 		try {
 			this.login();
-			SystemExpressionJobUtils.executeJobs();
+			this.executeJobs();
 		} catch (ServiceException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			this.logout();		
 		}
+	}
+	
+	private void executeJobs() {
+		try {
+			SystemExpressionJobUtils.executeJobs();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+		}		
 	}
 	
 }

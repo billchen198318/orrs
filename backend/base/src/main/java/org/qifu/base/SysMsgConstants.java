@@ -23,6 +23,10 @@ package org.qifu.base;
 
 public class SysMsgConstants {
 	
+	protected SysMsgConstants() {
+		throw new IllegalStateException("static model class: SysMsgConstants");
+	}
+	
 	// ?_BSE_? B=base S=system E=error 
 	// ?_UOS_? UO=user-operation S=status-msg
 	// ?_STD_? standard message

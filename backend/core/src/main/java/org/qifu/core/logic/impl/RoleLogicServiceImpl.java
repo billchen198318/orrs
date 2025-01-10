@@ -53,7 +53,6 @@ import org.qifu.core.service.ISysProgService;
 import org.qifu.core.service.IUserRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,35 +63,41 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(RoleLogicServiceImpl.class);
 	
-	private final static String DEFAULT_ROLE_CODE = "CMM_CONF001"; // 預設要套用role的 TB_SYS_CODE.CODE = 'BSC_CONF001' and TYPE='BSC'
-	private final static String DEFAULT_ROLE_CODE_TYPE = "CMM"; // 預設要套用role的 TB_SYS_CODE.CODE = 'BSC_CONF001' and TYPE='BSC'	
+	private static final String DEFAULT_ROLE_CODE = "CMM_CONF001"; // 預設要套用role的 TB_SYS_CODE.CODE = 'BSC_CONF001' and TYPE='BSC'
+	private static final String DEFAULT_ROLE_CODE_TYPE = "CMM"; // 預設要套用role的 TB_SYS_CODE.CODE = 'BSC_CONF001' and TYPE='BSC'	
 	private static final int MAX_DESCRIPTION_LENGTH = 500;
+	private static final String DESCRIPTION_VAR = "description";
 	
-	@Autowired
-	ISysCodeService<TbSysCode, String> sysCodeService;
+	private final ISysCodeService<TbSysCode, String> sysCodeService;
 	
-	@Autowired
-	IRoleService<TbRole, String> roleService;
+	private final IRoleService<TbRole, String> roleService;
 	
-	@Autowired
-	IRolePermissionService<TbRolePermission, String> rolePermissionService;
+	private final IRolePermissionService<TbRolePermission, String> rolePermissionService;
 	
-	@Autowired
-	IUserRoleService<TbUserRole, String> userRoleService;
+	private final IUserRoleService<TbUserRole, String> userRoleService;
 	
-	@Autowired
-	IAccountService<TbAccount, String> accountService;
+	private final IAccountService<TbAccount, String> accountService;
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
+	private final ISysProgService<TbSysProg, String> sysProgService;
 	
-	@Autowired
-	ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService; 
+	private final ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService; 
 	
-	public RoleLogicServiceImpl() {
+	public RoleLogicServiceImpl(ISysCodeService<TbSysCode, String> sysCodeService,
+			IRoleService<TbRole, String> roleService,
+			IRolePermissionService<TbRolePermission, String> rolePermissionService,
+			IUserRoleService<TbUserRole, String> userRoleService, IAccountService<TbAccount, String> accountService,
+			ISysProgService<TbSysProg, String> sysProgService,
+			ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService) {
 		super();
+		this.sysCodeService = sysCodeService;
+		this.roleService = roleService;
+		this.rolePermissionService = rolePermissionService;
+		this.userRoleService = userRoleService;
+		this.accountService = accountService;
+		this.sysProgService = sysProgService;
+		this.sysMenuRoleService = sysMenuRoleService;
 	}
-	
+
 	/**
 	 * 建立 TB_ROLE 資料
 	 * 
@@ -107,12 +112,12 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbRole> create(TbRole role) throws ServiceException, Exception {
+	public DefaultResult<TbRole> create(TbRole role) throws ServiceException {
 		if (role==null || super.isBlank(role.getRole())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		role.setDescription( super.defaultString(role.getDescription()) );
-		this.setStringValueMaxLength(role, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(role, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		return this.roleService.insert(role);
 	}
 
@@ -130,13 +135,13 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )	
 	@Override
-	public DefaultResult<TbRole> update(TbRole role) throws ServiceException, Exception {
+	public DefaultResult<TbRole> update(TbRole role) throws ServiceException {
 		
 		if (role==null || super.isBlank(role.getRole())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
 		role.setDescription( super.defaultString(role.getDescription()) );
-		this.setStringValueMaxLength(role, "description", MAX_DESCRIPTION_LENGTH);
+		this.setStringValueMaxLength(role, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		return this.roleService.update(role);
 	}
 
@@ -154,7 +159,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> delete(TbRole role) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbRole role) throws ServiceException {
 		if (role==null || super.isBlank(role.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -170,7 +175,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		if (role.getRole().equals(defaultUserRole)) {
 			throw new ServiceException("Default user role: " + defaultUserRole + " cannot delete!");
 		}
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("role", role.getRole());		
 		this.deleteRolePermission(params);
 		this.deleteUserRole(params);
@@ -178,7 +183,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		return roleService.delete(role);
 	}
 	
-	private void deleteRolePermission(Map<String, Object> params) throws ServiceException, Exception {
+	private void deleteRolePermission(Map<String, Object> params) throws ServiceException {
 		DefaultResult<List<TbRolePermission>> permListResult = this.rolePermissionService.selectListByParams(params);
 		if (CollectionUtils.isEmpty(permListResult.getValue())) {
 			return;
@@ -188,7 +193,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		}
 	}
 	
-	private void deleteUserRole(Map<String, Object> params) throws ServiceException, Exception {
+	private void deleteUserRole(Map<String, Object> params) throws ServiceException {
 		DefaultResult<List<TbUserRole>> userRoleListResult = this.userRoleService.selectListByParams(params);
 		if (CollectionUtils.isEmpty(userRoleListResult.getValue())) {
 			return;
@@ -198,7 +203,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		}
 	}
 	
-	private void deleteSysMenuRole(Map<String, Object> params) throws ServiceException, Exception {
+	private void deleteSysMenuRole(Map<String, Object> params) throws ServiceException {
 		DefaultResult<List<TbSysMenuRole>> menuRoleListResult = this.sysMenuRoleService.selectListByParams(params);
 		if (CollectionUtils.isEmpty(menuRoleListResult.getValue())) {
 			return;
@@ -223,7 +228,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbRolePermission> createPermission(TbRolePermission permission, String roleOid) throws ServiceException, Exception {
+	public DefaultResult<TbRolePermission> createPermission(TbRolePermission permission, String roleOid) throws ServiceException {
 		if ( super.isBlank(roleOid) || permission==null || super.isBlank(permission.getPermission()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -256,7 +261,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> deletePermission(TbRolePermission permission) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deletePermission(TbRolePermission permission) throws ServiceException {
 		if ( null==permission || super.isBlank(permission.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
@@ -277,7 +282,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 	 */	
 	@ServiceMethodAuthority(type = ServiceMethodType.SELECT)
 	@Override
-	public Map<String, List<TbRole>> findForAccountRoleEnableAndAll(String accountOid) throws ServiceException, Exception {
+	public Map<String, List<TbRole>> findForAccountRoleEnableAndAll(String accountOid) throws ServiceException {
 		if (super.isBlank(accountOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -286,7 +291,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			throw new ServiceException(aResult.getMessage());
 		}
 		TbAccount account = aResult.getValue();
-		Map<String, List<TbRole>> roleMap = new HashMap<String, List<TbRole>>();
+		Map<String, List<TbRole>> roleMap = new HashMap<>();
 		List<TbRole> enableRole = this.roleService.findForAccount(account.getAccount());
 		List<TbRole> allRole = this.roleService.selectList().getValue();
 		roleMap.put("enable", enableRole);
@@ -309,7 +314,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> updateUserRole(String accountOid, List<String> roles) throws ServiceException, Exception {
+	public DefaultResult<Boolean> updateUserRole(String accountOid, List<String> roles) throws ServiceException {
 		if (super.isBlank(accountOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -318,7 +323,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			throw new ServiceException(aResult.getMessage());
 		}
 		TbAccount account = aResult.getValue();
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		DefaultResult<Boolean> result = new DefaultResult<>();
 		result.setValue(false);
 		result.setMessage(BaseSystemMessage.updateFail());		
 		this.deleteUserRoleByAccount(account);
@@ -346,8 +351,8 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		return result;
 	}
 	
-	private void deleteUserRoleByAccount(TbAccount account) throws ServiceException, Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+	private void deleteUserRoleByAccount(TbAccount account) throws ServiceException {
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("account", account.getAccount());
 		DefaultResult<List<TbUserRole>> userRoleListResult = this.userRoleService.selectListByParams(paramMap);
 		if (CollectionUtils.isEmpty(userRoleListResult.getValue())) {
@@ -372,7 +377,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 	 */	
 	@ServiceMethodAuthority(type = ServiceMethodType.SELECT)
 	@Override
-	public Map<String, List<TbRole>> findForProgramRoleEnableAndAll(String programOid) throws ServiceException, Exception {
+	public Map<String, List<TbRole>> findForProgramRoleEnableAndAll(String programOid) throws ServiceException {
 		if (StringUtils.isBlank(programOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -381,7 +386,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			throw new ServiceException(spResult.getMessage());
 		}
 		TbSysProg sysProg = spResult.getValue();
-		Map<String, List<TbRole>> roleMap = new HashMap<String, List<TbRole>>();
+		Map<String, List<TbRole>> roleMap = new HashMap<>();
 		List<TbRole> enableRole = this.roleService.findForProgram(sysProg.getProgId());
 		List<TbRole> allRole = this.roleService.selectList().getValue();
 		roleMap.put("enable", enableRole);
@@ -404,7 +409,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> updateMenuRole(String progOid, List<String> roles) throws ServiceException, Exception {
+	public DefaultResult<Boolean> updateMenuRole(String progOid, List<String> roles) throws ServiceException {
 		if (super.isBlank(progOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -413,10 +418,10 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			throw new ServiceException(spResult.getMessage());
 		}
 		TbSysProg sysProg = spResult.getValue();
-		DefaultResult<Boolean> result = new DefaultResult<Boolean>();
+		DefaultResult<Boolean> result = new DefaultResult<>();
 		result.setValue(false);
 		result.setMessage(BaseSystemMessage.updateSuccess());			
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("progId", sysProg.getProgId());
 		DefaultResult<List<TbSysMenuRole>> sysMenuRoleListResult = this.sysMenuRoleService.selectListByParams(paramMap);
 		for (int i=0; sysMenuRoleListResult.getValue() != null && i < sysMenuRoleListResult.getValue().size(); i++) {
@@ -461,11 +466,11 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbRole> copyAsNew(String fromRoleOid, TbRole role) throws ServiceException, Exception {
+	public DefaultResult<TbRole> copyAsNew(String fromRoleOid, TbRole role) throws ServiceException {
 		if (role==null || super.isBlank(role.getRole()) || super.isBlank(fromRoleOid)) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
-		super.setStringValueMaxLength(role, "description", MAX_DESCRIPTION_LENGTH);
+		super.setStringValueMaxLength(role, DESCRIPTION_VAR, MAX_DESCRIPTION_LENGTH);
 		DefaultResult<TbRole> result = this.roleService.insert(role);
 		if (result.getValue() == null) {
 			throw new ServiceException(result.getMessage());
@@ -475,7 +480,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 			throw new ServiceException( fromResult.getMessage() );
 		}
 		TbRole oldRole = fromResult.getValue();		
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("role", oldRole.getRole());
 		DefaultResult<List<TbRolePermission>> permListResult = this.rolePermissionService.selectListByParams(paramMap);
 		for (int i=0; permListResult.getValue() != null && i < permListResult.getValue().size(); i++) {
@@ -506,7 +511,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 	 * @throws ServiceException
 	 * @throws Exception
 	 */	
-	public String getDefaultUserRole() throws ServiceException, Exception {
+	public String getDefaultUserRole() throws ServiceException {
 		String role = "";
 		TbSysCode sysCode = new TbSysCode();
 		sysCode.setType(DEFAULT_ROLE_CODE_TYPE);
@@ -520,7 +525,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 		if (super.isBlank(role)) {
 			throw new ServiceException(BaseSystemMessage.dataErrors());
 		}
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("role", role);
 		if ( this.roleService.count(paramMap) != 1 ) {
 			throw new ServiceException(BaseSystemMessage.dataErrors());
@@ -535,7 +540,7 @@ public class RoleLogicServiceImpl extends BaseLogicService implements IRoleLogic
 	 * @throws ServiceException
 	 * @throws Exception
 	 */	
-	public TbRole getDefaultUserRoleEntity() throws ServiceException, Exception {
+	public TbRole getDefaultUserRoleEntity() throws ServiceException {
 		TbSysCode sysCode = new TbSysCode();
 		sysCode.setType(DEFAULT_ROLE_CODE_TYPE);
 		sysCode.setCode(DEFAULT_ROLE_CODE);

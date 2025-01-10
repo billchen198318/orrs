@@ -39,8 +39,9 @@ public abstract class BaseLogicService {
 	
 	public String getAccountId() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && (auth.getPrincipal() instanceof UserDetails)) {
-			return ( (UserDetails) auth.getPrincipal() ).getUsername();
+		Object u = auth.getPrincipal();
+		if (u instanceof @SuppressWarnings("unused") UserDetails ud) {
+			return ( (UserDetails) u ).getUsername();
 		}
 		if (UserLocalUtils.getUserInfo() != null) { // for JOB service
 			return UserLocalUtils.getUserInfo().getUserId();
@@ -53,7 +54,7 @@ public abstract class BaseLogicService {
 	}	
 	
 	public String defaultString(String source) {
-		return SimpleUtils.getStr(source, "");
+		return SimpleUtils.getStr(source);
 	}	
 	
 	public boolean isBlank(String source) {
@@ -115,9 +116,7 @@ public abstract class BaseLogicService {
 			Ognl.setValue(variableName, obj, str);
 		} catch (OgnlException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} 
 	}	
 	
 }

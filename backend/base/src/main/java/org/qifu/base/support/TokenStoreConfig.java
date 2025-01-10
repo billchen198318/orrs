@@ -9,6 +9,10 @@ public class TokenStoreConfig {
 	
 	private static Map<String, String> configMap;
 	
+	protected TokenStoreConfig() {
+		throw new IllegalStateException("static model class: TokenStoreConfig");
+	}
+	
 	static {
 		try {
 			configMap = LoadResources.objectMapperReadValue("token-store-config.json", HashMap.class, TokenStoreConfig.class);

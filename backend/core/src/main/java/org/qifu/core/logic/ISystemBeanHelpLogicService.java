@@ -29,18 +29,18 @@ import org.qifu.core.entity.TbSysBeanHelpExprMap;
 
 public interface ISystemBeanHelpLogicService {
 	
-	DefaultResult<TbSysBeanHelp> create(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException, Exception;
+	DefaultResult<TbSysBeanHelp> create(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException;
 	
-	DefaultResult<TbSysBeanHelp> update(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException, Exception;
+	DefaultResult<TbSysBeanHelp> update(TbSysBeanHelp beanHelp, String systemOid) throws ServiceException;
 	
-	DefaultResult<Boolean> delete(TbSysBeanHelp beanHelp) throws ServiceException, Exception;
+	DefaultResult<Boolean> delete(TbSysBeanHelp beanHelp) throws ServiceException;
 	
-	DefaultResult<TbSysBeanHelpExpr> createExpr(TbSysBeanHelpExpr beanHelpExpr, String helpOid, String expressionOid) throws ServiceException, Exception;
+	DefaultResult<TbSysBeanHelpExpr> createExpr(TbSysBeanHelpExpr beanHelpExpr, String helpOid, String expressionOid) throws ServiceException;
 	
-	DefaultResult<Boolean> deleteExpr(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException, Exception;
+	DefaultResult<Boolean> deleteExpr(TbSysBeanHelpExpr beanHelpExpr) throws ServiceException;
 	
-	DefaultResult<TbSysBeanHelpExprMap> createExprMap(TbSysBeanHelpExprMap beanHelpExprMap, String helpExprOid) throws ServiceException, Exception;
+	DefaultResult<TbSysBeanHelpExprMap> createExprMap(TbSysBeanHelpExprMap beanHelpExprMap, String helpExprOid) throws ServiceException;
 	
-	DefaultResult<Boolean> deleteExprMap(TbSysBeanHelpExprMap beanHelpExprMap) throws ServiceException, Exception;
+	DefaultResult<Boolean> deleteExprMap(TbSysBeanHelpExprMap beanHelpExprMap) throws ServiceException;
 	
 }

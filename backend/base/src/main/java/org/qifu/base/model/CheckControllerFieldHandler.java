@@ -34,7 +34,7 @@ public class CheckControllerFieldHandler<T> {
 	private StringBuilder msg = new StringBuilder();
 	
 	public static <T> CheckControllerFieldHandler<T> build(DefaultControllerJsonResultObj<T> result) {
-		CheckControllerFieldHandler<T> handler = new CheckControllerFieldHandler<T>();
+		CheckControllerFieldHandler<T> handler = new CheckControllerFieldHandler<>();
 		handler.setResult(result);
 		return handler;
 	}
@@ -79,8 +79,8 @@ public class CheckControllerFieldHandler<T> {
 		}
 		try {
 			Object val = Ognl.getValue(expression, paramObj);
-			if ( val instanceof Boolean && (Boolean) val ) {
-				this.result.getCheckFields().put(id, message);
+			if ( Boolean.TRUE.equals(val) ) { 
+				this.result.getCheckFields().put(id, message); 
 			}
 		} catch (OgnlException e) {
 			e.printStackTrace();

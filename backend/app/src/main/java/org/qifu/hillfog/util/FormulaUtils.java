@@ -43,7 +43,7 @@ public class FormulaUtils {
 	private static IFormulaService<HfFormula, String> formulaService;
 	
 	static {
-		formulaService = (IFormulaService<HfFormula, String>) AppContext.context.getBean(IFormulaService.class);
+		formulaService = (IFormulaService<HfFormula, String>) AppContext.getContext().getBean(IFormulaService.class);
 	}
 	
 	public static HfFormula getFormulaById(String forId) throws ServiceException, Exception {

@@ -33,9 +33,6 @@ public class BaseApiSupport extends YesNo {
 	
 	private static final long serialVersionUID = -3934810030443337825L;
 
-//	@Autowired
-//	TokenFlagCheckConfigProperties tokenFlagCheckConfigProperties;
-
 	protected QueryParamBuilder queryParameter() {
 		return QueryParamBuilder.build();
 	}
@@ -44,26 +41,8 @@ public class BaseApiSupport extends YesNo {
 		return QueryParamBuilder.build(searchBody);
 	}	
 	
-	/*
-	protected Map<String, Claim> getTokenClaim(String token) {
-		TokenValidateFlagCheck flagCheck = null;
-		try {
-			flagCheck = ((TokenValidateFlagCheck) Class.forName(tokenFlagCheckConfigProperties.getClassName()).newInstance());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (null == flagCheck) {
-				Map<String, Claim> claimToken = new HashMap<String, Claim>();
-				return claimToken;
-			}
-		}
-		Map<String, Claim> claimToken = TokenBuilderUtil.verifyToken(token, flagCheck);		
-		return claimToken;
-	}
-	*/
-	
 	protected <T> DefaultControllerJsonResultObj<T> initDefaultJsonResult() {
-		DefaultControllerJsonResultObj<T> r = new DefaultControllerJsonResultObj<T>();
+		DefaultControllerJsonResultObj<T> r = new DefaultControllerJsonResultObj<>();
 		if (UserLocalUtils.getUserInfo() != null) {
 			r.setIsAuth(YES);
 			r.setLogin(YES);
@@ -72,7 +51,7 @@ public class BaseApiSupport extends YesNo {
 	}
 	
 	protected <T> QueryResult<T> initResult() {
-		QueryResult<T> result = new QueryResult<T>();
+		QueryResult<T> result = new QueryResult<>();
 		this.initResult(result);
 		return result;
 	}
@@ -82,7 +61,6 @@ public class BaseApiSupport extends YesNo {
 			return;
 		}
 		result.setIsAuth(NO);
-		// FIXME: 要改 UserLocalUtils 為 Apache-shiro 或別的登入session管理元件
 		if (UserLocalUtils.getUserInfo() != null) {
 			result.setIsAuth(YES);
 		}
@@ -127,16 +105,12 @@ public class BaseApiSupport extends YesNo {
 	}	
 	
 	protected <T> void noSuccessResult(QueryResult<T> result, Exception e) {
-		this.noSuccessResult(result, ( (e != null && e.getMessage() !=null) ? e.getMessage().toString() : BaseSystemMessage.objectNull() ));		
+		this.noSuccessResult(result, ( (e != null && e.getMessage() !=null) ? e.getMessage() : BaseSystemMessage.objectNull() ));		
 	}	
 	
 	protected void exceptionResult(DefaultControllerJsonResultObj<?> result, Exception e) {
 		e.printStackTrace();
-		if (e == null || e.getMessage() == null) {
-			result.setMessage( BaseSystemMessage.objectNull() );
-		} else {
-			result.setMessage( e.getMessage().toString() );
-		}
+		result.setMessage( e.getMessage() );
 		result.setSuccess( ControllerException.PAGE_EXCEPTION_CODE );
 	}
 	

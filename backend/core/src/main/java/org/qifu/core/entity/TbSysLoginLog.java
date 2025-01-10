@@ -9,7 +9,6 @@ import org.qifu.base.model.UpdateDateField;
 import org.qifu.base.model.UpdateUserField;
 import org.qifu.util.SimpleUtils;
 
-@Deprecated
 public class TbSysLoginLog implements java.io.Serializable {
 	private static final long serialVersionUID = -4553084549906639411L;
 	
@@ -22,7 +21,7 @@ public class TbSysLoginLog implements java.io.Serializable {
 	
 	/* for query grid show */
 	public String getCdateString() {
-		return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.cdate);
+		return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.cdate);
 	}	
 	
 	@EntityPK(name = "oid", autoUUID = true)

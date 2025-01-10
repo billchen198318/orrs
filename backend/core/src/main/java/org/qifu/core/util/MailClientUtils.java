@@ -27,10 +27,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.AppContext;
 import org.qifu.base.Constants;
 import org.qifu.base.properties.SpringMailSessionConfigProperties;
+import org.qifu.core.model.MailContent;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 public class MailClientUtils {
@@ -39,78 +41,86 @@ public class MailClientUtils {
 	
 	private static SpringMailSessionConfigProperties springMailSessionConfigProperties;
 	
+	protected MailClientUtils() {
+		throw new IllegalStateException("Utils class: MailClientUtils");
+	}
+	
 	static {
-		mailSender = AppContext.context.getBean(JavaMailSender.class);
-		springMailSessionConfigProperties = AppContext.context.getBean(SpringMailSessionConfigProperties.class);
+		mailSender = AppContext.getContext().getBean(JavaMailSender.class);
+		springMailSessionConfigProperties = AppContext.getContext().getBean(SpringMailSessionConfigProperties.class);
 	}
 	
 	public static void send(
 			String from, String to, 
-			String subject, String text) throws MailException, Exception {
-		send(from, to, null, null, null, null, subject, text);
+			MailContent mc) throws MailException, MessagingException {
+		send(from, to, null, null, null, null, mc);
 	}		
 	
 	public static void send(
 			String from, String to, 
-			String cc[], 
-			String subject, String text) throws MailException, Exception {
-		send(from, to, cc, null, null, null, subject, text);
+			String[] cc, 
+			MailContent mc) throws MailException, MessagingException {
+		send(from, to, cc, null, null, null, mc);
 	}	
 	
 	public static void send(
 			String from, String to, 
-			String cc[], String bcc[], 
-			String subject, String text) throws MailException, Exception {
-		send(from, to, cc, bcc, null, null, subject, text);
+			String[] cc, String[] bcc, 
+			MailContent mc) throws MailException, MessagingException {
+		send(from, to, cc, bcc, null, null, mc);
 	}
 	
 	public static void send(
 			String from, String to, 
 			String cc, String bcc, 
-			String subject, String text) throws MailException, Exception {
+			MailContent mc) throws MailException, MessagingException {
 		
-		String mailCc[] = null;
-		String mailBcc[] = null;
+		String[] mailCc = null;
+		String[] mailBcc = null;
 		if (!StringUtils.isBlank(cc)) {
 			mailCc = cc.split(Constants.DEFAULT_SPLIT_DELIMITER);
 		}
 		if (!StringUtils.isBlank(bcc)) {
 			mailBcc = bcc.split(Constants.DEFAULT_SPLIT_DELIMITER);
 		}
-		send(from, to, mailCc, mailBcc, subject, text);
+		send(from, to, mailCc, mailBcc, mc);
 	}
 	
 	public static void send(
 			String from, String to, 
-			String cc[], String bcc[], 
-			String fileNames[], File files[],
-			String subject, String text) throws MailException, Exception {
+			String[] cc, String[] bcc, 
+			String[] fileNames, File[] files,
+			MailContent mc) throws MailException, MessagingException {
 		
 		if (mailSender==null) {
-			throw new Exception("null mailSender!");
+			throw new IllegalArgumentException("null mailSender!");
 		}
 		if (StringUtils.isBlank(from) || StringUtils.isBlank(to)) {
-			throw new Exception("from and to is required!");
+			throw new IllegalArgumentException("from and to is required!");
 		}
-		if (fileNames!=null && files!=null) {
-			if (fileNames.length != files.length) {
-				throw new Exception("File parameter error!");
-			}
+		if (fileNames!=null && files!=null &&  (fileNames.length != files.length)) {
+			throw new IllegalArgumentException("File parameter error!");
 		}
+		mailSender.send( getMimeMessage(from, to, cc, bcc, fileNames, files, mc) );
+	}
+	
+	private static MimeMessage getMimeMessage(String from, String to, 
+			String[] cc, String[] bcc, 
+			String[] fileNames, File[] files,
+			MailContent mc) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, Constants.BASE_ENCODING);
 		message.getSession().setDebug( springMailSessionConfigProperties.enableDebug() );
 		helper.setFrom(from);
-		//helper.setTo( to.endsWith(";") ? to.substring(0, to.length()-1) : to );
-		String tos[] = to.split(Constants.DEFAULT_SPLIT_DELIMITER);
+		String[] tos = to.split(Constants.DEFAULT_SPLIT_DELIMITER);
 		for (String t : tos) {
 			t = StringUtils.deleteWhitespace(StringUtils.defaultString(t));
 			if (StringUtils.defaultString(t).length() > 0) {
 				helper.addTo(t);
 			}
 		}
-		helper.setSubject(subject);
-		helper.setText(text, true);
+		helper.setSubject(mc.getSubject());
+		helper.setText(mc.getContent(), true);
 		if (null!=cc && cc.length>0) {
 			helper.setCc(cc);
 		}
@@ -120,7 +130,7 @@ public class MailClientUtils {
 		for (int i=0; fileNames!=null && i<fileNames.length; i++) {
 			helper.addAttachment(fileNames[i], files[i]);
 		}
-		mailSender.send(message);
+		return message;
 	}
 	
 }

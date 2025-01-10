@@ -21,37 +21,45 @@
  */
 package org.qifu.util;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ognl.Ognl;
 import ognl.OgnlContext;
+import ognl.OgnlException;
 
 public class ManualDataSourceFactory {
 	
-	private static boolean checkDataSourceClass(Class<?> clazz) throws Exception {
+	protected ManualDataSourceFactory() {
+		throw new IllegalStateException("Utils class: ManualDataSourceFactory");
+	}
+	
+	private static boolean checkDataSourceClass(Class<?> clazz) {
 		if (null == clazz) {
 			return false;
 		}
 		boolean isDataSource = false;
 		Class<?>[] ifs = clazz.getInterfaces();
 		for (int i=0; ifs!=null && i<ifs.length; i++) {
-			if (ifs[i].getSimpleName().equals("DataSource")) {
+			String sn = ifs[i].getSimpleName();
+			if ("DataSource".equals(sn)) {
 				isDataSource = true;
 			}
 		}
 		return isDataSource;
 	}
 	
-	public static DataSource getDataSource(Class<?> dataSourceClass, String url, String user, String password) throws Exception {
+	public static DataSource getDataSource(Class<?> dataSourceClass, String url, String user, String password) throws OgnlException, IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		if (!checkDataSourceClass(dataSourceClass)) {
-			throw new Exception("DataSource Class is not implements DataSource. error!");
+			throw new IllegalArgumentException("DataSource Class is not implements DataSource. error!");
 		}
 		if (StringUtils.isBlank(url) || StringUtils.isBlank(user)) {
-			throw new Exception("url or user is required!");
+			throw new IllegalArgumentException("url or user is required!");
 		}
-		DataSource ds = (DataSource)dataSourceClass.newInstance();
+		DataSource ds = (DataSource)dataSourceClass.getDeclaredConstructor().newInstance();
 		OgnlContext ognlContext = Ognl.createDefaultContext(null);
 		Ognl.setValue("url", ognlContext, ds, url);
 		Ognl.setValue("user", ognlContext, ds, user);

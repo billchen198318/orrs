@@ -24,19 +24,18 @@ package org.qifu.base.model;
 import java.util.Map;
 
 public class ScriptTypeCode {
-	//public static final String BSH = "BSH"; // beanShell2
 	public static final String GROOVY = "GROOVY"; // groovy
 	
+	protected ScriptTypeCode() {
+		throw new IllegalStateException("static model class: ScriptTypeCode");
+	}
+	
 	public static boolean isTypeCode(String type) {
-		if ( /*BSH.equals(type) ||*/ GROOVY.equals(type)) {
-			return true;
-		}
-		return false;
+		return GROOVY.equals(type) ? Boolean.TRUE : Boolean.FALSE;
 	}
 	
 	public static Map<String, String> getTypeMap(boolean pleaseSelect) {
 		Map<String, String> dataMap = PleaseSelect.pageSelectMap(pleaseSelect);
-		//dataMap.put(BSH, "java ( BeanShell2 )");
 		dataMap.put(GROOVY, "groovy");
 		return dataMap;
 	}	

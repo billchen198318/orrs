@@ -24,12 +24,12 @@ package org.qifu.core.util;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
@@ -40,9 +40,13 @@ import org.qifu.base.exception.ServiceException;
 
 public class PdfConvertUtils {
 	
+	protected PdfConvertUtils() {
+		throw new IllegalStateException("Utils class: PdfConvertUtils");
+	}
+	
 	public static List<String> toImageUpload(File pdfFile, int resolution, 
-			String system, String uploadType, boolean isFile) throws ServiceException, Exception {
-		List<String> oids = new LinkedList<String>();
+			String system, String uploadType, boolean isFile) throws ServiceException, IOException {
+		List<String> oids = new LinkedList<>();
 		List<File> imageFiles = toImageFiles(pdfFile, resolution);
 		for (File file : imageFiles) {
 			oids.add(
@@ -53,26 +57,18 @@ public class PdfConvertUtils {
 		return oids;
 	}
 	
-	public static List<File> toImageFiles(File pdfFile, int resolution) throws Exception {
+	public static List<File> toImageFiles(File pdfFile, int resolution) throws IOException {
 		PDDocument document = Loader.loadPDF(pdfFile);	
 		PDFRenderer pdfRenderer = new PDFRenderer(document);
-		/*
-		List<PDPage> pages = new LinkedList<PDPage>();
-		for (int i=0; i < document.getDocumentCatalog().getPages().getCount(); i++) {
-			pages.add( document.getDocumentCatalog().getPages().get(i) );
-		}
-		*/
-		File tmpDir = new File(Constants.getWorkTmpDir() + "/" + PdfConvertUtils.class.getSimpleName() 
-				+ "/" + System.currentTimeMillis() + "/");
+		File tmpDir = new File(Constants.getWorkTmpDir() + File.separator + PdfConvertUtils.class.getSimpleName() 
+				+ File.separator + System.currentTimeMillis() + File.separator);
 		FileUtils.forceMkdir( tmpDir );
-		List<File> files = new LinkedList<File>();
-		//int len = String.valueOf(pages.size()+1).length();
+		List<File> files = new LinkedList<>();
 		int len = String.valueOf(document.getDocumentCatalog().getPages().getCount()+1).length();
-		//for (int i=0; i<pages.size(); i++) {
 		for (int i=0; i<document.getDocumentCatalog().getPages().getCount(); i++) {
 			String name = StringUtils.leftPad(String.valueOf(i+1), len, "0");
 			BufferedImage bufImage = pdfRenderer.renderImageWithDPI(i, resolution, ImageType.RGB);
-			File imageFile = new File( tmpDir.getPath() + "/" + name + ".png" );
+			File imageFile = new File( tmpDir.getPath() + File.separator + name + ".png" );
 			FileOutputStream fos = new FileOutputStream(imageFile);
 			ImageIOUtil.writeImage(bufImage, "png", fos, resolution);
 			fos.flush();
@@ -80,22 +76,7 @@ public class PdfConvertUtils {
 			files.add(imageFile);
 		}
 		document.close();
-		tmpDir = null;
 		return files;
 	}
 	
-	public static void main(String args[]) throws Exception {
-		if (args == null || args.length != 2) {
-			System.out.println("PdfConvertUtils [FILE] [RESOLUTION]");
-			System.out.println("Example: PdfConvertUtils /test.pdf 120");		
-			System.exit(1);
-		}		
-		System.out.println("source document file: " + args[0]);		
-		int res = NumberUtils.toInt(args[1], 300);
-		List<File> imageFiles = toImageFiles(new File(args[0]), res);
-		for (File file : imageFiles) {
-			System.out.println( file.getPath() );
-		}
-	}
-
 }

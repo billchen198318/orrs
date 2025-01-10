@@ -21,13 +21,9 @@
  */
 package org.qifu.core.config;
 
-import javax.sql.DataSource;
-
 import org.qifu.base.CoreAppConstants;
-import org.qifu.base.properties.BaseInfoConfigProperties;
 import org.qifu.base.service.impl.BaseUserDetailsService;
 import org.qifu.core.support.JwtAuthEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,22 +42,21 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @EnableWebSecurity
 public class WebSecurityConfig {
 	
-    @Autowired
-    BaseUserDetailsService baseUserDetailsService;
+    private final BaseUserDetailsService baseUserDetailsService;
     
-    @Autowired
-    JwtAuthEntryPoint unauthorizedHandler;    
+    private final JwtAuthEntryPoint unauthorizedHandler;    
     
-    @Autowired
-    DataSource dataSource;
+    private final PasswordEncoder passwordEncoder;    
     
-    @Autowired
-    BaseInfoConfigProperties baseInfoConfigProperties;
-    
-    @Autowired
-    PasswordEncoder passwordEncoder;    
-    
-    @Bean
+    public WebSecurityConfig(BaseUserDetailsService baseUserDetailsService, 
+    		JwtAuthEntryPoint unauthorizedHandler, PasswordEncoder passwordEncoder) {
+		super();
+		this.baseUserDetailsService = baseUserDetailsService;
+		this.unauthorizedHandler = unauthorizedHandler;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
     	return authenticationConfiguration.getAuthenticationManager();
     }    
@@ -87,9 +82,7 @@ public class WebSecurityConfig {
     			}
     			auth.anyRequest().authenticated();
     		});
-		http.exceptionHandling(exeConfig -> {
-		    exeConfig.authenticationEntryPoint(this.unauthorizedHandler);
-		});
+		http.exceptionHandling(exeConfig -> exeConfig.authenticationEntryPoint(this.unauthorizedHandler));
     	return http.build();
     }
     

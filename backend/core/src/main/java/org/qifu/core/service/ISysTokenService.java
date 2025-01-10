@@ -10,8 +10,8 @@ import org.qifu.core.vo.BoardDemo;
 
 public interface ISysTokenService<T, E> extends IBaseService<TbSysToken, String> {
 
-	public List<BoardDemo> findCountSizeByDatePerUser(Date date1, Date date2) throws ServiceException, Exception;
+	public List<BoardDemo> findCountSizeByDatePerUser(Date date1, Date date2) throws ServiceException;
 	
-	public Long countSizeByDate(Date date1, Date date2) throws ServiceException, Exception;	
+	public Long countSizeByDate(Date date1, Date date2) throws ServiceException;	
 	
 }

@@ -9,8 +9,12 @@ import org.qifu.base.model.TableMetadataModel;
 
 public class TableMetadataModelUtils {
 	
+	protected TableMetadataModelUtils() {
+		throw new IllegalStateException("Utils class: TableMetadataModelUtils");
+	}
+	
 	public static List<TableMetadataModel> build(String dataSourceId, String tableName) {
-		List<TableMetadataModel> tableMetadataModelList = new LinkedList<TableMetadataModel>();
+		List<TableMetadataModel> tableMetadataModelList = new LinkedList<>();
 		try {
 			Map<String, Map<String, String>> tableMetadataMap = DataUtils.getTableMetadataWithDoReleaseConnection(dataSourceId, tableName);
 			for (Map.Entry<String, Map<String, String>> entry : tableMetadataMap.entrySet()) {

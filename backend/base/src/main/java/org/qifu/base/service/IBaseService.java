@@ -29,6 +29,8 @@ import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.PageOf;
 import org.qifu.base.model.QueryResult;
 
+import ognl.OgnlException;
+
 /**
  * @param <T>	MyBatis Entity
  * @param <K>	PK屬性
@@ -37,35 +39,32 @@ public interface IBaseService<T extends java.io.Serializable, K extends java.io.
 	
 	public String defaultString(String source);
 	
-	public DefaultResult<T> selectByPrimaryKey(K pk) throws ServiceException, Exception;
+	public DefaultResult<T> selectByPrimaryKey(K pk) throws ServiceException;
 	
-	public DefaultResult<T> selectByEntityPrimaryKey(T mapperObj) throws ServiceException, Exception;
+	public DefaultResult<T> selectByEntityPrimaryKey(T mapperObj) throws ServiceException;
 	
-	public DefaultResult<List<T>> selectList() throws ServiceException, Exception;
+	public DefaultResult<List<T>> selectList() throws ServiceException;
 	
-	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap) throws ServiceException, Exception;
+	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap) throws ServiceException;
 	
-	public DefaultResult<List<T>> selectList(String orderBy, String sortType) throws ServiceException, Exception;
+	public DefaultResult<List<T>> selectList(String orderBy, String sortType) throws ServiceException;
 	
-	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException, Exception;
+	public DefaultResult<List<T>> selectListByParams(Map<String, Object> paramMap, String orderBy, String sortType) throws ServiceException;
 	
-	public DefaultResult<T> selectByUniqueKey(T mapperObj) throws ServiceException, Exception;
+	public DefaultResult<T> selectByUniqueKey(T mapperObj) throws ServiceException;
 	
-	public DefaultResult<T> insert(T mapperObj) throws ServiceException, Exception;
+	public DefaultResult<T> insert(T mapperObj) throws ServiceException;
 	
-	// 不需要, 改 insert method 內容, 自己判別是否有Unique Key欄位, 有的話要去count檢查
-	//public DefaultResult<T> insertIgnoreUK(T mapperObj) throws ServiceException, Exception;
+	public DefaultResult<T> update(T mapperObj) throws ServiceException;
 	
-	public DefaultResult<T> update(T mapperObj) throws ServiceException, Exception;
+	public DefaultResult<Boolean> delete(T mapperObj) throws ServiceException;
 	
-	public DefaultResult<Boolean> delete(T mapperObj) throws ServiceException, Exception;
+	public Long count(Map<String, Object> paramMap) throws ServiceException;
 	
-	public Long count(Map<String, Object> paramMap) throws ServiceException, Exception;
+	public Long countByUK(T mapperObj) throws ServiceException;	
 	
-	public Long countByUK(T mapperObj) throws ServiceException, Exception;	
+	public <V> QueryResult<List<V>> findPage(Map<String, Object> paramMap, PageOf pageOf) throws ServiceException;
 	
-	public <VO> QueryResult<List<VO>> findPage(Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, Exception;
-	
-	public <VO> QueryResult<List<VO>> findPage(String mapperCountMethodName, String mapperQueryMethodName, Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, Exception;
+	public <V> QueryResult<List<V>> findPage(String mapperCountMethodName, String mapperQueryMethodName, Map<String, Object> paramMap, PageOf pageOf) throws ServiceException, OgnlException;
 	
 }

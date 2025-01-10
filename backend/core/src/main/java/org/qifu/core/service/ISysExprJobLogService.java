@@ -27,6 +27,6 @@ import org.qifu.core.entity.TbSysExprJobLog;
 
 public interface ISysExprJobLogService<T, E> extends IBaseService<TbSysExprJobLog, String> {
 	
-	public Boolean deleteAll() throws ServiceException, Exception;
+	public Boolean deleteAll() throws ServiceException;
 	
 }

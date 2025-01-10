@@ -10,11 +10,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qifu.base.Constants;
+import org.qifu.base.exception.ServiceException;
 import org.qifu.base.model.DefaultResult;
 import org.qifu.base.model.RolePermissionAttr;
 import org.qifu.base.model.ScriptTypeCode;
 import org.qifu.base.model.UserRoleAndPermission;
-import org.qifu.base.model.YesNo;
+import org.qifu.base.model.YesNoKeyProvide;
 import org.qifu.core.entity.TbRolePermission;
 import org.qifu.core.entity.TbSysLoginLog;
 import org.qifu.core.entity.TbUserRole;
@@ -24,12 +25,11 @@ import org.qifu.core.service.IRolePermissionService;
 import org.qifu.core.service.ISysLoginLogService;
 import org.qifu.core.service.IUserRoleService;
 import org.qifu.util.ScriptExpressionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.ServletException;
+import jakarta.annotation.Resource;
 
 @Component
 public class JwtAuthLoginedUserRoleService {
@@ -37,44 +37,50 @@ public class JwtAuthLoginedUserRoleService {
 	
 	private static String createUserDataLdapModeScript = "";
 	
-	@Autowired
-	ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService;
+	private ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService;
 	
-    @Autowired
-    IUserRoleService<TbUserRole, String> userRoleService;
+	private IUserRoleService<TbUserRole, String> userRoleService;
     
-    @Autowired
-    IRolePermissionService<TbRolePermission, String> rolePermissionService;	
+	private IRolePermissionService<TbRolePermission, String> rolePermissionService;		
+	
+	public ISysLoginLogService<TbSysLoginLog, String> getSysLoginLogService() {
+		return sysLoginLogService;
+	}
+	
+	@Resource
+	public void setSysLoginLogService(ISysLoginLogService<TbSysLoginLog, String> sysLoginLogService) {
+		this.sysLoginLogService = sysLoginLogService;
+	}
+
+	public IUserRoleService<TbUserRole, String> getUserRoleService() {
+		return userRoleService;
+	}
+
+	@Resource
+	public void setUserRoleService(IUserRoleService<TbUserRole, String> userRoleService) {
+		this.userRoleService = userRoleService;
+	}
+
+	public IRolePermissionService<TbRolePermission, String> getRolePermissionService() {
+		return rolePermissionService;
+	}
+
+	@Resource
+	public void setRolePermissionService(IRolePermissionService<TbRolePermission, String> rolePermissionService) {
+		this.rolePermissionService = rolePermissionService;
+	}
     
-	public void onLoginedSuccess(Authentication authentication) throws IOException, ServletException {
+	public void onLoginedSuccess(Authentication authentication) {
 		UserDetails user = (UserDetails) authentication.getPrincipal();
 		try {
-			if (user instanceof User) {
+			if (user instanceof @SuppressWarnings("unused") User ux) {
 				User u = (User) user;
-				if (YesNo.YES.equals(u.getByLdap())) {
+				if (YesNoKeyProvide.YES.equals(u.getByLdap())) {
 					this.processLdapAccountData(u);
 				}
 				List<TbUserRole> userRoleList = this.findUserRoleList(user.getUsername());
-				List<UserRoleAndPermission> urapList = new ArrayList<UserRoleAndPermission>();
-				for (int i = 0; userRoleList != null && i < userRoleList.size(); i++) {
-					TbUserRole ur = userRoleList.get(i);
-					UserRoleAndPermission urap = new UserRoleAndPermission();
-					urap.setRole(ur.getRole());
-					List<TbRolePermission> rPermList = ur.getRolePermission();
-					if (urap.getRolePermission() == null) {
-						urap.setRolePermission(new ArrayList<RolePermissionAttr>());
-					}
-					for (int j = 0; rPermList != null && j < rPermList.size(); j++) {
-						if (!PermissionType.VIEW.name().equals(rPermList.get(j).getPermType())) {
-							continue;
-						}
-						RolePermissionAttr rpa = new RolePermissionAttr();
-						rpa.setPermission(rPermList.get(j).getPermission());
-						rpa.setType(rPermList.get(j).getPermType());
-						urap.getRolePermission().add(rpa);
-					}
-					urapList.add(urap);
-				}
+				List<UserRoleAndPermission> urapList = new ArrayList<>();
+				this.fillOfOnLoginedSuccess(userRoleList, urapList);
 				u.setRoles(urapList);
 			}
 			TbSysLoginLog loginLog = new TbSysLoginLog();
@@ -85,15 +91,32 @@ public class JwtAuthLoginedUserRoleService {
 		}
 	}
 	
-    private List<TbUserRole> findUserRoleList(String username) {
-        Map<String, Object> paramMap = new HashMap<String, Object>();
+	private void fillOfOnLoginedSuccess(List<TbUserRole> userRoleList, List<UserRoleAndPermission> urapList) {
+		for (int i = 0; userRoleList != null && i < userRoleList.size(); i++) {
+			TbUserRole ur = userRoleList.get(i);
+			UserRoleAndPermission urap = new UserRoleAndPermission();
+			urap.setRole(ur.getRole());
+			List<TbRolePermission> rPermList = ur.getRolePermission();
+			if (urap.getRolePermission() == null) {
+				urap.setRolePermission(new ArrayList<>());
+			}
+			for (int j = 0; rPermList != null && j < rPermList.size(); j++) {
+				if (!PermissionType.VIEW.name().equals(rPermList.get(j).getPermType())) {
+					continue;
+				}
+				RolePermissionAttr rpa = new RolePermissionAttr();
+				rpa.setPermission(rPermList.get(j).getPermission());
+				rpa.setType(rPermList.get(j).getPermType());
+				urap.getRolePermission().add(rpa);
+			}
+			urapList.add(urap);
+		}		
+	}
+	
+    private List<TbUserRole> findUserRoleList(String username) throws ServiceException {
+        Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("account", username);
-        DefaultResult<List<TbUserRole>> result = null;
-        try {
-            result = userRoleService.selectListByParams(paramMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        DefaultResult<List<TbUserRole>> result = userRoleService.selectListByParams(paramMap);
         List<TbUserRole> roleList = result.getValue();
         for (int i = 0; roleList != null && i < roleList.size(); i++) {
         	TbUserRole userRole = roleList.get(i);
@@ -106,16 +129,15 @@ public class JwtAuthLoginedUserRoleService {
 				e.printStackTrace();
 			}
         	if (userRole.getRolePermission() == null) {
-        		userRole.setRolePermission( new ArrayList<TbRolePermission>() );
+        		userRole.setRolePermission( new ArrayList<>() );
         	}
         }
         paramMap.clear();
-        paramMap = null;
         return roleList;
     }
     
     private void processLdapAccountData(User user) {
-    	Map<String, Object> paramMap = new HashMap<String, Object>();
+    	Map<String, Object> paramMap = new HashMap<>();
     	paramMap.put("user", user);
     	try {
 			ScriptExpressionUtils.execute(ScriptTypeCode.GROOVY, getCreateUserDataLdapModeScript(), null, paramMap);
@@ -123,26 +145,14 @@ public class JwtAuthLoginedUserRoleService {
 			e.printStackTrace();
 		}
     	paramMap.clear();
-    	paramMap = null;
     }
     
-	public static String getCreateUserDataLdapModeScript() throws Exception {
+	public static String getCreateUserDataLdapModeScript() throws IOException {
 		if ( !StringUtils.isBlank(createUserDataLdapModeScript) ) {
 			return createUserDataLdapModeScript;
 		}
-		InputStream is = null;
-		try {
-			is = JwtAuthLoginedUserRoleService.class.getClassLoader().getResource( CREATE_USER_DATA_LDAP_MODE_SCRIPT ).openStream();
-			createUserDataLdapModeScript = IOUtils.toString(is, Constants.BASE_ENCODING);			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (is!=null) {
-				is.close();
-			}			
-			is = null;			
+		try (InputStream is = JwtAuthLoginedUserRoleService.class.getClassLoader().getResource( CREATE_USER_DATA_LDAP_MODE_SCRIPT ).openStream()) {
+			createUserDataLdapModeScript = IOUtils.toString(is, Constants.BASE_ENCODING);
 		}
 		return createUserDataLdapModeScript;
 	}        

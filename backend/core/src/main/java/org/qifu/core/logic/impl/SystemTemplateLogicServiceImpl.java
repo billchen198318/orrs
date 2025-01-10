@@ -41,7 +41,6 @@ import org.qifu.core.service.ISysTemplateParamService;
 import org.qifu.core.service.ISysTemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,23 +52,24 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 	protected static Logger logger = LoggerFactory.getLogger(SystemTemplateLogicServiceImpl.class);
 	private static final int MAX_MESSAGE_LENGTH = 4000;
 	
-	@Autowired
-	ISysTemplateService<TbSysTemplate, String> sysTemplateService;
+	private final ISysTemplateService<TbSysTemplate, String> sysTemplateService;
 	
-	@Autowired
-	ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService;
+	private final ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService;
 	
-	public SystemTemplateLogicServiceImpl() {
+	public SystemTemplateLogicServiceImpl(ISysTemplateService<TbSysTemplate, String> sysTemplateService,
+			ISysTemplateParamService<TbSysTemplateParam, String> sysTemplateParamService) {
 		super();
+		this.sysTemplateService = sysTemplateService;
+		this.sysTemplateParamService = sysTemplateParamService;
 	}
-	
+
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysTemplate> create(TbSysTemplate sysTemplate) throws ServiceException, Exception {
+	public DefaultResult<TbSysTemplate> create(TbSysTemplate sysTemplate) throws ServiceException {
 		if (sysTemplate==null) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -85,7 +85,7 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )				
 	@Override
-	public DefaultResult<TbSysTemplate> update(TbSysTemplate sysTemplate) throws ServiceException, Exception {
+	public DefaultResult<TbSysTemplate> update(TbSysTemplate sysTemplate) throws ServiceException {
 		if (sysTemplate==null || super.isBlank(sysTemplate.getOid())) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}		
@@ -106,7 +106,7 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<Boolean> delete(TbSysTemplate sysTemplate) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSysTemplate sysTemplate) throws ServiceException {
 		if (sysTemplate==null || super.isBlank(sysTemplate.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -118,7 +118,7 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 		if (TemplateCode.isUsed(sysTemplate.getTemplateId())) {
 			throw new ServiceException(BaseSystemMessage.dataCannotDelete());
 		}
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("templateId", sysTemplate.getTemplateId());
 		DefaultResult<List<TbSysTemplateParam>> templateParamListResult = this.sysTemplateParamService.selectListByParams(params);
 		for (int i=0; templateParamListResult.getValue() !=null && i < templateParamListResult.getValue().size(); i++) {
@@ -127,14 +127,13 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 		return this.sysTemplateService.delete(sysTemplate);
 	}
 	
-	@Deprecated
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbSysTemplateParam> createParam(TbSysTemplateParam sysTemplateParam, String templateOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysTemplateParam> createParam(TbSysTemplateParam sysTemplateParam, String templateOid) throws ServiceException {
 		if (sysTemplateParam==null || super.isBlank(templateOid) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -153,7 +152,7 @@ public class SystemTemplateLogicServiceImpl extends BaseLogicService implements 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> deleteParam(TbSysTemplateParam sysTemplateParam) throws ServiceException, Exception {
+	public DefaultResult<Boolean> deleteParam(TbSysTemplateParam sysTemplateParam) throws ServiceException {
 		if (sysTemplateParam==null || super.isBlank(sysTemplateParam.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}

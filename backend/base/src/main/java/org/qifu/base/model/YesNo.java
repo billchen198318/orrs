@@ -38,10 +38,7 @@ public class YesNo implements YesNoKeyProvide {
 
 	@Override
 	public boolean isYes() {
-		if (YES.equals(key)) {
-			return true;
-		}
-		return false;
+		return YES.equals(key) ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 }

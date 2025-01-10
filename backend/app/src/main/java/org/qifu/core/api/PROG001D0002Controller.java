@@ -35,7 +35,6 @@ import org.qifu.core.entity.TbSysProg;
 import org.qifu.core.logic.ISystemProgramLogicService;
 import org.qifu.core.service.ISysProgService;
 import org.qifu.core.util.CoreApiSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,38 +50,42 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "CORE_PROG001D0002", description = "Program page management.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ResponseBody
 @RequestMapping("/api/PROG001D0002")
 public class PROG001D0002Controller extends CoreApiSupport {
 	private static final long serialVersionUID = -2060599663035482390L;
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
+	private static final String PROG_ID_VAR = "progId";
 	
-	@Autowired
-	ISystemProgramLogicService systemProgramLogicService;
+	private final transient ISysProgService<TbSysProg, String> sysProgService;
+	
+	private final transient ISystemProgramLogicService systemProgramLogicService;
+	
+	public PROG001D0002Controller(ISysProgService<TbSysProg, String> sysProgService,
+			ISystemProgramLogicService systemProgramLogicService) {
+		super();
+		this.sysProgService = sysProgService;
+		this.systemProgramLogicService = systemProgramLogicService;
+	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0002Q", check = true)
 	@Operation(summary = "CORE_PROG001D0002 - findPage", description = "查詢TB_SYS_PROG資料")
-	@ResponseBody
 	@PostMapping(value = "/findPage", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<QueryResult<List<TbSysProg>>> findPage(@RequestBody SearchBody searchBody) {
 		QueryResult<List<TbSysProg>> result = this.initResult();
 		try {
 			QueryResult<List<TbSysProg>> queryResult = this.sysProgService.findPage(
-					this.queryParameter(searchBody).fullEquals("progId").fullLink("nameLike").value(), 
+					this.queryParameter(searchBody).fullEquals(PROG_ID_VAR).fullLink("nameLike").value(), 
 					searchBody.getPageOf().orderBy("PROG_ID").sortTypeAsc());
 			this.setQueryResponseJsonResult(queryResult, result, searchBody.getPageOf());
 		} catch (ServiceException | ControllerException e) {
 			this.noSuccessResult(result, e);
-		} catch (Exception e) {
-			this.noSuccessResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0002D", check = true)
 	@Operation(summary = "CORE_PROG001D0002 - delete", description = "刪除TB_SYS_PROG資料")
-	@ResponseBody
 	@PostMapping(value = "/delete", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<Boolean>> doDelete(@RequestBody TbSysProg sysProg) {
 		DefaultControllerJsonResultObj<Boolean> result = this.initDefaultJsonResult();
@@ -91,16 +94,14 @@ public class PROG001D0002Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(delResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
-	private void handlerCheck(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException, Exception {
+	private void handlerCheck(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException {
 		CheckControllerFieldHandler<TbSysProg> chk = this.getCheckControllerFieldHandler(result);
 		chk
-		.testField("progId", sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(progId)", "請輸入程式編號")
+		.testField(PROG_ID_VAR, sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(progId)", "請輸入程式編號")
 		.testField("name", sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(name)", "請輸入程式名稱")
 		.testField("url", sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(url)", "請輸入Url")		
 		.testField("editMode", sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(editMode)", "請輸入Edit mode")
@@ -113,16 +114,16 @@ public class PROG001D0002Controller extends CoreApiSupport {
 		.testField("fontIconClassId", sysProg, "@org.apache.commons.lang3.StringUtils@isBlank(fontIconClassId)", "請輸入ICON class")		
 		.throwHtmlMessage();
 		
-		chk.testField("progId", sysProg, "!@org.qifu.util.SimpleUtils@checkBeTrueOf_azAZ09Id(sysId)", "程式編號只允許輸入0-9,a-z,A-Z正常字元");		
+		chk.testField(PROG_ID_VAR, sysProg, "!@org.qifu.util.SimpleUtils@checkBeTrueOfAZaz09Id(sysId)", "程式編號只允許輸入0-9,a-z,A-Z正常字元");		
 	}	
 	
-	private void save(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException, Exception {
+	private void save(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException {
 		this.handlerCheck(result, sysProg);
 		DefaultResult<TbSysProg> cResult = this.sysProgService.insert(sysProg);
 		this.setDefaultResponseJsonResult(cResult, result);
 	}	
 	
-	private void update(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException, Exception {
+	private void update(DefaultControllerJsonResultObj<TbSysProg> result, TbSysProg sysProg) throws ControllerException, ServiceException {
 		this.handlerCheck(result, sysProg);
 		DefaultResult<TbSysProg> cResult = this.sysProgService.update(sysProg);
 		this.setDefaultResponseJsonResult(cResult, result);
@@ -130,7 +131,6 @@ public class PROG001D0002Controller extends CoreApiSupport {
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0002C", check = true)
 	@Operation(summary = "CORE_PROG001D0002 - save", description = "新增TB_SYS_PROG資料")
-	@ResponseBody
 	@PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysProg>> doSave(@RequestBody TbSysProg sysProg) {
 		DefaultControllerJsonResultObj<TbSysProg> result = this.initDefaultJsonResult();
@@ -138,15 +138,12 @@ public class PROG001D0002Controller extends CoreApiSupport {
 			this.save(result, sysProg);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}	
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0002E", check = true)
 	@Operation(summary = "CORE_PROG001D0002 - load", description = "讀取TB_SYS_PROG資料")
-	@ResponseBody
 	@PostMapping(value = "/load", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysProg>> doLoad(@RequestBody TbSysProg sysProg) {
 		DefaultControllerJsonResultObj<TbSysProg> result = this.initDefaultJsonResult();
@@ -155,15 +152,12 @@ public class PROG001D0002Controller extends CoreApiSupport {
 			this.setDefaultResponseJsonResult(lResult, result);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}
 	
 	@ControllerMethodAuthority(programId = "CORE_PROG001D0002U", check = true)
 	@Operation(summary = "CORE_PROG001D0002 - update", description = "更新TB_SYS_PROG資料")
-	@ResponseBody
 	@PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})	
 	public ResponseEntity<DefaultControllerJsonResultObj<TbSysProg>> doUpdate(@RequestBody TbSysProg sysProg) {
 		DefaultControllerJsonResultObj<TbSysProg> result = this.initDefaultJsonResult();
@@ -171,9 +165,7 @@ public class PROG001D0002Controller extends CoreApiSupport {
 			this.update(result, sysProg);
 		} catch (ServiceException | ControllerException e) {
 			this.exceptionResult(result, e);
-		} catch (Exception e) {
-			this.exceptionResult(result, e);
-		}
+		} 
 		return ResponseEntity.ok().body(result);
 	}		
 	

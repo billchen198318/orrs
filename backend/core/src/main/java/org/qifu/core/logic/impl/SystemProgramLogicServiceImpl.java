@@ -47,7 +47,6 @@ import org.qifu.core.service.ISysProgService;
 import org.qifu.core.service.ISysService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,23 +57,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemProgramLogicServiceImpl extends BaseLogicService implements ISystemProgramLogicService {
 	protected static Logger logger = LoggerFactory.getLogger(SystemProgramLogicServiceImpl.class);
 	
-	@Autowired
-	ISysIconService<TbSysIcon, String> sysIconService;
+	private final ISysIconService<TbSysIcon, String> sysIconService;
 	
-	@Autowired
-	ISysService<TbSys, String> sysService;
+	private final ISysService<TbSys, String> sysService;
 	
-	@Autowired
-	ISysProgService<TbSysProg, String> sysProgService;
+	private final ISysProgService<TbSysProg, String> sysProgService;
 	
-	@Autowired
-	ISysMenuService<TbSysMenu, String> sysMenuService;
+	private final ISysMenuService<TbSysMenu, String> sysMenuService;
 	
-	@Autowired
-	ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService;	
+	private final ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService;	
 	
-	public SystemProgramLogicServiceImpl() {
+	public SystemProgramLogicServiceImpl(ISysIconService<TbSysIcon, String> sysIconService,
+			ISysService<TbSys, String> sysService, ISysProgService<TbSysProg, String> sysProgService,
+			ISysMenuService<TbSysMenu, String> sysMenuService,
+			ISysMenuRoleService<TbSysMenuRole, String> sysMenuRoleService) {
 		super();
+		this.sysIconService = sysIconService;
+		this.sysService = sysService;
+		this.sysProgService = sysProgService;
+		this.sysMenuService = sysMenuService;
+		this.sysMenuRoleService = sysMenuRoleService;
 	}
 
 	/**
@@ -86,14 +88,13 @@ public class SystemProgramLogicServiceImpl extends BaseLogicService implements I
 	 * @throws ServiceException
 	 * @throws Exception
 	 */	
-	@Deprecated
 	@ServiceMethodAuthority(type = ServiceMethodType.INSERT)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )			
 	@Override
-	public DefaultResult<TbSysProg> create(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysProg> create(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException {
 		TbSys sys = new TbSys();
 		sys.setOid(sysOid);
 		DefaultResult<TbSys> sysResult = this.sysService.selectByEntityPrimaryKey(sys);
@@ -123,14 +124,13 @@ public class SystemProgramLogicServiceImpl extends BaseLogicService implements I
 	 * @throws ServiceException
 	 * @throws Exception
 	 */	
-	@Deprecated
 	@ServiceMethodAuthority(type = ServiceMethodType.UPDATE)
 	@Transactional(
 			propagation=Propagation.REQUIRED, 
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<TbSysProg> update(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException, Exception {
+	public DefaultResult<TbSysProg> update(TbSysProg sysProg, String sysOid, String iconOid) throws ServiceException {
 		if (sysProg==null || StringUtils.isBlank(sysProg.getOid()) ) {
 			throw new ServiceException(BaseSystemMessage.parameterBlank());
 		}
@@ -167,7 +167,7 @@ public class SystemProgramLogicServiceImpl extends BaseLogicService implements I
 			readOnly=false,
 			rollbackFor={RuntimeException.class, IOException.class, Exception.class} )		
 	@Override
-	public DefaultResult<Boolean> delete(TbSysProg sysProg) throws ServiceException, Exception {
+	public DefaultResult<Boolean> delete(TbSysProg sysProg) throws ServiceException {
 		if (sysProg==null || StringUtils.isBlank(sysProg.getOid()) ) {
 			throw new ServiceException( BaseSystemMessage.parameterBlank() );
 		}		
@@ -176,7 +176,7 @@ public class SystemProgramLogicServiceImpl extends BaseLogicService implements I
 			throw new ServiceException(sysProgResult.getMessage());
 		}
 		sysProg = sysProgResult.getValue(); 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("progId", sysProg.getProgId());
 		if (this.sysMenuService.count(params)>0) {
 			throw new ServiceException(BaseSystemMessage.dataCannotDelete());

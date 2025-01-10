@@ -23,7 +23,7 @@ public class HfScorecard implements java.io.Serializable {
     private Date udate;
     
     public String getCdateString() {
-    	return SimpleUtils.getDateFormat_yyyyMMddHHmmss(this.cdate);
+    	return SimpleUtils.getDateFormatOfyyyyMMddHHmmss(this.cdate);
     }
     
     @EntityPK(name = "oid", autoUUID = true)

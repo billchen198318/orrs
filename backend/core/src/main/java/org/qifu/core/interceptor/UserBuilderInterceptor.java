@@ -43,13 +43,11 @@ import org.qifu.core.service.IUserRoleService;
 import org.qifu.core.util.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
-//import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -57,26 +55,58 @@ public class UserBuilderInterceptor implements HandlerInterceptor {
 	
 	protected static Logger logger = LoggerFactory.getLogger(UserBuilderInterceptor.class);
 	
-	@Autowired
-	ISysCodeService<TbSysCode, String> sysCodeService;	
+	private ISysCodeService<TbSysCode, String> sysCodeService;	
 	
-	@Autowired
-	IUserRoleService<TbUserRole, String> userRoleService; 
+	private IUserRoleService<TbUserRole, String> userRoleService; 
 	
-	@Autowired
-	IRolePermissionService<TbRolePermission, String> rolePermissionService;
+	private IRolePermissionService<TbRolePermission, String> rolePermissionService;
 	
-	@Autowired
 	private DataSource dataSource;	
 	
+	public ISysCodeService<TbSysCode, String> getSysCodeService() {
+		return sysCodeService;
+	}
+	
+	@Resource
+	public void setSysCodeService(ISysCodeService<TbSysCode, String> sysCodeService) {
+		this.sysCodeService = sysCodeService;
+	}
+
+	public IUserRoleService<TbUserRole, String> getUserRoleService() {
+		return userRoleService;
+	}
+
+	@Resource
+	public void setUserRoleService(IUserRoleService<TbUserRole, String> userRoleService) {
+		this.userRoleService = userRoleService;
+	}
+
+	public IRolePermissionService<TbRolePermission, String> getRolePermissionService() {
+		return rolePermissionService;
+	}
+
+	@Resource
+	public void setRolePermissionService(IRolePermissionService<TbRolePermission, String> rolePermissionService) {
+		this.rolePermissionService = rolePermissionService;
+	}
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+
+	@Resource
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		if (request.getRequestURL().indexOf(Constants.TOKEN_CHECK_URL_PATH) == -1) {
 			return true;
 		}
-		String authorization = StringUtils.defaultString(request.getHeader( Constants.TOKEN_Authorization )).trim();
+		String authorization = StringUtils.defaultString(request.getHeader( Constants.TOKEN_AUTH )).trim();
 		if (!authorization.startsWith(Constants.TOKEN_PREFIX)) {
-			logger.warn(">>> No authorization uri: " + request.getRequestURI() + " , remote-address: " + request.getRemoteAddr() + " , remote-port: " + request.getRemotePort());
+			logger.warn(">>> No authorization uri: {} , remote-address: {} , remote-port: {} ", request.getRequestURI(), request.getRemoteAddr(), request.getRemotePort());
 			response.setCharacterEncoding( Constants.BASE_ENCODING );
 			response.setStatus(401); // 2023-08-04 add , 讓前端的 axios interceptor 去接
 			response.getWriter().print( "{ \"success\":\"N\",\"message\":\"No authorization head " + Constants.TOKEN_PREFIX + "\",\"login\":\"N\",\"isAuthorize\":\"N\" }" );
@@ -87,46 +117,19 @@ public class UserBuilderInterceptor implements HandlerInterceptor {
 		
 		TokenStoreValidateBuilder tsv = TokenStoreValidateBuilder.build(this.dataSource);
 		
-		Map<String, Object> param = new HashMap<String, Object>();
-		
-		Map<String, Claim> claimToken = TokenBuilderUtils.verifyToken(authorization.replaceFirst(Constants.TOKEN_PREFIX, "").replaceAll(" ", ""), tsv);
+		Map<String, Object> param = new HashMap<>();
+		Map<String, Claim> claimToken = TokenBuilderUtils.verifyToken(authorization.replaceFirst(Constants.TOKEN_PREFIX, "").replace(" ", ""), tsv);
 		if (TokenBuilderUtils.existsInfo(claimToken)) {
-			//String clientId = StringUtils.defaultString( claimToken.get(PublicClaims.AUDIENCE).asString() );
 			String userId = StringUtils.defaultString( claimToken.get(Constants.TOKEN_USER_PARAM_NAME).asString() );
-			List<String> roleIds = new ArrayList<String>();
-			Map<String, List<RolePermissionAttr>> rolePermissionMap = new HashMap<String, List<RolePermissionAttr>>();
-			try {
-				param.clear();
-				if (!StringUtils.isBlank(userId)) {
-					param.put("account", userId);
-					List<TbUserRole> urList = this.userRoleService.selectListByParams(param).getValue();
-					for (int j = 0; urList != null && j < urList.size(); j++) {
-						TbUserRole ur = urList.get(j);
-						roleIds.add(ur.getRole());
-						param.clear();
-						param.put("role", ur.getRole());
-						List<TbRolePermission> rpList = this.rolePermissionService.selectListByParams(param).getValue();
-						rolePermissionMap.put(ur.getRole(), new ArrayList<RolePermissionAttr>());
-						List<RolePermissionAttr> permList = rolePermissionMap.get(ur.getRole());
-						for (int x = 0; rpList != null && x < rpList.size(); x++) {
-							TbRolePermission rp = rpList.get(x);
-							RolePermissionAttr rpa = new RolePermissionAttr();
-							rpa.setPermission(rp.getPermission());
-							rpa.setType(rp.getPermType());
-							permList.add(rpa);
-						}
-					}
-				}				
-			} catch (ServiceException se) {
-				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}			
+			List<String> roleIds = new ArrayList<>();
+			Map<String, List<RolePermissionAttr>> rolePermissionMap = new HashMap<>();
+			this.fillUserRoleDataOfPreHandle(param, userId, roleIds, rolePermissionMap);		
 			UserUtils.setUserInfoForUserLocalUtils( claimToken.get(Constants.TOKEN_USER_PARAM_NAME).asString(), roleIds, rolePermissionMap);
-			logger.info("User builder from JWT Authorization header : " + claimToken.get(Constants.TOKEN_USER_PARAM_NAME).asString() + " , role: " + roleIds);
+			String tkUserName = claimToken.get(Constants.TOKEN_USER_PARAM_NAME).asString();
+			logger.info("User builder from JWT Authorization header : {} , role: {}", tkUserName, roleIds);
 		}
 		if ( UserUtils.getCurrentUser() == null ) {
-			logger.warn(">>> No authorization uri: " + request.getRequestURI() + " , remote-address: " + request.getRemoteAddr() + " , remote-port: " + request.getRemotePort());
+			logger.warn(">>> No authorization uri: {} , remote-address: {} , remote-port: {} ", request.getRequestURI(), request.getRemoteAddr(), request.getRemotePort());
 			response.setCharacterEncoding( Constants.BASE_ENCODING );
 			response.setStatus(401); // 2023-08-04 add , 讓前端的 axios interceptor 去接
 			response.getWriter().print( Constants.NO_LOGIN_JSON_DATA );
@@ -137,11 +140,36 @@ public class UserBuilderInterceptor implements HandlerInterceptor {
 		return true;
 	}
 	
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    	
-    }
-    
+	private void fillUserRoleDataOfPreHandle(Map<String, Object> param, String userId, List<String> roleIds, Map<String, List<RolePermissionAttr>> rolePermissionMap) {
+		try {
+			param.clear();
+			if (!StringUtils.isBlank(userId)) {
+				param.put("account", userId);
+				List<TbUserRole> urList = this.userRoleService.selectListByParams(param).getValue();
+				for (int j = 0; urList != null && j < urList.size(); j++) {
+					TbUserRole ur = urList.get(j);
+					roleIds.add(ur.getRole());
+					param.clear();
+					param.put("role", ur.getRole());
+					List<TbRolePermission> rpList = this.rolePermissionService.selectListByParams(param).getValue();
+					rolePermissionMap.put(ur.getRole(), new ArrayList<>());
+					List<RolePermissionAttr> permList = rolePermissionMap.get(ur.getRole());
+					for (int x = 0; rpList != null && x < rpList.size(); x++) {
+						TbRolePermission rp = rpList.get(x);
+						RolePermissionAttr rpa = new RolePermissionAttr();
+						rpa.setPermission(rp.getPermission());
+						rpa.setType(rp.getPermType());
+						permList.add(rpa);
+					}
+				}
+			}				
+		} catch (ServiceException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}			
+	}
+	
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
     	UserUtils.removeForUserLocalUtils();

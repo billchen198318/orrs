@@ -31,13 +31,13 @@ import org.qifu.base.exception.ServiceException;
 public class DefaultResult<T> implements java.io.Serializable {
 	private static final long serialVersionUID = 738672416927503320L;
 	
-	private String isAuth = YesNo.NO;
+	private String isAuth = YesNoKeyProvide.NO;
 	
-	private String success = YesNo.NO;
+	private String success = YesNoKeyProvide.NO;
 	
 	private String message = "";
 	
-	private T value;
+	private transient T value = null;
 
 	public String getIsAuth() {
 		return isAuth;
@@ -75,15 +75,11 @@ public class DefaultResult<T> implements java.io.Serializable {
 		if (null == this.value) {
 			throw new ServiceException(this.message);
 		}
-		if (this.value instanceof List) {
-			if ( CollectionUtils.isEmpty( ((List<?>)this.value) ) ) {
-				throw new ServiceException(this.message);
-			}
+		if (this.value instanceof List &&  ( CollectionUtils.isEmpty( ((List<?>)this.value) ) )) {
+			throw new ServiceException(this.message);
 		}
-		if (this.value instanceof Map) {
-			if ( MapUtils.isEmpty( ((Map<?,?>)this.value) ) ) {
-				throw new ServiceException(this.message);
-			}
+		if (this.value instanceof Map &&  ( MapUtils.isEmpty( ((Map<?,?>)this.value) ) )) {
+			throw new ServiceException(this.message);
 		}
 		return this.value;
 	}

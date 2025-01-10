@@ -23,6 +23,7 @@ package org.qifu.core.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,38 +45,26 @@ import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 public class PdfCopyPageBuilder {
 	private byte[] sourceReportData = null; 
-	private List<String> findWords = new ArrayList<String>();
+	private List<String> findWords = new ArrayList<>();
 	private String readPassword = "";
 	private boolean modeByFindFound = true;
 	private boolean forcePutAllPage = false;
 	
-	public static void main(String args[]) throws Exception {
-		byte newPdfByte[] = PdfCopyPageBuilder.build()
-				.addFindWord("初音未來")
-				.addFindWord("白癡女神阿克婭超贊的說。不要跟我搶! ≧◇≦ ")
-				.setForcePutAllPage(false)
-				.setModeByFindFound(false)
-				.setSourcePdfFile( new File("/tmp/play.pdf") )
-				.getContent();
-		FileUtils.writeByteArrayToFile(new File("/tmp/play-new.pdf"), newPdfByte);
-	}
-	
 	public static PdfCopyPageBuilder build() {
-		PdfCopyPageBuilder pdfCopyPageBuilder = new PdfCopyPageBuilder();
-		return pdfCopyPageBuilder;
+		return new PdfCopyPageBuilder();
 	}
 	
-	public PdfCopyPageBuilder setSourceReportData(byte[] content) throws Exception {
+	public PdfCopyPageBuilder setSourceReportData(byte[] content) {
 		if (null == content) {
-			throw new Exception("null data.");
+			throw new IllegalArgumentException("null data.");
 		}
 		this.sourceReportData = content;
 		return this;
 	}
 	
-	public PdfCopyPageBuilder setSourcePdfFile(File file) throws Exception {
+	public PdfCopyPageBuilder setSourcePdfFile(File file) throws IOException {
 		if (null == file || !file.exists() || !file.isFile()) {
-			throw new Exception("file args error.");
+			throw new IllegalArgumentException("file args error.");
 		}
 		this.setSourceReportData( FileUtils.readFileToByteArray(file) );
 		return this;
@@ -106,128 +95,99 @@ public class PdfCopyPageBuilder {
 		return this;
 	}
 	
-	public String toUpload(String system) throws ServiceException, Exception {
+	public String toUpload(String system) throws ServiceException, IOException {
 		return this.toUpload(system, UploadTypes.IS_TEMP);
 	}
 	
-	public String toUpload(String system, String uploadType) throws ServiceException, Exception {
-		byte newPdfByte[] = this.getContent();
+	public String toUpload(String system, String uploadType) throws ServiceException, IOException {
+		byte[] newPdfByte = this.getContent();
 		return UploadSupportUtils.create(system, uploadType, false, newPdfByte, SimpleUtils.getUUIDStr()+".pdf");
 	}	
 	
-	public byte[] getContent() throws Exception {
-		if (!this.modeByFindFound && this.findWords.size() > 1) {
-			throw new Exception("modeByFindFound set to false, cannot add many find word.");
-		}
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		PdfReader pdfReader = null;
-		if (!StringUtils.isBlank(this.readPassword)) {
-			pdfReader = new PdfReader(sourceReportData, readPassword.getBytes());
-		} else {
-			pdfReader = new PdfReader(sourceReportData);
-		}
-		Document document = new Document(pdfReader.getPageSizeWithRotation(1));
-		PdfCopy pdfCopy = null;
-		try {
-			pdfCopy = new PdfCopy(document, os);
-			document.open();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
-		boolean isCutPdf =false;
-		boolean needPut = false;
-		for (int i=1; i<=pdfReader.getNumberOfPages() && pdfCopy!=null; i++) {
-        	needPut = false;
-        	String text = pdfTextExtractor.getTextFromPage(i);
-        	if (!this.forcePutAllPage) {
-            	if (this.modeByFindFound) {
-                	for (String word : this.findWords) {
-                		if (text.indexOf(word) > -1) {
-                			needPut = true;
-                		}
-                	}        		
-            	} else {
-            		for (String word : this.findWords) {
-            			if (text.indexOf(word) == -1) {
-            				needPut = true;
-            			}
-            		}
-            	}        		
-        	} else {
-        		needPut = true;
-        	}
-        	if (needPut) {
-        		try {
-        			PdfImportedPage page = pdfCopy.getImportedPage(pdfReader, i);
-        			pdfCopy.newPage();
-        			pdfCopy.addPage(page); 
-        			isCutPdf = true;
-        		} catch (Exception e) {
-        			e.printStackTrace();
-        		}        		
-        	}
-        }		
-        
-        if (!isCutPdf) { // 沒劫到後, 產生空白的doc
-        	document = null;
-        	document = new Document();
-        	
-        	os.close();
-    		os = null;
-    		os = new ByteArrayOutputStream();
-    		
-        	try {
-    			PdfWriter.getInstance( document, os );
-    			document.open();
-    			Paragraph paragraph = new Paragraph(" ");
-    			paragraph.setAlignment(Element.ALIGN_RIGHT);
-    			document.add(paragraph);
-    			paragraph = new Paragraph(" ");
-    			paragraph.setAlignment(Element.ALIGN_CENTER);
-    			document.add(paragraph);
-    			paragraph = new Paragraph(" ");
-    			paragraph.setAlignment(Element.ALIGN_LEFT);
-    			document.add(paragraph);
-    			paragraph = new Paragraph(" ");
-    			paragraph.setAlignment(Element.ALIGN_LEFT);
-    			paragraph.setIndentationLeft(50);    			
-    			document.add(paragraph);			
-    		} catch (DocumentException e) {
-    			e.printStackTrace();
-    		}        	
-        }		
-        
-        try {
-        	if (document != null) {
-        		document.close();
-        	}            	
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        /*
-        try {
-        	if (pdfCopy != null && pdfCopy.getPageNumber() > 0) {
-        		pdfCopy.close();
-        	}
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        */
-        try {
-        	if (pdfReader != null) {
-        		pdfReader.close();
-        	}
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        
-		byte[] data = os.toByteArray();
-		if (os != null) {
-			os.close();
-		}
-		os = null;
-		return data;
+	public byte[] getContent() throws IOException {
+	    if (!this.modeByFindFound && this.findWords.size() > 1) {
+	        throw new IllegalArgumentException("modeByFindFound set to false, cannot add many find word.");
+	    }
+
+	    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+	        PdfReader pdfReader = createPdfReader();
+	        Document document = new Document(pdfReader.getPageSizeWithRotation(1));
+	        boolean isCutPdf = false;
+	        
+	        try (PdfCopy pdfCopy = new PdfCopy(document, os)) {
+	            document.open();
+	            PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
+	            
+	            for (int i = 1; i <= pdfReader.getNumberOfPages(); i++) {
+	                String text = pdfTextExtractor.getTextFromPage(i);
+	                boolean needPut = shouldIncludePage(text);
+	                if (needPut) {
+                        PdfImportedPage page = pdfCopy.getImportedPage(pdfReader, i);
+                        pdfCopy.addPage(page);
+                        isCutPdf = true;
+	                }
+	            }
+	        } 
+	        // Handle case where no pages were included (generate an empty document)
+	        if (!isCutPdf) {
+	            generateEmptyDocument(os);
+	        }
+	        return os.toByteArray();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        throw e;  // Re-throw to notify the caller of an IO exception
+	    }
+	}
+
+	// Helper method to create PdfReader with or without password
+	private PdfReader createPdfReader() throws IOException {
+	    if (StringUtils.isBlank(this.readPassword)) {
+	        return new PdfReader(sourceReportData);
+	    } else {
+	        return new PdfReader(sourceReportData, readPassword.getBytes());
+	    }
+	}
+
+	// Helper method to determine if the page should be included based on the mode and find words
+	private boolean shouldIncludePage(String text) {
+	    if (this.forcePutAllPage) {
+	        return true;
+	    }
+
+	    for (String word : this.findWords) {
+	        boolean found = text.contains(word);
+	        if ((this.modeByFindFound && found) || (!this.modeByFindFound && !found)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	// Helper method to generate an empty document with some space
+	private void generateEmptyDocument(ByteArrayOutputStream os) {
+	    try (Document emptyDocument = new Document()) {
+	        PdfWriter.getInstance(emptyDocument, os);
+	        emptyDocument.open();
+	        addEmptyParagraphs(emptyDocument);
+	    } catch (DocumentException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	private void addEmptyParagraphs(Document document) throws DocumentException {		
+		Paragraph paragraph = new Paragraph(" ");
+		paragraph.setAlignment(Element.ALIGN_RIGHT);
+		document.add(paragraph);
+		paragraph = new Paragraph(" ");
+		paragraph.setAlignment(Element.ALIGN_CENTER);
+		document.add(paragraph);
+		paragraph = new Paragraph(" ");
+		paragraph.setAlignment(Element.ALIGN_LEFT);
+		document.add(paragraph);
+		paragraph = new Paragraph(" ");
+		paragraph.setAlignment(Element.ALIGN_LEFT);
+		paragraph.setIndentationLeft(50);    			
+		document.add(paragraph);					
 	}
 	
 }

@@ -39,37 +39,39 @@ public class CoreAppConstants {
 	
 	// ======================================================================================
 	
-	private static final String _CONFIG_ExcludePathPatterns = "excludePathPatterns.json";
-	
 	private static Map<String, Object> excludePathPatternsMap = null;
 	
-	private static String excludePathPatternsArray[] = null;
+	private static String[] excludePathPatternsArray = null;
+	
+	protected CoreAppConstants() {
+		throw new IllegalStateException("Constants class: CoreAppConstants");
+	}
 	
 	static {
 		try {
-			excludePathPatternsMap = LoadResources.objectMapperReadValue(_CONFIG_ExcludePathPatterns, HashMap.class, CoreAppConstants.class);
+			excludePathPatternsMap = LoadResources.objectMapperReadValue("excludePathPatterns.json", HashMap.class, CoreAppConstants.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (null==excludePathPatternsMap) {
-				excludePathPatternsMap = new HashMap<String, Object>();
+				excludePathPatternsMap = new HashMap<>();
 			}
 		}
 	}
 	
-	public static final String [] WebConfig_resource = {
+	protected static final String [] WebConfigResource = {
 			"/webjars/**",
 			"swagger-ui.html",
             "/**" // frontend static html/js resource
 	};
 	
-	public static final String[] WebConfig_resourceLocations = {
+	protected static final String[] WebConfigResourceLocations = {
             "classpath:/META-INF/resources/webjars/",
             "classpath:/META-INF/resources/",
             "classpath:/static/" // frontend static html/js/image resource
 	};
 	
-	public static final String [] WebConfig_interceptorExcludePathPatterns = {
+	protected static final String [] WebConfigInterceptorExcludePathPatterns = {
 			"/ui5/**", 
 			"/webjars/**", 
 			"/bootbox/**", 
@@ -111,61 +113,31 @@ public class CoreAppConstants {
 			
 	};	
 	
+	public static String[] getWebconfigresource() {
+		return WebConfigResource;
+	}
+
+	public static String[] getWebconfigresourcelocations() {
+		return WebConfigResourceLocations;
+	}
+
+	public static String[] getWebconfiginterceptorexcludepathpatternsVariable() {
+		return WebConfigInterceptorExcludePathPatterns;
+	}
+
 	public static String[] getWebConfiginterceptorExcludePathPatterns() {
 		if (excludePathPatternsArray != null) {
 			return excludePathPatternsArray;
 		}
-		System.out.println("init Constants getWebConfiginterceptorExcludePathPatterns...");
 		@SuppressWarnings("unchecked")
 		List<String> excludePathPatterns = (List<String>) excludePathPatternsMap.get("excludePathPatterns");
 		if ( null == excludePathPatterns ) {
-			excludePathPatterns = new ArrayList<String>();
+			excludePathPatterns = new ArrayList<>();
 		}
-		Object[] arr = Stream.concat( Arrays.stream(WebConfig_interceptorExcludePathPatterns), Arrays.stream( excludePathPatterns.toArray()) ).toArray();
-		return ( excludePathPatternsArray = Arrays.copyOf(arr, arr.length, String[].class) );
+		Object[] arr = Stream.concat( Arrays.stream(WebConfigInterceptorExcludePathPatterns), Arrays.stream( excludePathPatterns.toArray()) ).toArray();
+		excludePathPatternsArray = Arrays.copyOf(arr, arr.length, String[].class);
+		return excludePathPatternsArray;
 	}	
-	
-	// ======================================================================================
-	
-	/*
-	private static final String _CONFIG_ContentCachingRequestWrapperFilter = "org/qifu/core/filter/ContentCachingRequestWrapperFilter.json";
-	
-	private static Map<String, Object> contentCachingRequestWrapperFilter_excludePathPatternsMap = null;
-	
-	private static String _contentCachingRequestWrapperFilter_excludePathPatternsDatas = " { } ";
-	
-	static {
-		try {
-			InputStream is = BaseSystemMessage.class.getClassLoader().getResource( _CONFIG_ContentCachingRequestWrapperFilter ).openStream();
-			_contentCachingRequestWrapperFilter_excludePathPatternsDatas = IOUtils.toString(is, Constants.BASE_ENCODING);
-			is.close();
-			is = null;
-			contentCachingRequestWrapperFilter_excludePathPatternsMap = loadDatas_contentCachingRequestWrapperFilter_excludePathPatterns();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (null==contentCachingRequestWrapperFilter_excludePathPatternsMap) {
-				contentCachingRequestWrapperFilter_excludePathPatternsMap = new HashMap<String, Object>();
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static Map<String, Object> loadDatas_contentCachingRequestWrapperFilter_excludePathPatterns() {
-		Map<String, Object> datas = null;
-		try {
-			datas = (Map<String, Object>)new ObjectMapper().readValue( _contentCachingRequestWrapperFilter_excludePathPatternsDatas, LinkedHashMap.class );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return datas;
-	}		
-	
-	@SuppressWarnings("unchecked")
-	public static List<String> getContentCachingRequestWrapperFilterExcludePathPatterns() {
-		return (List<String>) contentCachingRequestWrapperFilter_excludePathPatternsMap.get("excludePathPatterns");
-	}
-	*/
 	
 	// ======================================================================================
 	
