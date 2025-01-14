@@ -123,6 +123,7 @@ public class UploadSupportUtils {
 		cleanTempUpload( baseInfoConfigProperties.getSystem() );
 	}
 	
+	/**
 	public static void cleanTempUpload(String system) throws ServiceException {
 		logger.info("clean upload({}) temp begin...", system);
 		//sysUploadService.deleteTmpContentBySystem(system); // 2020-06-27 rem
@@ -169,6 +170,69 @@ public class UploadSupportUtils {
 		}		
 		logger.info("end...");
 	}	
+	*/
+	
+	public static void cleanTempUpload(String system) throws ServiceException {
+	    logger.info("clean upload({}) temp begin...", system);
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("system", system);
+	    paramMap.put("type", UploadTypes.IS_TEMP);
+	    
+	    DefaultResult<List<TbSysUpload>> searchListResult = sysUploadService.selectListByParams(paramMap);
+	    DateTime currentDateTime = new DateTime();
+	    
+	    for (int i = 0; searchListResult.getValue() != null && i < searchListResult.getValue().size(); i++) {
+	        TbSysUpload entity = searchListResult.getValue().get(i);
+	        
+	        // Combine all validation checks into a single if condition
+	        if (shouldProcessFile(entity, currentDateTime)) {
+	            String dir = getUploadFileDir(entity.getSystem(), entity.getSubDir(), entity.getType());
+	            String fileFullPath = dir + File.separator + entity.getFileName();
+	            File file = new File(fileFullPath);
+	            
+	            if (file.exists()) {
+	                try {
+	                    logger.warn("delete : {}", file.getPath());
+	                    FileUtils.forceDelete(file);
+	                    sysUploadService.delete(entity);
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            } else {
+	                logger.warn("upload temp file no exists, upload oid: {}", entity.getOid());
+	            }
+	        }
+	    }
+	    logger.info("end...");
+	}
+
+	// Helper method to consolidate validation logic
+	private static boolean shouldProcessFile(TbSysUpload entity, DateTime currentDateTime) {
+	    // Check if create date is null
+	    if (entity.getCdate() == null) {
+	        logger.warn("upload temp file null create date time, cannot remove, upload oid: {}", entity.getOid());
+	        return false;
+	    }
+
+	    // Check duration
+	    DateTime createDateTime = new DateTime(entity.getCdate());
+	    Duration duration = new Duration(createDateTime, currentDateTime);
+	    if (duration.getStandardHours() < 4) {
+	        logger.warn("upload temp file no over remove check time(hour-{}, min-{}), cannot remove, upload oid: {}", 
+	            duration.getStandardHours(), duration.getStandardMinutes(), entity.getOid());
+	        return false;
+	    }
+
+	    // Handle non-file type uploads
+	    if (!YesNoKeyProvide.YES.equals(entity.getIsFile())) {
+	        logger.warn("delete upload not real file type, upload oid : {} , show-name: {}", 
+	            entity.getOid(), entity.getShowName());
+	        sysUploadService.delete(entity);
+	        return false;
+	    }
+
+	    return true;
+	}
 	
 	public static String getSubDir() {
 		return SimpleUtils.getStrYMD(SimpleUtils.IS_YEAR);

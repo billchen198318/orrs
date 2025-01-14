@@ -70,6 +70,7 @@ public class SystemExpressionJobUtils {
 		baseInfoConfigProperties = AppContext.getContext().getBean(BaseInfoConfigProperties.class);
 	}
 	
+	/**
 	private static boolean isRunTime(TbSysExprJob exprJob, String dayOfWeek, String hour, String minute) {
 		
 		// 查 DAY_OF_WEEK
@@ -91,7 +92,19 @@ public class SystemExpressionJobUtils {
 		}
 		
 		return true;
-	}		
+	}
+	*/
+	
+	private static boolean isRunTime(TbSysExprJob exprJob, String dayOfWeek, String hour, String minute) {
+	    return (ExpressionJobConstants.DATEOFWEEK_HOUR_MINUTE_ALL.equals(exprJob.getRunDayOfWeek()) || 
+	            dayOfWeek.equals(exprJob.getRunDayOfWeek())) 
+	           && 
+	           (ExpressionJobConstants.DATEOFWEEK_HOUR_MINUTE_ALL.equals(exprJob.getRunHour()) || 
+	            hour.equals(exprJob.getRunHour()))
+	           &&
+	           (ExpressionJobConstants.DATEOFWEEK_HOUR_MINUTE_ALL.equals(exprJob.getRunMinute()) || 
+	            minute.equals(exprJob.getRunMinute()));
+	}	
 	
 	public static void initRunStatusFlag(String system) throws ServiceException {
 		Map<String, Object> paramMap = new HashMap<>();
