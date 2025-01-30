@@ -1,0 +1,11 @@
+{
+	"enable" : "Y",
+	"setting" : [
+		{
+			"memo"			: "Document search for user message of chat mode!",
+			"variable"		: "userMessage",
+			"sqlCondition"	: " CONTENT like '%david%' or '%S01%' ",
+			"test" 			: "userMessage.indexOf(\"david\") > -1 && userMessage.indexOf(\"S01\") > -1"		
+		}
+	]
+}
