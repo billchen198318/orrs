@@ -1,5 +1,5 @@
 {
-	"models" : [ "gemma2", "qwen2.5-coder", "llama3.2-vision" ],
+	"models" : [ "gemma2", "qwen2.5-coder", "llama3.2-vision", "deepseek-r1:8b" ],
 	"similarityThreshold" : 0.7,
 	"embedding" : "nextfire/paraphrase-multilingual-minilm",
 	"commonTemplate" : "about $COMMON_TEMPLATE_PARAM{qustion} please reference:\n $COMMON_TEMPLATE_PARAM{reference}"
