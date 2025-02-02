@@ -25,7 +25,7 @@ public class OrrsConstants {
 	
 	public static final int MAX_PROMPT_RECORD = 10;
 	
-	public static final int MAX_USER_MESSAGE_SIZE = 20000;
+	public static final int MAX_USER_MESSAGE_SIZE = 128000; /** 20000; */
 	
 	public static final int MAX_COMMAND_RECORD = 10;
 	

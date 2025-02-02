@@ -63,7 +63,7 @@ CREATE TABLE `tb_orrs_command` (
   `CMD_ID` varchar(10) NOT NULL,
   `NAME` varchar(50) NOT NULL,
   `DESCRIPTION` varchar(500) DEFAULT NULL,
-  `USER_MESSAGE` varchar(20000) NOT NULL,
+  `USER_MESSAGE` TEXT NOT NULL DEFAULT ' ',
   `RESULT_VARIABLE` varchar(50) NOT NULL,
   `RESULT_TYPE` varchar(10) NOT NULL DEFAULT 'GROOVY',
   `LLM_MODEL` varchar(25) NOT NULL DEFAULT 'gemma2',
