@@ -81,7 +81,7 @@ public class ReadToOrrsDoc {
 		doc.setName(srcFile.getName());
 		doc.setContent(content);
 		doc.setSysPromptTpl("關於提問問題, 如果與 S01 專案 或 java 相關的話, 參考下面相關資料:\n{information}");
-		doc.setTplVariable("{information}");
+		doc.setTplVariable("information");
 		orrsDocService.insert(doc);
 		pos++;
 	}
