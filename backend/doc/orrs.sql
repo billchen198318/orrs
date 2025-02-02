@@ -172,7 +172,7 @@ CREATE TABLE `tb_orrs_doc` (
   `OID` char(36) NOT NULL,
   `DOC_ID` varchar(10) NOT NULL,
   `NAME` varchar(50) NOT NULL,
-  `CONTENT` varchar(8000) NOT NULL DEFAULT '',
+  `CONTENT` TEXT NOT NULL DEFAULT ' ',
   `SYS_PROMPT_TPL` varchar(1000) NOT NULL DEFAULT '',
   `TPL_VARIABLE` varchar(100) NOT NULL,
   `CUSERID` varchar(24) NOT NULL,
