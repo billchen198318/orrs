@@ -91,7 +91,7 @@ public class ORRS001D0005Controller extends CoreApiSupport {
 			param.put(setting.getVariable(), userMessage);
 			try {
 				Object res = Ognl.getValue(setting.getTest(), param);
-				if ( res instanceof @SuppressWarnings("unused") Boolean bl ) {
+				if ( res instanceof @SuppressWarnings("unused") Boolean bl && (Boolean) res ) {
 					this.fillDocumentSetting(messageList, userMessage, setting);
 				}
 			} catch (OgnlException e) {
