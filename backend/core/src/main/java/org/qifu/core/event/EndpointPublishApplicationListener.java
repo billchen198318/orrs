@@ -61,13 +61,10 @@ public class EndpointPublishApplicationListener implements ApplicationListener<C
 			}
 			Object serviceBean = this.getBean(event, beanId);
 			if (null != serviceBean) {
-				try (EndpointImpl endpoint = new EndpointImpl(bus, serviceBean)) {
-					List<String> inInterceptors = (List<String>) endpointMap.get("inInterceptors");
-					List<String> outInterceptors = (List<String>) endpointMap.get("outInterceptors");
-					this.publishProcess(event, publish, endpoint, inInterceptors, outInterceptors);				
-				} catch (Exception e) {
-					e.printStackTrace();
-				}				
+				EndpointImpl endpoint = new EndpointImpl(bus, serviceBean);
+				List<String> inInterceptors = (List<String>) endpointMap.get("inInterceptors");
+				List<String> outInterceptors = (List<String>) endpointMap.get("outInterceptors");
+				this.publishProcess(event, publish, endpoint, inInterceptors, outInterceptors);				
 			}
 		}		
 	}
